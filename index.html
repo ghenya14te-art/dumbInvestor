@@ -1,0 +1,2715 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1120">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Гібридні криптостратегії: Спот + Ф'ючерси — Симулятор та Журнал угод</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #0b1120;
+      color: #e2e8f0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .tab-btn.active {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #3b82f6;
+    }
+    .preset-btn.active {
+      background-color: rgba(37, 99, 235, 0.22);
+      border-color: #3b82f6;
+      color: #ffffff;
+    }
+    .strategy-card.active {
+      background-color: rgba(37, 99, 235, 0.16);
+      border-color: #3b82f6;
+    }
+    .case-btn.active {
+      background-color: rgba(16, 185, 129, 0.16);
+      border-color: #10b981;
+      color: #ffffff;
+    }
+    .drop-zone.dragover {
+      border-color: #3b82f6;
+      background-color: rgba(37, 99, 235, 0.12);
+    }
+    input[type="range"] {
+      accent-color: #3b82f6;
+    }
+    .trade-dot {
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .fade-in {
+      animation: fadeIn 0.25s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/85 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+          <h1 class="text-base sm:text-lg font-bold text-white tracking-tight">Гібридні криптостратегії: Спот + Ф'ючерси</h1>
+          <span id="tg-sync-badge" class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono-num bg-slate-800 border border-slate-700 text-slate-300">Локальний режим</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-0.5">Порівняння стратегій, 5 гібридних моделей, 7 активів в історії та журнал угод по скріншотах</p>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex flex-wrap gap-1.5" aria-label="Розділи симулятора">
+        <button id="nav-math" type="button" class="tab-btn active px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+          1. Симулятор (A vs B)
+        </button>
+        <button id="nav-strategies" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+          2. 5 Стратегій
+        </button>
+        <button id="nav-history" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+          3. Кейси (7 активів)
+        </button>
+        <button id="nav-risk" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+          4. Калькулятор
+        </button>
+        <button id="nav-journal" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-emerald-700/80 text-emerald-300 hover:text-white hover:border-emerald-500 transition">
+          5. Журнал (Скріншот OCR)
+        </button>
+        <button id="nav-glossary" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-amber-700/80 text-amber-300 hover:text-white hover:border-amber-500 transition">
+          6. Словник і навчання
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- ==================== TAB 1: MATH & STRATEGY A vs B SIMULATOR ==================== -->
+    <section id="tab-math" class="space-y-6 fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-5">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-white">Порівняння стратегій на одному графіку (Winrate × R:R)</h2>
+            <p class="text-sm text-slate-400 mt-1 max-w-3xl">
+              Порівнюй <span class="text-emerald-400 font-medium">Стратегію A</span> та <span class="text-purple-400 font-medium">Стратегію B</span> на одному графіку капіталу, щоб побачити, як 25–40% прибуткових угод із високим R:R конкурують із частішими угодами.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs font-medium text-slate-200 cursor-pointer">
+              <input id="toggle-compare-b" type="checkbox" checked class="h-4 w-4 rounded border-slate-600 text-purple-500 focus:ring-0">
+              <span>Порівняти зі Стратегією B</span>
+            </label>
+            <button id="btn-play-sim" type="button" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition flex items-center gap-1.5">
+              <span>▶</span><span>Анімація</span>
+            </button>
+            <button id="btn-shuffle-sim" type="button" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium transition">
+              ↻ Нова серія
+            </button>
+            <button id="btn-instant-sim" type="button" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium transition">
+              ⚡ Миттєво
+            </button>
+          </div>
+        </div>
+
+        <!-- Presets for Strategy A -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6" id="preset-container">
+          <button type="button" data-preset="sniper" class="preset-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-xs font-semibold text-blue-400">Снайпер пробоїв</div>
+            <div class="font-mono-num text-sm font-bold text-white mt-0.5">25% WR · 1:4</div>
+            <div class="text-xs text-slate-400 mt-0.5">3 з 4 у мінус, але +0,25R</div>
+          </button>
+          <button type="button" data-preset="trend" class="preset-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-xs font-semibold text-emerald-400">Тренд-піраміда</div>
+            <div class="font-mono-num text-sm font-bold text-white mt-0.5">33% WR · 1:3</div>
+            <div class="text-xs text-slate-400 mt-0.5">1 з 3 у плюс, але +0,32R</div>
+          </button>
+          <button type="button" data-preset="classic40" class="preset-btn active text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-xs font-semibold text-amber-400">Класика 40%</div>
+            <div class="font-mono-num text-sm font-bold text-white mt-0.5">40% WR · 1:2.5</div>
+            <div class="text-xs text-slate-400 mt-0.5">Оптимальний свінг +0,40R</div>
+          </button>
+          <button type="button" data-preset="balanced45" class="preset-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-xs font-semibold text-cyan-400">Робочий баланс</div>
+            <div class="font-mono-num text-sm font-bold text-white mt-0.5">45% WR · 1:2</div>
+            <div class="text-xs text-slate-400 mt-0.5">Помірна просадка +0,35R</div>
+          </button>
+          <button type="button" data-preset="scalp55" class="preset-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-xs font-semibold text-purple-400">Частий відскок</div>
+            <div class="font-mono-num text-sm font-bold text-white mt-0.5">55% WR · 1:1.5</div>
+            <div class="text-xs text-slate-400 mt-0.5">Комфортна психіка +0,38R</div>
+          </button>
+        </div>
+
+        <!-- Sliders + Live Chart Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Controls -->
+          <div class="lg:col-span-4 space-y-4">
+            <!-- Strategy A -->
+            <div class="bg-slate-950/60 border border-emerald-900/60 rounded-xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Стратегія A (Основна)</span>
+                <span id="stat-expectancy" class="font-mono-num text-xs font-semibold text-emerald-400">+0.35R</span>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-400">Стартовий депозит</span>
+                  <span id="val-sim-deposit" class="font-mono-num font-semibold text-white">$1 000</span>
+                </div>
+                <input id="sim-deposit" type="range" min="500" max="10000" step="100" value="1000" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-400">Winrate A</span>
+                  <span id="val-sim-wr" class="font-mono-num font-semibold text-blue-400">40%</span>
+                </div>
+                <input id="sim-wr" type="range" min="15" max="75" step="1" value="40" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-400">R:R A (1 : X)</span>
+                  <span id="val-sim-rr" class="font-mono-num font-semibold text-emerald-400">1 : 2.5</span>
+                </div>
+                <input id="sim-rr" type="range" min="1.0" max="5.0" step="0.1" value="2.5" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-400">Ризик A на угоду</span>
+                  <span id="val-sim-risk" class="font-mono-num font-semibold text-amber-400">1.0% ($10)</span>
+                </div>
+                <input id="sim-risk" type="range" min="0.5" max="3.0" step="0.25" value="1.0" class="w-full">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span class="text-slate-400">Угод</span>
+                    <span id="val-sim-trades" class="font-mono-num font-semibold text-white">30</span>
+                  </div>
+                  <input id="sim-trades" type="range" min="10" max="60" step="5" value="30" class="w-full">
+                </div>
+                <div>
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span class="text-slate-400">Комісія</span>
+                    <span id="val-sim-fee" class="font-mono-num font-semibold text-slate-300">0.05R</span>
+                  </div>
+                  <input id="sim-fee" type="range" min="0" max="0.20" step="0.01" value="0.05" class="w-full">
+                </div>
+              </div>
+              <div class="pt-2 border-t border-slate-800 flex justify-between text-xs">
+                <span class="text-slate-400">Break-even WR (A):</span>
+                <span id="stat-breakeven" class="font-mono-num font-semibold text-white">28.6%</span>
+              </div>
+            </div>
+
+            <!-- Strategy B Comparison Controls -->
+            <div id="panel-strategy-b" class="bg-slate-950/60 border border-purple-900/60 rounded-xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-purple-400">Стратегія B (Для порівняння)</span>
+                <span id="stat-expectancy-b" class="font-mono-num text-xs font-semibold text-purple-300">+0.20R</span>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-400">Winrate B</span>
+                  <span id="val-sim-wr-b" class="font-mono-num font-semibold text-purple-300">25%</span>
+                </div>
+                <input id="sim-wr-b" type="range" min="15" max="75" step="1" value="25" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-400">R:R B (1 : X)</span>
+                  <span id="val-sim-rr-b" class="font-mono-num font-semibold text-purple-300">1 : 4.0</span>
+                </div>
+                <input id="sim-rr-b" type="range" min="1.0" max="5.0" step="0.1" value="4.0" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-400">Ризик B на угоду</span>
+                  <span id="val-sim-risk-b" class="font-mono-num font-semibold text-amber-400">1.0% ($10)</span>
+                </div>
+                <input id="sim-risk-b" type="range" min="0.5" max="3.0" step="0.25" value="1.0" class="w-full">
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart + KPIs -->
+          <div class="lg:col-span-8 flex flex-col gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3">
+                <div class="text-xs text-emerald-400">Баланс A</div>
+                <div id="kpi-balance" class="font-mono-num text-lg font-bold text-white mt-0.5">$1 000</div>
+                <div id="kpi-pnl" class="font-mono-num text-xs text-emerald-400">+$0 (0.0%)</div>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3">
+                <div class="text-xs text-purple-400">Баланс B</div>
+                <div id="kpi-balance-b" class="font-mono-num text-lg font-bold text-white mt-0.5">$1 000</div>
+                <div id="kpi-pnl-b" class="font-mono-num text-xs text-purple-300">+$0 (0.0%)</div>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3">
+                <div class="text-xs text-slate-400">Макс. просадка (A / B)</div>
+                <div id="kpi-dd" class="font-mono-num text-base font-bold text-rose-400 mt-1">0.0% / 0.0%</div>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3">
+                <div class="text-xs text-slate-400">Плюс / Мінус (A)</div>
+                <div id="kpi-wl" class="font-mono-num text-lg font-bold text-slate-200 mt-0.5">0 / 0</div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-400">Анімовані криві капіталу: Стратегія A vs Стратегія B</span>
+                <span id="sim-step-badge" class="font-mono-num text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Крок 0 / 30</span>
+              </div>
+              <div class="relative h-72 sm:h-80">
+                <canvas id="equityChart"></canvas>
+              </div>
+              <div class="mt-3 pt-3 border-t border-slate-800">
+                <div class="text-xs text-slate-400 mb-1.5">Стрічка угод Стратегії A (зелена — Take-Profit, червона — Stop-Loss):</div>
+                <div id="trade-dots" class="flex flex-wrap gap-1.5 min-h-[20px]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Winrate x R:R Expectancy Matrix -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <h3 class="text-base sm:text-lg font-bold text-white mb-1">Матриця математичного очікування (Expectancy у R за угоду)</h3>
+        <p class="text-xs sm:text-sm text-slate-400 mb-4">
+          Зелені клітинки — прибуткові комбінації навіть при 25–40% успішних угод (з урахуванням комісії 0.05R). Клікни на клітинку, щоб завантажити її у Стратегію A.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs sm:text-sm border-collapse font-mono-num">
+            <thead>
+              <tr class="border-b border-slate-700 text-slate-400">
+                <th class="py-2 px-3 text-left font-sans">Winrate \ R:R</th>
+                <th class="py-2 px-3 text-center">1 : 1.5</th>
+                <th class="py-2 px-3 text-center">1 : 2.0</th>
+                <th class="py-2 px-3 text-center">1 : 2.5</th>
+                <th class="py-2 px-3 text-center">1 : 3.0</th>
+                <th class="py-2 px-3 text-center">1 : 4.0</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: 5 HYBRID STRATEGIES ==================== -->
+    <section id="tab-strategies" class="hidden space-y-6 fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-white">5 гібридних моделей: як поєднати Спот і Ф'ючерси</h2>
+            <p class="text-sm text-slate-400 mt-1">Обери стратегію та змінюй загальний бюджет, щоб побачити точний розподіл активів, частоту угод і правила обмеження ризику.</p>
+          </div>
+          <div class="flex items-center gap-2 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2">
+            <label for="strat-budget" class="text-xs text-slate-400 whitespace-nowrap">Твій бюджет ($):</label>
+            <input id="strat-budget" type="number" min="200" max="100000" step="100" value="1000" class="w-24 bg-transparent font-mono-num text-sm font-bold text-white focus:outline-none">
+          </div>
+        </div>
+
+        <div id="strategy-selector" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-5 bg-slate-950/60 border border-slate-800 rounded-xl p-5 flex flex-col">
+            <h3 id="strat-title" class="text-base font-bold text-white mb-1"></h3>
+            <p id="strat-tagline" class="text-xs text-slate-400 mb-4"></p>
+            <div class="relative h-60 my-auto">
+              <canvas id="stratDoughnut"></canvas>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-800 text-center">
+              <div>
+                <div class="text-[11px] text-slate-400">Угод / міс.</div>
+                <div id="strat-freq" class="font-mono-num text-sm font-bold text-white mt-0.5"></div>
+              </div>
+              <div>
+                <div class="text-[11px] text-slate-400">Макс. плече</div>
+                <div id="strat-lev" class="font-mono-num text-sm font-bold text-amber-400 mt-0.5"></div>
+              </div>
+              <div>
+                <div class="text-[11px] text-slate-400">Ціль R:R</div>
+                <div id="strat-rr" class="font-mono-num text-sm font-bold text-emerald-400 mt-0.5"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 space-y-4">
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+              <h4 class="text-sm font-semibold text-white mb-3">Розподіл капіталу та роль кожного блоку</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs sm:text-sm">
+                  <thead>
+                    <tr class="border-b border-slate-800 text-slate-400">
+                      <th class="py-2 text-left">Блок / Інструмент</th>
+                      <th class="py-2 text-right">Частка</th>
+                      <th class="py-2 text-right">Сума</th>
+                      <th class="py-2 pl-4 text-left">Як працює</th>
+                    </tr>
+                  </thead>
+                  <tbody id="strat-alloc-body" class="divide-y divide-slate-800/70"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+                <h4 class="text-sm font-semibold text-emerald-400 mb-2">Правила зменшення ризику</h4>
+                <ul id="strat-rules" class="space-y-1.5 text-xs text-slate-300 list-disc pl-4"></ul>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+                <h4 class="text-sm font-semibold text-blue-400 mb-2">Коли працює / Коли пауза</h4>
+                <p id="strat-fit" class="text-xs text-slate-300 leading-relaxed mb-2"></p>
+                <p id="strat-pause" class="text-xs text-rose-300 leading-relaxed"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: HISTORICAL CASE STUDIES (7 ASSETS) ==================== -->
+    <section id="tab-history" class="hidden space-y-6 fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-white">Історичні кейси на 7 активах: BTC, ETH, SOL, WBT, BNB, XRP, GRAM</h2>
+            <p class="text-sm text-slate-400 mt-1">Обери реальний кейс і відтвори покроково, як поводиться $1 000 у <span class="text-blue-400 font-medium">Чистому споті</span>, <span class="text-rose-400 font-medium">Ф'ючерсах 5x</span> та <span class="text-emerald-400 font-medium">Гібридній стратегії</span>.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="btn-play-hist" type="button" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition flex items-center gap-1.5">
+              <span>▶</span><span>Відтворити кейс</span>
+            </button>
+            <button id="btn-show-hist" type="button" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium transition">
+              Показати весь графік
+            </button>
+          </div>
+        </div>
+
+        <!-- 8 Case Buttons (BTC x3 + ETH, SOL, WBT, BNB, XRP, GRAM) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
+          <button type="button" data-case="nov2026" class="case-btn active text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-emerald-400">BTC · 14–21.11.2026</div>
+            <div class="text-xs font-bold text-white mt-0.5">Листопадовий обвал</div>
+            <div class="text-[11px] text-slate-400">$67 043 → $60 209</div>
+          </button>
+          <button type="button" data-case="eth2026" class="case-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-blue-400">ETH · 14–21.11.2026</div>
+            <div class="text-xs font-bold text-white mt-0.5">Просідання -12.4%</div>
+            <div class="text-[11px] text-slate-400">$1 927 → $1 689</div>
+          </button>
+          <button type="button" data-case="sol2026" class="case-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-purple-400">SOL · Жов–Лис 2026</div>
+            <div class="text-xs font-bold text-white mt-0.5">Пробій підтримки $70</div>
+            <div class="text-[11px] text-slate-400">$121.4 → $66.9</div>
+          </button>
+          <button type="button" data-case="wbt2026" class="case-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-amber-400">WBT · Вер–Лис 2026</div>
+            <div class="text-xs font-bold text-white mt-0.5">Корекція після ATH</div>
+            <div class="text-[11px] text-slate-400">$87.9 → $56.0</div>
+          </button>
+          <button type="button" data-case="bnb2026" class="case-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-yellow-400">BNB · 14–21.11.2026</div>
+            <div class="text-xs font-bold text-white mt-0.5">Стійкість у топ-5</div>
+            <div class="text-[11px] text-slate-400">$601.2 → $556.4</div>
+          </button>
+          <button type="button" data-case="xrp2026" class="case-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-cyan-400">XRP · 14–21.11.2026</div>
+            <div class="text-xs font-bold text-white mt-0.5">Втрата рівня $1.00</div>
+            <div class="text-[11px] text-slate-400">$1.01 → $0.928</div>
+          </button>
+          <button type="button" data-case="gram2026" class="case-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-sky-400">GRAM · Лис 2026</div>
+            <div class="text-xs font-bold text-white mt-0.5">Тиск інфляції 3.6%</div>
+            <div class="text-[11px] text-slate-400">$1.10 → $0.937</div>
+          </button>
+          <button type="button" data-case="cycle2024" class="case-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+            <div class="text-[11px] font-semibold text-rose-400">BTC · 2024 цикл</div>
+            <div class="text-xs font-bold text-white mt-0.5">Боковик і прорив</div>
+            <div class="text-[11px] text-slate-400">$42.6K → $96.4K</div>
+          </button>
+        </div>
+
+        <!-- Live Comparison KPIs -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3.5">
+            <div class="text-xs text-blue-400 font-medium">Чистий спот (100% активу)</div>
+            <div id="hist-kpi-spot" class="font-mono-num text-xl font-bold text-white mt-0.5">$1 000</div>
+          </div>
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3.5">
+            <div class="text-xs text-emerald-400 font-medium">Гібрид (75% спот + 25% захисний ф'ючерс)</div>
+            <div id="hist-kpi-hybrid" class="font-mono-num text-xl font-bold text-emerald-400 mt-0.5">$1 000</div>
+          </div>
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3.5">
+            <div class="text-xs text-rose-400 font-medium">Ф'ючерси 5x Лонг (без хеджу)</div>
+            <div id="hist-kpi-fut" class="font-mono-num text-xl font-bold text-rose-400 mt-0.5">$1 000</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span id="hist-asset-label" class="text-xs font-medium text-slate-400">Реальна ціна активу (USD)</span>
+              <span id="hist-date-badge" class="font-mono-num text-xs text-slate-300 bg-slate-800 px-2 py-0.5 rounded">—</span>
+            </div>
+            <div class="relative h-64">
+              <canvas id="histPriceChart"></canvas>
+            </div>
+          </div>
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium text-slate-400">Динаміка балансу $1 000 за трьома підходами</span>
+              <span class="font-mono-num text-xs text-slate-400">USD</span>
+            </div>
+            <div class="relative h-64">
+              <canvas id="histEquityChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Пояснення механіки на поточному кроці</div>
+          <p id="hist-narrative" class="text-sm text-slate-200 leading-relaxed"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: RISK CALCULATOR & STRATEGY COMPARISON CHART ==================== -->
+    <section id="tab-risk" class="hidden space-y-6 fade-in">
+      <!-- COMPREHENSIVE FULL-STRATEGY CALCULATOR (SPOT + FUTURES + CASH) -->
+      <div class="bg-slate-900 border border-blue-900/60 rounded-2xl p-5 sm:p-6 space-y-5">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 mb-1">
+              <span class="h-2 w-2 rounded-full bg-blue-400"></span>
+              <span>Комплексний розрахунок усієї стратегії</span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white">Калькулятор гібридної стратегії: Спот + Ф'ючерси + Кеш</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
+              Рахуй увесь портфель у комплексі: спотове ядро, стейблкоїн-резерв (з усередненням на просадці), серію ф'ючерсних угод або захисний хедж та всі комісії.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-1.5" id="full-strat-presets">
+            <button type="button" data-fpreset="hedge" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-blue-600 text-white transition">Ядро + Хедж</button>
+            <button type="button" data-fpreset="swing" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Спот + Свінг 40%</button>
+            <button type="button" data-fpreset="barbell" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Штанга 80/20</button>
+            <button type="button" data-fpreset="funding" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Фандинг 1x</button>
+            <button type="button" data-fpreset="booster" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">DCA + Бустер</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Left: Unified Inputs -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="fc-budget" class="block text-xs text-slate-400 mb-1">Загальний капітал ($)</label>
+                  <input id="fc-budget" type="number" value="1000" min="100" step="100" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 font-mono-num text-sm font-bold text-white focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                  <label for="fc-fut-mode" class="block text-xs text-slate-400 mb-1">Роль ф'ючерсного блоку</label>
+                  <select id="fc-fut-mode" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:border-blue-500 focus:outline-none">
+                    <option value="hedge">Захисний хедж-шорт</option>
+                    <option value="swing">Активний свінг (WR × R:R)</option>
+                    <option value="funding">Дельта-нейтрал (фандинг)</option>
+                    <option value="booster">Трендовий бустер (лише в ріст)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Split Sliders -->
+              <div class="space-y-2.5 pt-2 border-t border-slate-800">
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-blue-400 font-medium">Частка Споту</span>
+                    <span id="fc-val-spot" class="font-mono-num text-white">60% ($600)</span>
+                  </div>
+                  <input id="fc-spot-pct" type="range" min="0" max="100" step="5" value="60" class="w-full">
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-emerald-400 font-medium">Частка Ф'ючерсів</span>
+                    <span id="fc-val-fut" class="font-mono-num text-white">25% ($250)</span>
+                  </div>
+                  <input id="fc-fut-pct" type="range" min="0" max="100" step="5" value="25" class="w-full">
+                </div>
+                <div class="flex justify-between text-xs pt-1">
+                  <span class="text-slate-400">Автоматичний кеш-резерв (USDT/USDC):</span>
+                  <span id="fc-val-cash" class="font-mono-num font-bold text-slate-200">15% ($150)</span>
+                </div>
+                <div id="fc-split-warn" class="hidden text-xs text-rose-400 font-medium">Сума Спот + Ф'ючерси перевищує 100% — зменш одну з часток.</div>
+              </div>
+            </div>
+
+            <!-- Market Move & Trade Parameters -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-300 font-medium">Сценарій руху ринку за період</span>
+                  <span id="fc-val-move" class="font-mono-num font-bold text-amber-400">-15%</span>
+                </div>
+                <input id="fc-market-move" type="range" min="-35" max="45" step="1" value="-15" class="w-full">
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                <div>
+                  <label for="fc-trades" class="block text-[11px] text-slate-400 mb-1">Ф'юч. угод</label>
+                  <input id="fc-trades" type="number" value="4" min="1" max="50" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 font-mono-num text-xs text-white">
+                </div>
+                <div>
+                  <label for="fc-wr" class="block text-[11px] text-slate-400 mb-1">Winrate (%)</label>
+                  <input id="fc-wr" type="number" value="40" min="15" max="80" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 font-mono-num text-xs text-white">
+                </div>
+                <div>
+                  <label for="fc-rr" class="block text-[11px] text-slate-400 mb-1">R:R (1:X)</label>
+                  <input id="fc-rr" type="number" value="2.5" min="1" max="5" step="0.1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 font-mono-num text-xs text-white">
+                </div>
+                <div>
+                  <label for="fc-lev" class="block text-[11px] text-slate-400 mb-1">Плече</label>
+                  <input id="fc-lev" type="number" value="1.5" min="1" max="5" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 font-mono-num text-xs text-white">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label for="fc-dca-tranches" class="block text-[11px] text-slate-400 mb-1">Спот DCA-траншів</label>
+                  <input id="fc-dca-tranches" type="number" value="3" min="1" max="6" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 font-mono-num text-xs text-white">
+                </div>
+                <div>
+                  <label for="fc-funding-days" class="block text-[11px] text-slate-400 mb-1">Горизонт (днів)</label>
+                  <input id="fc-funding-days" type="number" value="30" min="7" max="180" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 font-mono-num text-xs text-white">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Full Portfolio KPIs + Stress-Test Chart -->
+          <div class="lg:col-span-7 flex flex-col gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+                <div class="text-[11px] text-slate-400">Підсумок портфеля</div>
+                <div id="fc-kpi-total" class="font-mono-num text-lg font-bold text-white mt-0.5">$978</div>
+                <div id="fc-kpi-total-pct" class="font-mono-num text-xs text-rose-400">-$22 (-2.2%)</div>
+              </div>
+              <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+                <div class="text-[11px] text-blue-400">Внесок Споту (DCA)</div>
+                <div id="fc-kpi-spot" class="font-mono-num text-base font-bold text-white mt-0.5">-$72</div>
+                <div id="fc-kpi-spot-sub" class="text-[11px] text-slate-400">3 транші</div>
+              </div>
+              <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+                <div class="text-[11px] text-emerald-400">Внесок Ф'ючерсів</div>
+                <div id="fc-kpi-fut" class="font-mono-num text-base font-bold text-emerald-400 mt-0.5">+$54</div>
+                <div id="fc-kpi-fut-sub" class="text-[11px] text-slate-400">Хедж 1.5x</div>
+              </div>
+              <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+                <div class="text-[11px] text-slate-400">Кеш + Комісії</div>
+                <div id="fc-kpi-fees" class="font-mono-num text-base font-bold text-slate-200 mt-0.5">-$4</div>
+                <div id="fc-kpi-cash-sub" class="text-[11px] text-slate-400">Резерв $150</div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300">Стрес-тест стратегії на русі ринку від -30% до +40%</span>
+                <span class="font-mono-num text-[11px] text-slate-400">Гібрид vs Спот 100% vs Ф'ючерси 3x</span>
+              </div>
+              <div class="relative h-64">
+                <canvas id="fullStratStressChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Position Calculator -->
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+          <h2 class="text-lg font-bold text-white mb-1">Калькулятор безпечного розміру позиції</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mb-4">Обери актив зі списку або введи свої ціни, щоб порівняти ризик, маржу та проєкцію результату для 3 стратегій ризику на одному графіку.</p>
+
+          <!-- Quick Asset Price Buttons -->
+          <div class="flex flex-wrap gap-1.5 mb-4" id="calc-asset-pills">
+            <button type="button" data-casset="BTC" data-cprice="60209" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-blue-600 text-white">BTC $60 209</button>
+            <button type="button" data-casset="ETH" data-cprice="1689" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">ETH $1 689</button>
+            <button type="button" data-casset="SOL" data-cprice="68" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">SOL $68</button>
+            <button type="button" data-casset="WBT" data-cprice="56.02" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">WBT $56.02</button>
+            <button type="button" data-casset="BNB" data-cprice="556.4" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">BNB $556.4</button>
+            <button type="button" data-casset="XRP" data-cprice="0.928" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">XRP $0.928</button>
+            <button type="button" data-casset="GRAM" data-cprice="0.937" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">GRAM $0.937</button>
+          </div>
+
+          <div class="flex gap-2 mb-4">
+            <button id="dir-long" type="button" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white transition">Лонг (Long ↑)</button>
+            <button id="dir-short" type="button" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition">Шорт (Short ↓)</button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div>
+              <label for="calc-dep" class="block text-xs text-slate-400 mb-1">Депозит ф'ючерсів ($)</label>
+              <input id="calc-dep" type="number" value="1000" min="50" step="50" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white focus:border-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label for="calc-risk-pct" class="block text-xs text-slate-400 mb-1">Ризик на угоду (%)</label>
+              <input id="calc-risk-pct" type="number" value="1" min="0.25" max="10" step="0.25" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white focus:border-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label for="calc-entry" class="block text-xs text-slate-400 mb-1">Ціна входу ($)</label>
+              <input id="calc-entry" type="number" value="60209" min="0.0001" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white focus:border-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label for="calc-sl" class="block text-xs text-slate-400 mb-1">Stop-Loss ($)</label>
+              <input id="calc-sl" type="number" value="58700" min="0.0001" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white focus:border-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label for="calc-tp" class="block text-xs text-slate-400 mb-1">Take-Profit ($)</label>
+              <input id="calc-tp" type="number" value="63980" min="0.0001" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white focus:border-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label for="calc-lev" class="block text-xs text-slate-400 mb-1">Плече (Isolated)</label>
+              <input id="calc-lev" type="number" value="2" min="1" max="20" step="1" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white focus:border-blue-500 focus:outline-none">
+            </div>
+          </div>
+
+          <div id="calc-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-medium"></div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+              <div class="text-xs text-slate-400">Розмір позиції</div>
+              <div id="res-pos" class="font-mono-num text-base font-bold text-white mt-0.5">$400</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+              <div class="text-xs text-slate-400">Потрібна маржа</div>
+              <div id="res-margin" class="font-mono-num text-base font-bold text-blue-400 mt-0.5">$200</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+              <div class="text-xs text-slate-400">Ризик / Прибуток</div>
+              <div id="res-rr" class="font-mono-num text-base font-bold text-emerald-400 mt-0.5">1 : 2.50</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+              <div class="text-xs text-slate-400">Макс. збиток / Профіт</div>
+              <div id="res-pnl" class="font-mono-num text-sm font-bold text-slate-200 mt-0.5">-$10 / +$25</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+              <div class="text-xs text-slate-400">Мін. Winrate у нуль</div>
+              <div id="res-be" class="font-mono-num text-base font-bold text-amber-400 mt-0.5">28.6%</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+              <div class="text-xs text-slate-400">Орієнт. ліквідація</div>
+              <div id="res-liq" class="font-mono-num text-base font-bold text-rose-400 mt-0.5">$30 405</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy Comparison Chart inside Calculator + Checklist -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-white mb-1">Порівняння 3 стратегій для цього сетапу (20 угод при 40% WR)</h3>
+            <p class="text-xs text-slate-400 mb-3">Очікувана траєкторія депозиту з твоїм поточним R:R для трьох рівнів ризику на угоду.</p>
+            <div class="relative h-56">
+              <canvas id="calcCompareChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="text-sm font-bold text-white">Чеклист перед входом</h3>
+              <span id="check-score" class="font-mono-num text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300">0 / 6</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-1.5 my-2.5 overflow-hidden">
+              <div id="check-bar" class="bg-emerald-500 h-1.5 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div id="checklist-items" class="space-y-2 flex-1"></div>
+            <button id="btn-reset-check" type="button" class="mt-3 w-full py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition">
+              Скинути чеклист
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: TRADE JOURNAL WITH SCREENSHOT OCR ==================== -->
+    <section id="tab-journal" class="hidden space-y-6 fade-in">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Screenshot OCR Dropzone + Editable Form -->
+        <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Додати угоду по скріншоту з біржі</h2>
+            <p class="text-xs text-slate-400 mt-1">Перетягни скріншот (Binance, WhiteBIT, Bybit, OKX), вибери файл або просто натисни <span class="font-mono-num text-slate-200 bg-slate-800 px-1.5 py-0.5 rounded">Ctrl+V</span> — локальний OCR у браузері автоматично розпізнає пару, напрямок, плече, ціни та PnL.</p>
+          </div>
+
+          <!-- Dropzone -->
+          <div id="ocr-dropzone" class="drop-zone border-2 border-dashed border-slate-700 rounded-xl p-5 text-center cursor-pointer hover:border-blue-500 transition bg-slate-950/60">
+            <input id="ocr-file-input" type="file" accept="image/*" class="hidden">
+            <div class="text-sm font-semibold text-slate-200">Завантажити або вставити (Ctrl+V) скріншот</div>
+            <div class="text-xs text-slate-400 mt-1">PNG, JPG, WEBP — обробляється локально в браузері</div>
+            <div id="ocr-status" class="hidden mt-3 text-xs font-mono-num text-blue-400"></div>
+            <img id="ocr-preview" alt="Попередній перегляд скріншота" class="hidden mt-3 max-h-36 mx-auto rounded-lg border border-slate-700 object-contain">
+          </div>
+
+          <details id="ocr-raw-wrap" class="hidden bg-slate-950/60 border border-slate-800 rounded-xl p-3 text-xs">
+            <summary class="cursor-pointer text-slate-400 font-medium">Розпізнаний текст зі скріншота (OCR)</summary>
+            <pre id="ocr-raw-text" class="mt-2 text-[11px] text-slate-300 whitespace-pre-wrap font-mono-num max-h-28 overflow-y-auto"></pre>
+          </details>
+
+          <!-- Editable Trade Form -->
+          <div class="space-y-3 pt-1">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="j-asset" class="block text-xs text-slate-400 mb-1">Актив / Пара</label>
+                <input id="j-asset" type="text" value="BTCUSDT" placeholder="BTCUSDT" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-blue-500 focus:outline-none">
+              </div>
+              <div>
+                <label for="j-market" class="block text-xs text-slate-400 mb-1">Ринок і напрямок</label>
+                <select id="j-market" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white focus:border-blue-500 focus:outline-none">
+                  <option value="Futures Long">Ф'ючерси Long</option>
+                  <option value="Futures Short">Ф'ючерси Short</option>
+                  <option value="Spot Buy">Спот Buy</option>
+                  <option value="Spot Sell">Спот Sell</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5">
+              <div>
+                <label for="j-entry" class="block text-xs text-slate-400 mb-1">Вхід ($)</label>
+                <input id="j-entry" type="number" step="any" placeholder="60200" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white focus:border-blue-500 focus:outline-none">
+              </div>
+              <div>
+                <label for="j-exit" class="block text-xs text-slate-400 mb-1">Вихід ($)</label>
+                <input id="j-exit" type="number" step="any" placeholder="62800" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white focus:border-blue-500 focus:outline-none">
+              </div>
+              <div>
+                <label for="j-lev" class="block text-xs text-slate-400 mb-1">Плече</label>
+                <input id="j-lev" type="text" value="2x" placeholder="1x / 2x" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white focus:border-blue-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="j-pnl" class="block text-xs text-slate-400 mb-1">Результат PnL ($)</label>
+                <input id="j-pnl" type="number" step="any" placeholder="+25 або -10" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-blue-500 focus:outline-none">
+              </div>
+              <div>
+                <label for="j-note" class="block text-xs text-slate-400 mb-1">Примітка / Сетап</label>
+                <input id="j-note" type="text" placeholder="Відскок від $60K" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button id="btn-add-trade" type="button" class="flex-1 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition">
+                + Зберегти угоду в трекер
+              </button>
+              <button id="btn-demo-ocr" type="button" class="px-3 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-medium transition" title="Заповнити тестовий приклад розпізнаного скріншота">
+                Демо-скрін
+              </button>
+            </div>
+            <div id="j-toast" class="hidden text-xs font-medium text-emerald-400"></div>
+          </div>
+        </div>
+
+        <!-- Journal Analytics + Table -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-xs text-slate-400">Усього угод</div>
+              <div id="j-kpi-count" class="font-mono-num text-xl font-bold text-white mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-xs text-slate-400">Фактичний Winrate</div>
+              <div id="j-kpi-wr" class="font-mono-num text-xl font-bold text-blue-400 mt-0.5">0%</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-xs text-slate-400">Сумарний PnL</div>
+              <div id="j-kpi-pnl" class="font-mono-num text-xl font-bold text-emerald-400 mt-0.5">$0</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-xs text-slate-400">Середній Профіт / Стоп</div>
+              <div id="j-kpi-ratio" class="font-mono-num text-lg font-bold text-amber-400 mt-0.5">—</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium text-slate-400">Крива накопиченого прибутку за журналом угод ($)</span>
+              <div class="flex gap-2">
+                <button id="btn-export-csv" type="button" class="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200 transition">Експорт CSV</button>
+                <button id="btn-clear-journal" type="button" class="px-2.5 py-1 rounded-md bg-rose-950/60 hover:bg-rose-900/60 border border-rose-800/70 text-xs text-rose-300 transition">Очистити</button>
+              </div>
+            </div>
+            <div class="relative h-48">
+              <canvas id="journalChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-sm font-bold text-white mb-3">Історія зафіксованих угод</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400">
+                    <th class="py-2 text-left">Дата</th>
+                    <th class="py-2 text-left">Актив</th>
+                    <th class="py-2 text-left">Тип</th>
+                    <th class="py-2 text-right">Вхід / Вихід</th>
+                    <th class="py-2 text-right">PnL ($)</th>
+                    <th class="py-2 text-right">Дія</th>
+                  </tr>
+                </thead>
+                <tbody id="journal-table-body" class="divide-y divide-slate-800/70"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: GLOSSARY & LEARNING ==================== -->
+    <section id="tab-glossary" class="hidden space-y-6 fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-white">Словник термінів, абревіатур і позначень</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Усі поняття, які використовуються в симуляторі, стратегіях і калькуляторі — простою мовою та з прикладами на $1 000.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 flex items-center gap-3">
+              <div>
+                <div class="text-[11px] text-slate-400">Прогрес вивчення</div>
+                <div id="gloss-progress-text" class="font-mono-num text-xs font-bold text-emerald-400">0 / 26 вивчено</div>
+              </div>
+              <div class="w-20 bg-slate-800 rounded-full h-2 overflow-hidden">
+                <div id="gloss-progress-bar" class="bg-emerald-500 h-2 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <button id="btn-toggle-quiz" type="button" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs sm:text-sm font-semibold transition">
+              🎯 Міні-тест (перевір себе)
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Mini-Quiz Panel (collapsible) -->
+        <div id="gloss-quiz-panel" class="hidden bg-slate-950/80 border border-amber-800/60 rounded-xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Швидкий тест на розуміння термінів</span>
+            <span id="quiz-score-badge" class="font-mono-num text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-200">Рахунок: 0 / 0</span>
+          </div>
+          <p id="quiz-question" class="text-sm sm:text-base font-semibold text-white"></p>
+          <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+          <div id="quiz-feedback" class="hidden text-xs sm:text-sm p-3 rounded-lg"></div>
+          <div class="flex justify-end gap-2">
+            <button id="btn-quiz-next" type="button" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition">Наступне питання →</button>
+          </div>
+        </div>
+
+        <!-- Search + Category Filters -->
+        <div class="flex flex-col md:flex-row gap-3">
+          <input id="gloss-search" type="text" placeholder="Пошук терміну або абревіатури (наприклад: R:R, DCA, Isolated, фандинг, RSI)..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none">
+          <div id="gloss-cats" class="flex flex-wrap gap-1.5">
+            <button type="button" data-gcat="all" class="px-3 py-2 rounded-lg text-xs font-medium bg-blue-600 text-white transition">Усі</button>
+            <button type="button" data-gcat="math" class="px-3 py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Математика і ризик</button>
+            <button type="button" data-gcat="futures" class="px-3 py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Ф'ючерси і маржа</button>
+            <button type="button" data-gcat="strategy" class="px-3 py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Спот і стратегії</button>
+            <button type="button" data-gcat="market" class="px-3 py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Ринок і графіки</button>
+          </div>
+        </div>
+
+        <!-- Glossary Cards Grid -->
+        <div id="gloss-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <footer class="text-xs text-slate-500 border-t border-slate-800/80 pt-4 pb-6 flex flex-col sm:flex-row justify-between gap-2">
+      <span>Освітній аналітичний симулятор. Не є індивідуальною фінансовою порадою.</span>
+      <span>Дані 7 активів: Google Finance, CoinGecko, Bybit, CoinMarketCap, MetaMask, Digrin (листопад 2026).</span>
+    </footer>
+  </main>
+
+  <script>
+    // ==================== STATE & NAVIGATION ====================
+    const tabs = ['math', 'strategies', 'history', 'risk', 'journal', 'glossary'];
+    let activeTab = 'math';
+    let simTimer = null;
+    let histTimer = null;
+
+    function switchTab(tabId) {
+      activeTab = tabId;
+      tabs.forEach(t => {
+        const panel = document.getElementById('tab-' + t);
+        const btn = document.getElementById('nav-' + t);
+        if (t === tabId) {
+          panel.classList.remove('hidden');
+          btn.classList.add('active');
+        } else {
+          panel.classList.add('hidden');
+          btn.classList.remove('active');
+        }
+      });
+      if (tabId === 'strategies' && stratChart) stratChart.resize();
+      if (tabId === 'history') {
+        if (histPriceChart) histPriceChart.resize();
+        if (histEquityChart) histEquityChart.resize();
+      }
+      if (tabId === 'math' && equityChart) equityChart.resize();
+      if (tabId === 'risk') {
+        if (calcCompareChart) calcCompareChart.resize();
+        if (fullStratStressChart) fullStratStressChart.resize();
+      }
+      if (tabId === 'journal' && journalChart) journalChart.resize();
+    }
+
+    tabs.forEach(t => {
+      document.getElementById('nav-' + t).addEventListener('click', () => switchTab(t));
+    });
+
+    // ==================== TAB 1: WINRATE x R:R SIMULATOR (A vs B) ====================
+    const presets = {
+      sniper: { wr: 25, rr: 4.0, risk: 1.0, trades: 30 },
+      trend: { wr: 33, rr: 3.0, risk: 1.0, trades: 30 },
+      classic40: { wr: 40, rr: 2.5, risk: 1.0, trades: 30 },
+      balanced45: { wr: 45, rr: 2.0, risk: 1.0, trades: 30 },
+      scalp55: { wr: 55, rr: 1.5, risk: 1.0, trades: 30 }
+    };
+
+    const elDep = document.getElementById('sim-deposit');
+    const elWr = document.getElementById('sim-wr');
+    const elRr = document.getElementById('sim-rr');
+    const elRisk = document.getElementById('sim-risk');
+    const elTrades = document.getElementById('sim-trades');
+    const elFee = document.getElementById('sim-fee');
+
+    const elCompareB = document.getElementById('toggle-compare-b');
+    const elWrB = document.getElementById('sim-wr-b');
+    const elRrB = document.getElementById('sim-rr-b');
+    const elRiskB = document.getElementById('sim-risk-b');
+
+    let currentOutcomesA = [];
+    let currentOutcomesB = [];
+    let equityChart = null;
+
+    function generateOutcomes(n, wr) {
+      const wins = Math.round((n * wr) / 100);
+      const arr = [];
+      for (let i = 0; i < n; i++) arr.push(i < wins ? 1 : 0);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getSimParams() {
+      return {
+        deposit: parseFloat(elDep.value) || 1000,
+        wr: parseFloat(elWr.value) || 40,
+        rr: parseFloat(elRr.value) || 2.5,
+        riskPct: parseFloat(elRisk.value) || 1.0,
+        trades: parseInt(elTrades.value, 10) || 30,
+        feeR: parseFloat(elFee.value) || 0.05,
+        compareB: elCompareB.checked,
+        wrB: parseFloat(elWrB.value) || 25,
+        rrB: parseFloat(elRrB.value) || 4.0,
+        riskPctB: parseFloat(elRiskB.value) || 1.0
+      };
+    }
+
+    function updateSimLabels() {
+      const p = getSimParams();
+      const riskUsd = (p.deposit * p.riskPct) / 100;
+      const riskUsdB = (p.deposit * p.riskPctB) / 100;
+
+      document.getElementById('val-sim-deposit').textContent = '$' + p.deposit.toLocaleString('uk-UA');
+      document.getElementById('val-sim-wr').textContent = p.wr + '%';
+      document.getElementById('val-sim-rr').textContent = '1 : ' + p.rr.toFixed(1);
+      document.getElementById('val-sim-risk').textContent = p.riskPct.toFixed(2).replace(/\.00$/, '.0') + '% ($' + riskUsd.toFixed(0) + ')';
+      document.getElementById('val-sim-trades').textContent = p.trades;
+      document.getElementById('val-sim-fee').textContent = p.feeR.toFixed(2) + 'R';
+
+      document.getElementById('val-sim-wr-b').textContent = p.wrB + '%';
+      document.getElementById('val-sim-rr-b').textContent = '1 : ' + p.rrB.toFixed(1);
+      document.getElementById('val-sim-risk-b').textContent = p.riskPctB.toFixed(2).replace(/\.00$/, '.0') + '% ($' + riskUsdB.toFixed(0) + ')';
+      document.getElementById('panel-strategy-b').classList.toggle('opacity-40', !p.compareB);
+
+      const beWr = (1 / (1 + p.rr)) * 100;
+      document.getElementById('stat-breakeven').textContent = beWr.toFixed(1) + '%';
+
+      const expA = (p.wr / 100) * p.rr - (1 - p.wr / 100) - p.feeR;
+      const expElA = document.getElementById('stat-expectancy');
+      expElA.textContent = `${expA >= 0 ? '+' : ''}${expA.toFixed(2)}R`;
+      expElA.className = 'font-mono-num text-xs font-semibold ' + (expA >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      const expB = (p.wrB / 100) * p.rrB - (1 - p.wrB / 100) - p.feeR;
+      const expElB = document.getElementById('stat-expectancy-b');
+      expElB.textContent = `${expB >= 0 ? '+' : ''}${expB.toFixed(2)}R`;
+      expElB.className = 'font-mono-num text-xs font-semibold ' + (expB >= 0 ? 'text-purple-300' : 'text-rose-400');
+    }
+
+    function computeEquitySeries(deposit, riskPct, rr, feeR, outcomes) {
+      const labels = ['Старт'];
+      const values = [deposit];
+      let bal = deposit;
+      let peak = deposit;
+      let maxDd = 0;
+      let w = 0, l = 0;
+
+      for (let i = 0; i < outcomes.length; i++) {
+        const riskUsd = (bal * riskPct) / 100;
+        if (outcomes[i] === 1) {
+          bal += riskUsd * (rr - feeR);
+          w++;
+        } else {
+          bal -= riskUsd * (1 + feeR);
+          l++;
+        }
+        bal = Math.max(0, bal);
+        if (bal > peak) peak = bal;
+        const dd = peak > 0 ? ((peak - bal) / peak) * 100 : 0;
+        if (dd > maxDd) maxDd = dd;
+        labels.push('#' + (i + 1));
+        values.push(Number(bal.toFixed(2)));
+      }
+      return { labels, values, maxDd, wins: w, losses: l };
+    }
+
+    function renderEquityFrame(stepCount) {
+      const p = getSimParams();
+      const slicedA = currentOutcomesA.slice(0, stepCount);
+      const slicedB = currentOutcomesB.slice(0, stepCount);
+      const resA = computeEquitySeries(p.deposit, p.riskPct, p.rr, p.feeR, slicedA);
+      const resB = computeEquitySeries(p.deposit, p.riskPctB, p.rrB, p.feeR, slicedB);
+
+      const curBalA = resA.values[resA.values.length - 1];
+      const pnlA = curBalA - p.deposit;
+      const pnlPctA = p.deposit > 0 ? (pnlA / p.deposit) * 100 : 0;
+
+      const curBalB = resB.values[resB.values.length - 1];
+      const pnlB = curBalB - p.deposit;
+      const pnlPctB = p.deposit > 0 ? (pnlB / p.deposit) * 100 : 0;
+
+      document.getElementById('kpi-balance').textContent = '$' + curBalA.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+      const pnlEl = document.getElementById('kpi-pnl');
+      pnlEl.textContent = `${pnlA >= 0 ? '+' : ''}$${pnlA.toFixed(0)} (${pnlA >= 0 ? '+' : ''}${pnlPctA.toFixed(1)}%)`;
+      pnlEl.className = 'font-mono-num text-xs ' + (pnlA >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      if (p.compareB) {
+        document.getElementById('kpi-balance-b').textContent = '$' + curBalB.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+        const pnlElB = document.getElementById('kpi-pnl-b');
+        pnlElB.textContent = `${pnlB >= 0 ? '+' : ''}$${pnlB.toFixed(0)} (${pnlB >= 0 ? '+' : ''}${pnlPctB.toFixed(1)}%)`;
+        pnlElB.className = 'font-mono-num text-xs ' + (pnlB >= 0 ? 'text-purple-300' : 'text-rose-400');
+        document.getElementById('kpi-dd').textContent = `-${resA.maxDd.toFixed(1)}% / -${resB.maxDd.toFixed(1)}%`;
+      } else {
+        document.getElementById('kpi-balance-b').textContent = 'Вимкнено';
+        document.getElementById('kpi-pnl-b').textContent = '—';
+        document.getElementById('kpi-dd').textContent = `-${resA.maxDd.toFixed(1)}%`;
+      }
+
+      document.getElementById('kpi-wl').textContent = `${resA.wins} / ${resA.losses}`;
+      document.getElementById('sim-step-badge').textContent = `Крок ${stepCount} / ${currentOutcomesA.length}`;
+
+      const dotsEl = document.getElementById('trade-dots');
+      dotsEl.innerHTML = slicedA.map((o, idx) =>
+        `<span title="Угода #${idx + 1}: ${o ? 'Take-Profit' : 'Stop-Loss'}" class="trade-dot inline-block w-3 h-3 rounded-full ${o ? 'bg-emerald-500' : 'bg-rose-500'}"></span>`
+      ).join('');
+
+      const datasets = [{
+        label: `Стратегія A (${p.wr}% · 1:${p.rr.toFixed(1)})`,
+        data: resA.values,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.12)',
+        fill: true,
+        tension: 0.2,
+        pointRadius: 3,
+        pointBackgroundColor: resA.values.map((_, i) => i === 0 ? '#94a3b8' : (slicedA[i - 1] ? '#10b981' : '#f43f5e'))
+      }];
+
+      if (p.compareB) {
+        datasets.push({
+          label: `Стратегія B (${p.wrB}% · 1:${p.rrB.toFixed(1)})`,
+          data: resB.values,
+          borderColor: '#a855f7',
+          backgroundColor: 'rgba(168, 85, 247, 0.08)',
+          borderDash: [6, 3],
+          fill: false,
+          tension: 0.2,
+          pointRadius: 2.5
+        });
+      }
+
+      if (!equityChart) {
+        const ctx = document.getElementById('equityChart').getContext('2d');
+        equityChart = new Chart(ctx, {
+          type: 'line',
+          data: { labels: resA.labels, datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 110 },
+            plugins: {
+              legend: { display: true, position: 'top', labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } } },
+              tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: $${Number(ctx.parsed.y).toLocaleString('uk-UA')}` } }
+            },
+            scales: {
+              x: { ticks: { color: '#94a3b8', maxTicksLimit: 10 }, grid: { color: 'rgba(148,163,184,0.08)' } },
+              y: { ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            }
+          }
+        });
+      } else {
+        equityChart.data.labels = resA.labels;
+        equityChart.data.datasets = datasets;
+        equityChart.update();
+      }
+    }
+
+    function stopSimAnimation() {
+      if (simTimer) {
+        clearInterval(simTimer);
+        simTimer = null;
+      }
+    }
+
+    function playSimAnimation() {
+      stopSimAnimation();
+      let step = 0;
+      renderEquityFrame(0);
+      simTimer = setInterval(() => {
+        step++;
+        renderEquityFrame(step);
+        if (step >= currentOutcomesA.length) stopSimAnimation();
+      }, 100);
+    }
+
+    function rebuildSim(animate) {
+      stopSimAnimation();
+      updateSimLabels();
+      const p = getSimParams();
+      currentOutcomesA = generateOutcomes(p.trades, p.wr);
+      currentOutcomesB = generateOutcomes(p.trades, p.wrB);
+      if (animate) playSimAnimation();
+      else renderEquityFrame(currentOutcomesA.length);
+    }
+
+    function buildMatrix() {
+      const wrList = [25, 30, 35, 40, 45, 50, 55];
+      const rrList = [1.5, 2.0, 2.5, 3.0, 4.0];
+      const tbody = document.getElementById('matrix-body');
+      tbody.innerHTML = wrList.map(wr => {
+        const cells = rrList.map(rr => {
+          const exp = (wr / 100) * rr - (1 - wr / 100) - 0.05;
+          let cls = 'bg-rose-950/50 text-rose-300 border-rose-900/50';
+          if (exp > 0.35) cls = 'bg-emerald-900/60 text-emerald-200 border-emerald-700/60 font-bold';
+          else if (exp > 0) cls = 'bg-emerald-950/60 text-emerald-300 border-emerald-900/50';
+          else if (exp > -0.1) cls = 'bg-slate-800/70 text-slate-300 border-slate-700';
+          const sign = exp >= 0 ? '+' : '';
+          return `<td class="p-1.5"><button type="button" data-mwr="${wr}" data-mrr="${rr}" class="matrix-cell w-full py-2 px-2 rounded-lg border ${cls} hover:ring-2 hover:ring-blue-400 transition">${sign}${exp.toFixed(2)}R</button></td>`;
+        }).join('');
+        return `<tr class="border-b border-slate-800/60"><td class="py-2 px-3 font-semibold text-slate-200">${wr}%</td>${cells}</tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('.matrix-cell').forEach(btn => {
+        btn.addEventListener('click', () => {
+          elWr.value = btn.dataset.mwr;
+          elRr.value = btn.dataset.mrr;
+          document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+          rebuildSim(true);
+        });
+      });
+    }
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pr = presets[btn.dataset.preset];
+        if (!pr) return;
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        elWr.value = pr.wr;
+        elRr.value = pr.rr;
+        elRisk.value = pr.risk;
+        elTrades.value = pr.trades;
+        rebuildSim(true);
+      });
+    });
+
+    [elDep, elWr, elRr, elRisk, elTrades, elFee, elWrB, elRrB, elRiskB].forEach(el => {
+      el.addEventListener('input', () => {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        rebuildSim(false);
+      });
+    });
+
+    elCompareB.addEventListener('change', () => {
+      updateSimLabels();
+      renderEquityFrame(currentOutcomesA.length);
+    });
+
+    document.getElementById('btn-play-sim').addEventListener('click', playSimAnimation);
+    document.getElementById('btn-shuffle-sim').addEventListener('click', () => rebuildSim(true));
+    document.getElementById('btn-instant-sim').addEventListener('click', () => {
+      stopSimAnimation();
+      renderEquityFrame(currentOutcomesA.length);
+    });
+
+    // ==================== TAB 2: 5 HYBRID STRATEGIES ====================
+    const strategies = [
+      {
+        id: 'core-hedge',
+        name: '1. Ядро + Захисний хедж',
+        short: '75% Спот / 25% Ф\'ючерси',
+        tagline: 'Базовий портфель у BTC/ETH + короткі шорти на пробоях підтримки для захисту від просадок.',
+        freq: '2–4 / міс.',
+        lev: '1x–2x',
+        rr: '1 : 2.0',
+        alloc: [
+          { name: 'BTC + ETH (Спот)', pct: 60, color: '#3b82f6', role: 'Довгострокове ядро, яке генерує прибуток на зростанні ринку.' },
+          { name: 'USDT / USDC (Спот-кеш)', pct: 15, color: '#64748b', role: 'Подушка для усереднення споту біля сильних рівнів.' },
+          { name: 'Захисний шорт (Ф\'ючерси)', pct: 25, color: '#10b981', role: 'Шорт 1x–2x при пробої підтримки (наприклад, BTC нижче $59K) для перекриття мінусу споту.' }
+        ],
+        rules: [
+          'Хедж-шорт не перевищує 50% обсягу споту — портфель залишається чистим лонгом на довгій дистанції.',
+          'Обов\'язковий Stop-Loss над рівнем пробою (+2–3%), щоб не застрягти в шорті при хибному пробої.',
+          'Тільки ізольована маржа (Isolated) на BTC та ETH.'
+        ],
+        fit: 'Ідеально для нестабільного або ведмежого ринку (як у листопаді 2026), коли боїшся продавати спот на дні, але хочеш згладити просадку.',
+        pause: 'Пауза для шортів: коли BTC закріплюється вище 20-денної EMA та відновлюються припливи в ETF.'
+      },
+      {
+        id: 'swing-40',
+        name: '2. Спот + Свінг 40% WR',
+        short: '70% Спот / 30% Ф\'ючерси',
+        tagline: 'Спокійне спотове ядро + активна асиметрична торгівля від рівнів із ризиком 1% і ціллю 1:2.5.',
+        freq: '8–15 / міс.',
+        lev: '2x–3x',
+        rr: '1 : 2.5',
+        alloc: [
+          { name: 'BTC + ETH + WBT/SOL (Спот)', pct: 55, color: '#3b82f6', role: 'Основний капітал без ризику ліквідації.' },
+          { name: 'USDT Резерв', pct: 15, color: '#64748b', role: 'Страховка на випадок різкого обвалу.' },
+          { name: 'Ф\'ючерсний свінг-депозит', pct: 30, color: '#f59e0b', role: 'Серії з 10–15 угод на місяць: ризик 1% від усього портфеля ($10), TP +2.5% ($25).' }
+        ],
+        rules: [
+          'При 40% вдалих угод і R:R 1:2.5 очікуваний результат серії з 15 угод — близько +$50…+$60.',
+          'Денний ліміт: 2 стопи поспіль = пауза на 24 години.',
+          'Прибуток понад +10% на ф\'ючерсному рахунку щомісяця переливається у спот BTC.'
+        ],
+        fit: 'Найкраще працює на ринку з чіткими діапазонами та волатильністю 4–8% (як зараз по BTC, ETH, SOL).',
+        pause: 'Пауза: під час вузького флету (<1.5% за добу) або за годину до рішень ФРС по ставці.'
+      },
+      {
+        id: 'barbell',
+        name: '3. Штанга (Барбел)',
+        short: '80% Надійне / 20% Снайпер',
+        tagline: 'Модель Насіма Талеба: 80% у максимально захищених активах, 20% — рідкісні ф\'ючерсні пробої 1:4.',
+        freq: '4–8 / міс.',
+        lev: '2x–3x',
+        rr: '1 : 4.0',
+        alloc: [
+          { name: 'BTC (Спот)', pct: 50, color: '#3b82f6', role: 'Базовий актив із найвищою ліквідністю.' },
+          { name: 'USDT / USDC (Безризиковий кеш)', pct: 30, color: '#64748b', role: 'Максимальний захист від «чорних лебедів».' },
+          { name: 'Асиметричні пробої (Ф\'ючерси)', pct: 20, color: '#8b5cf6', role: 'Вхід лише на сильних виходах із консолідацій із трейлінг-стопом. Достатньо 25–30% вдалих угод.' }
+        ],
+        rules: [
+          'Жодних «середніх» ризикованих альткоїнів — або максимальна безпека (80%), або чітка асиметрія (20%).',
+          'Переведення стопа в беззбиток після проходження +1.5R.',
+          'Максимум 1 відкрита ф\'ючерсна угода одночасно.'
+        ],
+        fit: 'Підходить зайнятим людям: не треба сидіти біля монітора щодня, достатньо 1–2 якісних сетапів на тиждень.',
+        pause: 'Пауза: на «пилі», де пробої постійно повертаються назад у діапазон.'
+      },
+      {
+        id: 'funding',
+        name: '4. Дельта-нейтральний фандинг',
+        short: '50% Спот / 50% Шорт 1x',
+        tagline: 'Ціна не має значення: лонг на споті перекритий шортом 1x на ф\'ючерсі, дохід іде зі ставки фінансування.',
+        freq: '1–2 / міс.',
+        lev: '1x',
+        rr: 'Арбітраж',
+        alloc: [
+          { name: 'Купівля BTC / ETH / SOL на споті', pct: 50, color: '#3b82f6', role: 'Позитивна дельта (+1) — прибуток при зростанні ціни.' },
+          { name: 'Шорт 1x того ж активу (Ф\'ючерси)', pct: 50, color: '#10b981', role: 'Негативна дельта (-1) — повністю нейтралізує рух ціни та збирає позитивний funding rate кожні 8 год.' }
+        ],
+        rules: [
+          'Плече строго 1x (максимум 1.5x при великому запасі маржі), щоб виключити ліквідацію при різкому пампі.',
+          'Закривати обидві ноги одночасно, якщо фандинг стає від\'ємним на 3+ інтервали поспіль.',
+          'Враховувати комісію відкриття/закриття (має окупитися за 3–5 днів фандингу).'
+        ],
+        fit: 'Ідеально на бичачому або перегрітому ринку, коли фандинг становить +0.02%…+0.05% за 8 годин (20–50% річних).',
+        pause: 'УВАГА ЗАРАЗ: у листопаді 2026 на падінні фандинг часто негативний — зараз стратегію варто тримати на паузі.'
+      },
+      {
+        id: 'dca-booster',
+        name: '5. Спот-DCA + Трендовий бустер',
+        short: '60% Спот / 20% Кеш / 20% Тренд',
+        tagline: 'Системне накопичення споту + підсилення лонгом 2x лише тоді, коли ринок підтвердив висхідний тренд.',
+        freq: '6–12 / міс.',
+        lev: '2x',
+        rr: '1 : 2.5',
+        alloc: [
+          { name: 'Спот DCA (BTC, ETH, SOL, WBT)', pct: 60, color: '#3b82f6', role: 'Поступовий набір частинами на рівнях підтримки.' },
+          { name: 'USDT Резерв', pct: 20, color: '#64748b', role: 'Докуповує спот при глибоких проливах (-15% і більше).' },
+          { name: 'Трендовий бустер (Ф\'ючерси 2x)', pct: 20, color: '#06b6d4', role: 'Вмикається тільки при закріпленні ціни вище 20-EMA (наприклад, BTC > $63 000).' }
+        ],
+        rules: [
+          'Жодних ф\'ючерсних лонгів проти тренду — на ведмежій фазі бустер просто лежить у USDT.',
+          'Фіксація 50% бустера на першому сильному опорі, решта — за трейлінг-стопом.',
+          'Ризик на одну угоду бустера не перевищує 1.2% від усього капіталу.'
+        ],
+        fit: 'Найкраща модель для переходу з корекції у фазу відновлення: не ловить «падаючі ножі» з плечем, але прискорює ріст після розвороту.',
+        pause: 'Пауза для бустера: поки BTC торгується нижче $60 000–$63 000 і тривають відтоки з ETF.'
+      }
+    ];
+
+    let selectedStratId = 'core-hedge';
+    let stratChart = null;
+
+    function renderStrategyCards() {
+      const container = document.getElementById('strategy-selector');
+      container.innerHTML = strategies.map(s => `
+        <button type="button" data-sid="${s.id}" class="strategy-card ${s.id === selectedStratId ? 'active' : ''} text-left p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-600 transition">
+          <div class="text-xs font-bold text-white">${s.name}</div>
+          <div class="font-mono-num text-[11px] text-blue-400 mt-1">${s.short}</div>
+          <div class="text-[11px] text-slate-400 mt-1">${s.freq} · ${s.lev}</div>
+        </button>
+      `).join('');
+
+      container.querySelectorAll('.strategy-card').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedStratId = btn.dataset.sid;
+          renderStrategyCards();
+          renderStrategyDetail();
+        });
+      });
+    }
+
+    function renderStrategyDetail() {
+      const s = strategies.find(x => x.id === selectedStratId) || strategies[0];
+      const budget = Math.max(100, parseFloat(document.getElementById('strat-budget').value) || 1000);
+
+      document.getElementById('strat-title').textContent = s.name;
+      document.getElementById('strat-tagline').textContent = s.tagline;
+      document.getElementById('strat-freq').textContent = s.freq;
+      document.getElementById('strat-lev').textContent = s.lev;
+      document.getElementById('strat-rr').textContent = s.rr;
+
+      const tbody = document.getElementById('strat-alloc-body');
+      tbody.innerHTML = s.alloc.map(a => {
+        const usd = (budget * a.pct) / 100;
+        return `
+          <tr>
+            <td class="py-2.5 font-medium text-slate-200 flex items-center gap-2">
+              <span class="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${a.color}"></span>
+              <span>${a.name}</span>
+            </td>
+            <td class="py-2.5 text-right font-mono-num text-slate-300 whitespace-nowrap">${a.pct}%</td>
+            <td class="py-2.5 text-right font-mono-num font-bold text-white whitespace-nowrap">$${usd.toLocaleString('uk-UA', { maximumFractionDigits: 0 })}</td>
+            <td class="py-2.5 pl-4 text-slate-400">${a.role}</td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('strat-rules').innerHTML = s.rules.map(r => `<li>${r}</li>`).join('');
+      document.getElementById('strat-fit').innerHTML = `<strong class="text-slate-100">Оптимально:</strong> ${s.fit}`;
+      document.getElementById('strat-pause').innerHTML = `<strong class="text-rose-400">Обмеження:</strong> ${s.pause}`;
+
+      const labels = s.alloc.map(a => a.name);
+      const data = s.alloc.map(a => (budget * a.pct) / 100);
+      const colors = s.alloc.map(a => a.color);
+
+      if (!stratChart) {
+        const ctx = document.getElementById('stratDoughnut').getContext('2d');
+        stratChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#0f172a', borderWidth: 3 }] },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '62%',
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } } },
+              tooltip: { callbacks: { label: ctx => ` ${ctx.label}: $${Number(ctx.parsed).toLocaleString('uk-UA')}` } }
+            }
+          }
+        });
+      } else {
+        stratChart.data.labels = labels;
+        stratChart.data.datasets[0].data = data;
+        stratChart.data.datasets[0].backgroundColor = colors;
+        stratChart.update();
+      }
+    }
+
+    document.getElementById('strat-budget').addEventListener('input', renderStrategyDetail);
+
+    // ==================== TAB 3: HISTORICAL CASE STUDIES (7 ASSETS) ====================
+    const histCases = {
+      nov2026: {
+        asset: 'Bitcoin (BTC/USD)',
+        labels: ['14 лист.', '15 лист.', '16 лист.', '17 лист.', '18 лист.', '19 лист.', '20 лист.', '21 лист.'],
+        prices: [67043, 64901, 64760, 64981, 64340, 61912, 58790, 60209],
+        spot: [1000, 968, 966, 969, 960, 923, 877, 898],
+        fut5x: [1000, 840, 830, 846, 798, 617, 384, 0],
+        hybrid: [1000, 976, 974, 977, 970, 943, 932, 944],
+        notes: [
+          '14 листопада: старт $1 000 при BTC $67 043. Гібрид тримає 75% спот + 25% USDT-резерв.',
+          '15 листопада: перший відкат до $64 901 (-3.2%). Лонг 5x втрачає -16% ($840), гібрид — лише -2.4%.',
+          '16 листопада: консолідація біля $64 760. Підтримка $64 000 ще тримається.',
+          '17 листопада: слабкий відскок до $64 981 на тлі триваючих відтоків із Bitcoin-ETF.',
+          '18 листопада: тиск посилюється ($64 340). Ф\'ючерси 5x у просадці -20%.',
+          '19 листопада: пробій $64 000 → $61 912 (рекордний відтік $541M з IBIT). Гібрид вмикає захисний шорт 1.5x.',
+          '20 листопада: обвал до $58 790. Хедж компенсує більшість просадки споту ($932 vs $877).',
+          '21 листопада: нічний пролив до $55 150 ліквідує 5x-лонг ($0). Гібрид завершує тиждень на $944 (-5.6% проти -10.2% у споті).'
+        ]
+      },
+      eth2026: {
+        asset: 'Ethereum (ETH/USD)',
+        labels: ['14 лист.', '15 лист.', '16 лист.', '17 лист.', '18 лист.', '19 лист.', '20 лист.', '21 лист.'],
+        prices: [1927.4, 1768.8, 1835.3, 1819.2, 1822.6, 1774.7, 1755.3, 1688.9],
+        spot: [1000, 918, 952, 944, 946, 921, 911, 876],
+        fut5x: [1000, 589, 761, 719, 728, 604, 553, 381],
+        hybrid: [1000, 938, 964, 958, 959, 948, 945, 932],
+        notes: [
+          '14 листопада: старт при ETH $1 927 після втрати психологічної позначки $2 000.',
+          '15 листопада: різке падіння -8.2% до $1 769. Лонг 5x втрачає -41% за одну добу.',
+          '16 листопада: технічний відскок до $1 835.',
+          '17 листопада: ETH не може закріпитися вище $1 850–$1 875.',
+          '18 листопада: боковик $1 823. Гібрид виставляє тригер на хедж-шорт нижче $1 800.',
+          '19 листопада: пробій $1 800 → $1 775. Вмикається захисний шорт 1.5x на 25% капіталу.',
+          '20 листопада: зниження до $1 755; захисний шорт утримує гібрид біля $945.',
+          '21 листопада: ETH падає до $1 689 (-12.4% за тиждень). Гібрид зберігає $932 (-6.8% проти -62% у 5x-ф\'ючерсах).'
+        ]
+      },
+      sol2026: {
+        asset: 'Solana (SOL/USD)',
+        labels: ['5 жов.', '21 жов.', '14 лист.', '20 лист.', '21 лист.'],
+        prices: [121.44, 103.86, 75.18, 72.53, 66.94],
+        spot: [1000, 855, 619, 597, 551],
+        fut5x: [1000, 276, 0, 0, 0],
+        hybrid: [1000, 891, 775, 764, 742],
+        notes: [
+          '5 жовтня 2026: SOL консолідується біля $121.44 під опором $123.',
+          '21 жовтня: відкат на -14.5% до $103.86. Ф\'ючерси 5x втрачають понад 70% депозиту; гібрид активує захисний шорт.',
+          '14 листопада: глибока корекція до $75.18. Лонг 5x повністю ліквідований ($0), а хедж гібрида суттєво пом\'якшує падіння ($775 vs $619).',
+          '20 листопада: тест $72.53 на фоні падіння BTC нижче $60K.',
+          '21 листопада: пробій $70 до $66.94 (мінімум $65.03). Гібрид зберігає $742 — на $191 більше, ніж чистий спот.'
+        ]
+      },
+      wbt2026: {
+        asset: 'WhiteBIT Coin (WBT/USD)',
+        labels: ['21 вер. (ATH)', '1 лист.', '13 лист.', '18 лист.', '21 лист.'],
+        prices: [87.91, 74.55, 67.00, 62.05, 56.02],
+        spot: [1000, 848, 762, 706, 637],
+        fut5x: [1000, 240, 0, 0, 0],
+        hybrid: [1000, 886, 844, 818, 792],
+        notes: [
+          '21 вересня 2026: WBT встановлює історичний максимум $87.91.',
+          '1 листопада: відкат до $74.55 (-15.2% від ATH). Гібрид тримає 25% у кеші та готує хедж-тригер на пробої $70.',
+          '13 листопада: падіння нижче $67 напередодні широкого ринкового розпродажу. Лонг 5x ліквідовано ($0), гібрид перекриває частину мінусу захисним шортом.',
+          '18 листопада: $62.05 попри запуск Whitechain L2 та спалювання 30 618 WBT.',
+          '21 листопада: $56.02 (внутрішньоденний мінімум $53.62). Гібрид зберігає $792 проти $637 у чистого споту.'
+        ]
+      },
+      bnb2026: {
+        asset: 'BNB (BNB/USD)',
+        labels: ['14 лист.', '15 лист.', '16 лист.', '17 лист.', '18 лист.', '19 лист.', '20 лист.', '21 лист.'],
+        prices: [601.2, 575.6, 575.5, 576.5, 569.4, 564.5, 535.9, 556.4],
+        spot: [1000, 957, 957, 959, 947, 939, 891, 925],
+        fut5x: [1000, 787, 786, 794, 735, 695, 457, 627],
+        hybrid: [1000, 968, 968, 969, 960, 954, 938, 952],
+        notes: [
+          '14 листопада: BNB тримається біля $601.20.',
+          '15 листопада: зниження на -4.3% до $575.60.',
+          '16 листопада: стабілізація біля $575.50 — BNB показує найменшу волатильність у топ-5.',
+          '17 листопада: локальний баланс $576.50.',
+          '18 листопада: суд в Абу-Дабі видає ордер про заморожування активів у справі зламу Binance; BNB сповзає до $569.40.',
+          '19 листопада: пробій $565 → вмикається захисний шорт 1.5x у гібриді.',
+          '20 листопада: мінімум $535.90 (-10.9%). 5x-лонг падає до $457, а гібрид тримає $938.',
+          '21 листопада: відскок до $556.40. Гібрид завершує тиждень на $952 (-4.8% проти -7.5% у споті).'
+        ]
+      },
+      xrp2026: {
+        asset: 'XRP (XRP/USD)',
+        labels: ['14 лист.', '15 лист.', '16 лист.', '17 лист.', '18 лист.', '19 лист.', '20 лист.', '21 лист.'],
+        prices: [1.010, 0.913, 0.975, 0.955, 0.983, 0.969, 0.960, 0.928],
+        spot: [1000, 904, 965, 946, 973, 959, 950, 919],
+        fut5x: [1000, 520, 827, 728, 866, 797, 752, 594],
+        hybrid: [1000, 928, 974, 959, 980, 970, 964, 951],
+        notes: [
+          '14 листопада: XRP торгується біля психологічної межі $1.01.',
+          '15 листопада: пролив до $0.913 (-9.5%). 5x-лонг втрачає майже половину депозиту за день.',
+          '16 листопада: різкий відскок до $0.975.',
+          '17 листопада: тиск через нульові припливи в XRP-ETF ($0.955).',
+          '18 листопада: спроба повернути $1.00 зупиняється на $0.983.',
+          '19 листопада: відтік понад $37M з XRP-ETF за місяць тягне ціну вниз ($0.969).',
+          '20 листопада: $0.960 — гібрид тримає хедж під $0.98.',
+          '21 листопада: XRP тестує $0.866 і відскакує до $0.928. Гібрид зберігає $951 проти $919 у споті та $594 у 5x-лонгу.'
+        ]
+      },
+      gram2026: {
+        asset: 'Gram (GRAM, екс-Toncoin)',
+        labels: ['13 лист.', '17 лист.', '19 лист.', '20 лист.', '21 лист.'],
+        prices: [1.10, 1.03, 1.006, 0.960, 0.937],
+        spot: [1000, 936, 915, 873, 852],
+        fut5x: [1000, 682, 573, 364, 0],
+        hybrid: [1000, 952, 936, 922, 914],
+        notes: [
+          '13 листопада: GRAM біля $1.10, але 200-денна середня вже спрямована вниз.',
+          '17 листопада: зниження до $1.03; ринок закладає підвищену інфляцію мережі (3.6%).',
+          '19 листопада: тест нижньої межі $1.006, ставки фінансування переходять у мінус. Гібрид вмикає захисний шорт.',
+          '20 листопада: пробій психологічної підтримки $1.00 → $0.960.',
+          '21 листопада: внутрішньоденне дно $0.882 (-19.8% від $1.10) ліквідує 5x-лонг ($0). Гібрид тримає $914 проти $852 у споті.'
+        ]
+      },
+      cycle2024: {
+        asset: 'Bitcoin (BTC/USD · 2024)',
+        labels: ['Січ 24', 'Лют 24', 'Бер 24', 'Кві 24', 'Тра 24', 'Чер 24', 'Лип 24', 'Сер 24', 'Вер 24', 'Жов 24', 'Лис 24'],
+        prices: [42583, 61198, 71334, 60637, 67490, 62678, 64619, 58970, 63330, 70215, 96449],
+        spot: [1000, 1437, 1675, 1424, 1585, 1472, 1517, 1385, 1487, 1649, 2265],
+        fut5x: [1000, 2200, 2950, 1450, 2050, 1420, 1640, 880, 1210, 1790, 3250],
+        hybrid: [1000, 1358, 1560, 1442, 1576, 1518, 1565, 1495, 1592, 1748, 2410],
+        notes: [
+          'Січень 2024: запуск спотових ETF, BTC $42 583. Старт $1 000.',
+          'Лютий 2024: ралі до $61 198 (+43.7%).',
+          'Березень 2024: пік $71 334. Гібрид фіксує трендовий бустер у USDT.',
+          'Квітень 2024: корекція -15% до $60 637. Гібрид утримує $1 442.',
+          'Травень 2024: відскок $67 490.',
+          'Червень 2024: $62 678 — затяжний літній боковик.',
+          'Липень 2024: $64 619 — діапазон $60K–$70K.',
+          'Серпень 2024: дно боковика $58 970. 5x-лонг падає нижче старту ($880), гібрид тримає $1 495.',
+          'Вересень 2024: $63 330 — підготовка до виходу з діапазону.',
+          'Жовтень 2024: $70 215 — активація трендового бустера 2x.',
+          'Листопад 2024: прорив $96 449. Гібрид обганяє чистий спот ($2 410 vs $2 265) із удвічі меншою просадкою.'
+        ]
+      }
+    };
+
+    let activeCaseKey = 'nov2026';
+    let histPriceChart = null;
+    let histEquityChart = null;
+
+    function stopHistAnim() {
+      if (histTimer) {
+        clearInterval(histTimer);
+        histTimer = null;
+      }
+    }
+
+    function renderHistFrame(stepCount) {
+      const c = histCases[activeCaseKey];
+      const n = Math.min(Math.max(1, stepCount), c.labels.length);
+      const lbls = c.labels.slice(0, n);
+      const prices = c.prices.slice(0, n);
+      const spot = c.spot.slice(0, n);
+      const hyb = c.hybrid.slice(0, n);
+      const fut = c.fut5x.slice(0, n);
+
+      const lastSpot = spot[n - 1];
+      const lastHyb = hyb[n - 1];
+      const lastFut = fut[n - 1];
+
+      document.getElementById('hist-asset-label').textContent = 'Реальна ціна: ' + c.asset;
+      document.getElementById('hist-date-badge').textContent = `${lbls[n - 1]} ($${prices[n - 1].toLocaleString('uk-UA')})`;
+      document.getElementById('hist-kpi-spot').textContent = `$${lastSpot.toLocaleString('uk-UA')} (${lastSpot >= 1000 ? '+' : ''}${(((lastSpot - 1000) / 1000) * 100).toFixed(1)}%)`;
+      document.getElementById('hist-kpi-hybrid').textContent = `$${lastHyb.toLocaleString('uk-UA')} (${lastHyb >= 1000 ? '+' : ''}${(((lastHyb - 1000) / 1000) * 100).toFixed(1)}%)`;
+      document.getElementById('hist-kpi-fut').textContent = lastFut === 0 ? '$0 (ЛІКВІДАЦІЯ)' : `$${lastFut.toLocaleString('uk-UA')} (${lastFut >= 1000 ? '+' : ''}${(((lastFut - 1000) / 1000) * 100).toFixed(1)}%)`;
+      document.getElementById('hist-narrative').textContent = c.notes[n - 1];
+
+      if (!histPriceChart) {
+        const ctx1 = document.getElementById('histPriceChart').getContext('2d');
+        histPriceChart = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: lbls,
+            datasets: [{ label: c.asset, data: prices, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.12)', fill: true, tension: 0.2, pointRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 150 },
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.08)' } },
+              y: { ticks: { color: '#94a3b8', callback: v => '$' + v.toLocaleString('uk-UA') }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            }
+          }
+        });
+      } else {
+        histPriceChart.data.labels = lbls;
+        histPriceChart.data.datasets[0].label = c.asset;
+        histPriceChart.data.datasets[0].data = prices;
+        histPriceChart.update();
+      }
+
+      if (!histEquityChart) {
+        const ctx2 = document.getElementById('histEquityChart').getContext('2d');
+        histEquityChart = new Chart(ctx2, {
+          type: 'line',
+          data: {
+            labels: lbls,
+            datasets: [
+              { label: 'Гібрид', data: hyb, borderColor: '#10b981', borderWidth: 2.5, tension: 0.2, pointRadius: 3 },
+              { label: 'Чистий спот', data: spot, borderColor: '#3b82f6', borderWidth: 2, tension: 0.2, pointRadius: 3 },
+              { label: 'Ф\'ючерси 5x', data: fut, borderColor: '#f43f5e', borderDash: [5, 4], borderWidth: 2, tension: 0.2, pointRadius: 3 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 150 },
+            plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } } } },
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.08)' } },
+              y: { ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            }
+          }
+        });
+      } else {
+        histEquityChart.data.labels = lbls;
+        histEquityChart.data.datasets[0].data = hyb;
+        histEquityChart.data.datasets[1].data = spot;
+        histEquityChart.data.datasets[2].data = fut;
+        histEquityChart.update();
+      }
+    }
+
+    function playHistAnim() {
+      stopHistAnim();
+      const total = histCases[activeCaseKey].labels.length;
+      let step = 1;
+      renderHistFrame(step);
+      histTimer = setInterval(() => {
+        step++;
+        renderHistFrame(step);
+        if (step >= total) stopHistAnim();
+      }, 650);
+    }
+
+    document.querySelectorAll('.case-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        stopHistAnim();
+        activeCaseKey = btn.dataset.case;
+        document.querySelectorAll('.case-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderHistFrame(histCases[activeCaseKey].labels.length);
+      });
+    });
+
+    document.getElementById('btn-play-hist').addEventListener('click', playHistAnim);
+    document.getElementById('btn-show-hist').addEventListener('click', () => {
+      stopHistAnim();
+      renderHistFrame(histCases[activeCaseKey].labels.length);
+    });
+
+    // ==================== TAB 4: RISK CALCULATOR + 3-STRATEGY COMPARISON CHART ====================
+    let calcDir = 'long';
+    let calcCompareChart = null;
+
+    function updateCalcCompareChart(dep, riskPct, rr) {
+      // Deterministic 20-trade sequence at 40% WR (8 wins, 12 losses)
+      const seq = [0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1];
+      const labels = ['0', ...seq.map((_, i) => String(i + 1))];
+
+      function simCurve(rPct) {
+        let b = dep;
+        const arr = [Number(b.toFixed(0))];
+        for (const win of seq) {
+          const rUsd = (b * rPct) / 100;
+          b += win ? rUsd * (rr - 0.05) : -rUsd * 1.05;
+          b = Math.max(0, b);
+          arr.push(Number(b.toFixed(0)));
+        }
+        return arr;
+      }
+
+      const cons = simCurve(0.5);
+      const cur = simCurve(riskPct);
+      const aggr = simCurve(Math.min(5, Math.max(2, riskPct * 2)));
+
+      if (!calcCompareChart) {
+        const ctx = document.getElementById('calcCompareChart').getContext('2d');
+        calcCompareChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Консервативний (0.5%)', data: cons, borderColor: '#3b82f6', borderWidth: 2, tension: 0.2, pointRadius: 0 },
+              { label: `Твій ризик (${riskPct}%)`, data: cur, borderColor: '#10b981', borderWidth: 2.5, tension: 0.2, pointRadius: 2 },
+              { label: `Агресивний (${Math.min(5, Math.max(2, riskPct * 2))}%)`, data: aggr, borderColor: '#f59e0b', borderDash: [5, 3], borderWidth: 2, tension: 0.2, pointRadius: 0 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 150 },
+            plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 10, font: { size: 10 } } } },
+            scales: {
+              x: { ticks: { color: '#94a3b8', maxTicksLimit: 7 }, grid: { color: 'rgba(148,163,184,0.08)' } },
+              y: { ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            }
+          }
+        });
+      } else {
+        calcCompareChart.data.datasets[0].data = cons;
+        calcCompareChart.data.datasets[1].label = `Твій ризик (${riskPct}%)`;
+        calcCompareChart.data.datasets[1].data = cur;
+        calcCompareChart.data.datasets[2].label = `Агресивний (${Math.min(5, Math.max(2, riskPct * 2))}%)`;
+        calcCompareChart.data.datasets[2].data = aggr;
+        calcCompareChart.update();
+      }
+    }
+
+    function updateCalculator() {
+      const dep = parseFloat(document.getElementById('calc-dep').value) || 0;
+      const riskPct = parseFloat(document.getElementById('calc-risk-pct').value) || 0;
+      const entry = parseFloat(document.getElementById('calc-entry').value) || 0;
+      const sl = parseFloat(document.getElementById('calc-sl').value) || 0;
+      const tp = parseFloat(document.getElementById('calc-tp').value) || 0;
+      const lev = Math.max(1, parseFloat(document.getElementById('calc-lev').value) || 1);
+
+      const alertEl = document.getElementById('calc-alert');
+
+      if (dep <= 0 || riskPct <= 0 || entry <= 0 || sl <= 0 || tp <= 0) {
+        alertEl.className = 'mb-4 p-3 rounded-xl text-xs font-medium bg-rose-950/60 border border-rose-800 text-rose-300';
+        alertEl.textContent = 'Введи коректні додатні значення для всіх полів.';
+        return;
+      }
+
+      const slValid = calcDir === 'long' ? sl < entry : sl > entry;
+      const tpValid = calcDir === 'long' ? tp > entry : tp < entry;
+
+      if (!slValid || !tpValid) {
+        alertEl.className = 'mb-4 p-3 rounded-xl text-xs font-medium bg-amber-950/60 border border-amber-800 text-amber-300';
+        alertEl.textContent = calcDir === 'long'
+          ? 'Для Лонгу Stop-Loss має бути нижче ціни входу, а Take-Profit — вище.'
+          : 'Для Шорту Stop-Loss має бути вище ціни входу, а Take-Profit — нижче.';
+        return;
+      }
+
+      const riskUsd = (dep * riskPct) / 100;
+      const slDist = Math.abs(entry - sl) / entry;
+      const tpDist = Math.abs(tp - entry) / entry;
+      const posSize = slDist > 0 ? riskUsd / slDist : 0;
+      const margin = posSize / lev;
+      const rewardUsd = posSize * tpDist;
+      const rr = riskUsd > 0 ? rewardUsd / riskUsd : 0;
+      const beWr = rr > 0 ? (1 / (1 + rr)) * 100 : 100;
+
+      const liqPrice = calcDir === 'long'
+        ? entry * (1 - (1 / lev) + 0.005)
+        : entry * (1 + (1 / lev) - 0.005);
+
+      const liqDanger = calcDir === 'long' ? liqPrice >= sl : liqPrice <= sl;
+      const marginDanger = margin > dep;
+
+      if (liqDanger) {
+        alertEl.className = 'mb-4 p-3 rounded-xl text-xs font-medium bg-rose-950/70 border border-rose-700 text-rose-200';
+        alertEl.textContent = 'НЕБЕЗПЕЧНО: ціна ліквідації настане РАНІШЕ за Stop-Loss! Зменш плече.';
+      } else if (marginDanger) {
+        alertEl.className = 'mb-4 p-3 rounded-xl text-xs font-medium bg-amber-950/70 border border-amber-700 text-amber-200';
+        alertEl.textContent = `Увага: потрібна маржа ($${margin.toFixed(0)}) перевищує депозит ($${dep.toFixed(0)}). Зменш % ризику або розшир стоп.`;
+      } else {
+        alertEl.className = 'mb-4 p-3 rounded-xl text-xs font-medium bg-emerald-950/60 border border-emerald-800 text-emerald-300';
+        alertEl.textContent = `Параметри безпечні: ліквідація далеко за стопом, вільний залишок маржі — $${Math.max(0, dep - margin).toFixed(0)}.`;
+      }
+
+      document.getElementById('res-pos').textContent = '$' + posSize.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+      document.getElementById('res-margin').textContent = '$' + margin.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+      document.getElementById('res-rr').textContent = '1 : ' + rr.toFixed(2);
+      document.getElementById('res-pnl').textContent = `-$${riskUsd.toFixed(1)} / +$${rewardUsd.toFixed(1)}`;
+      document.getElementById('res-be').textContent = beWr.toFixed(1) + '%';
+      document.getElementById('res-liq').textContent = '$' + Math.max(0, liqPrice).toLocaleString('uk-UA', { maximumFractionDigits: 3 });
+
+      updateCalcCompareChart(dep, riskPct, rr);
+    }
+
+    function applyCalcAsset(price) {
+      const p = parseFloat(price);
+      document.getElementById('calc-entry').value = p;
+      const slFactor = calcDir === 'long' ? 0.975 : 1.025;
+      const tpFactor = calcDir === 'long' ? 1.0625 : 0.9375;
+      const dec = p < 10 ? 3 : (p < 200 ? 2 : 0);
+      document.getElementById('calc-sl').value = (p * slFactor).toFixed(dec);
+      document.getElementById('calc-tp').value = (p * tpFactor).toFixed(dec);
+      updateCalculator();
+    }
+
+    document.querySelectorAll('#calc-asset-pills button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#calc-asset-pills button').forEach(b => {
+          b.className = 'px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700';
+        });
+        btn.className = 'px-2.5 py-1 rounded-md text-xs font-mono-num bg-blue-600 text-white';
+        applyCalcAsset(btn.dataset.cprice);
+      });
+    });
+
+    document.getElementById('dir-long').addEventListener('click', () => {
+      calcDir = 'long';
+      document.getElementById('dir-long').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white transition';
+      document.getElementById('dir-short').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition';
+      applyCalcAsset(document.getElementById('calc-entry').value || 60209);
+    });
+
+    document.getElementById('dir-short').addEventListener('click', () => {
+      calcDir = 'short';
+      document.getElementById('dir-short').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-rose-600 text-white transition';
+      document.getElementById('dir-long').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition';
+      applyCalcAsset(document.getElementById('calc-entry').value || 60209);
+    });
+
+    ['calc-dep', 'calc-risk-pct', 'calc-entry', 'calc-sl', 'calc-tp', 'calc-lev'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateCalculator);
+    });
+
+    // Checklist
+    const checklistData = [
+      'Увімкнено ізольовану маржу (Isolated), а не Cross.',
+      'Плече ≤ 2x–3x, ліквідація далеко за Stop-Loss.',
+      'Ризик у доларах ≤ 1% від депозиту.',
+      'Співвідношення R:R ≥ 1:2 (краще 1:2.5+).',
+      'Денний ліміт збитків (3%) ще не вичерпано.',
+      'Висока ліквідність пари та немає новин ФРС найближчу годину.'
+    ];
+    let checkedState = [false, false, false, false, false, false];
+
+    function renderChecklist() {
+      const wrap = document.getElementById('checklist-items');
+      wrap.innerHTML = checklistData.map((txt, idx) => `
+        <label class="flex items-start gap-2.5 p-2 rounded-lg border ${checkedState[idx] ? 'border-emerald-700/70 bg-emerald-950/30' : 'border-slate-800 bg-slate-950/60'} cursor-pointer hover:border-slate-600 transition">
+          <input type="checkbox" data-cidx="${idx}" ${checkedState[idx] ? 'checked' : ''} class="mt-0.5 h-3.5 w-3.5 rounded border-slate-600 text-emerald-500 focus:ring-0">
+          <span class="text-xs ${checkedState[idx] ? 'text-emerald-200 line-through' : 'text-slate-200'}">${txt}</span>
+        </label>
+      `).join('');
+
+      wrap.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          checkedState[parseInt(cb.dataset.cidx, 10)] = cb.checked;
+          renderChecklist();
+        });
+      });
+
+      const done = checkedState.filter(Boolean).length;
+      document.getElementById('check-score').textContent = `${done} / ${checklistData.length}`;
+      document.getElementById('check-bar').style.width = `${(done / checklistData.length) * 100}%`;
+    }
+
+    document.getElementById('btn-reset-check').addEventListener('click', () => {
+      checkedState = checkedState.map(() => false);
+      renderChecklist();
+    });
+
+    // ==================== TAB 5: TRADE JOURNAL & SCREENSHOT OCR ====================
+    const STORAGE_KEY = 'hybrid_crypto_journal_v1';
+    let journalTrades = [];
+    let journalChart = null;
+
+    function getTgWebApp() {
+      try {
+        return (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function hasTgCloud() {
+      const tg = getTgWebApp();
+      return Boolean(tg && tg.CloudStorage && typeof tg.CloudStorage.getItem === 'function' && tg.initData);
+    }
+
+    function initTelegramMiniApp() {
+      const tg = getTgWebApp();
+      const badge = document.getElementById('tg-sync-badge');
+      if (!tg) return;
+      try {
+        tg.ready();
+        tg.expand();
+        if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#0b1120');
+        if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#0b1120');
+        if (badge && tg.initData) {
+          badge.textContent = hasTgCloud() ? 'Telegram Cloud' : 'Telegram Mini App';
+          badge.className = 'hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono-num bg-emerald-950/70 border border-emerald-700/70 text-emerald-300';
+        }
+      } catch (e) {
+        // Safe fallback outside Telegram
+      }
+    }
+
+    function loadJournal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) journalTrades = parsed;
+        }
+      } catch (e) {
+        journalTrades = [];
+      }
+      if (hasTgCloud()) {
+        try {
+          getTgWebApp().CloudStorage.getItem(STORAGE_KEY, (err, val) => {
+            if (!err && val) {
+              try {
+                const parsed = JSON.parse(val);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  journalTrades = parsed;
+                  try { localStorage.setItem(STORAGE_KEY, val); } catch (e2) {}
+                  renderJournal();
+                }
+              } catch (e3) {}
+            }
+          });
+        } catch (e) {}
+      }
+    }
+
+    function saveJournal() {
+      const payload = JSON.stringify(journalTrades);
+      try {
+        localStorage.setItem(STORAGE_KEY, payload);
+      } catch (e) {}
+      if (hasTgCloud()) {
+        try {
+          // Telegram CloudStorage max 4096 chars per key: keep latest trades if oversized
+          let cloudPayload = payload;
+          if (cloudPayload.length > 4000) {
+            cloudPayload = JSON.stringify(journalTrades.slice(-25));
+          }
+          getTgWebApp().CloudStorage.setItem(STORAGE_KEY, cloudPayload);
+        } catch (e) {}
+      }
+    }
+
+    function parseExchangeOcrText(text) {
+      const upper = text.toUpperCase();
+      const result = { asset: '', market: '', entry: '', exit: '', lev: '', pnl: '' };
+
+      // Pair detection (BTCUSDT, ETH/USDT, SOL-USDT, WBTUSDT, GRAMUSDT, etc.)
+      const pairMatch = upper.match(/\b(BTC|ETH|SOL|WBT|BNB|XRP|GRAM|TON|ADA|DOGE|AVAX|LINK|SUI|ARB|OP)[\/\-\s]?(USDT|USDC|USD|PERP)\b/);
+      if (pairMatch) {
+        result.asset = pairMatch[1] + (pairMatch[2] === 'PERP' ? 'USDT' : pairMatch[2]);
+      }
+
+      // Direction & Market
+      if (/\bSHORT\b|ШОРТ|ПРОДАЖ|SELL/.test(upper)) {
+        result.market = /\d+\s*X|PERP|FUTURES|Ф'ЮЧ/.test(upper) ? 'Futures Short' : 'Spot Sell';
+      } else if (/\bLONG\b|ЛОНГ|КУПІВЛ|BUY/.test(upper)) {
+        result.market = /\d+\s*X|PERP|FUTURES|Ф'ЮЧ/.test(upper) ? 'Futures Long' : 'Spot Buy';
+      }
+
+      // Leverage (e.g., 2x, 3x, 5X, 10x)
+      const levMatch = upper.match(/\b(\d{1,2})\s*X\b/);
+      if (levMatch) result.lev = levMatch[1] + 'x';
+
+      // Entry Price
+      const entryMatch = text.match(/(?:Entry\s*Price|Вхід|Ціна входу|Avg\s*Entry|Open\s*Price)[^\d]{0,16}([\d,]+(?:\.\d+)?)/i);
+      if (entryMatch) result.entry = entryMatch[1].replace(/,/g, '');
+
+      // Exit / Mark / Last Price
+      const exitMatch = text.match(/(?:Close\s*Price|Mark\s*Price|Last\s*Price|Вихід|Ціна закриття|Exit)[^\d]{0,16}([\d,]+(?:\.\d+)?)/i);
+      if (exitMatch) result.exit = exitMatch[1].replace(/,/g, '');
+
+      // PnL in USD/USDT
+      const pnlMatch = text.match(/(?:PNL|Realized\s*PNL|Unrealized\s*PNL|Прибуток|ROI)[^\-\+\d]{0,18}([\+\-]?\s*\$?\s*[\d,]+(?:\.\d+)?)/i);
+      if (pnlMatch) {
+        result.pnl = pnlMatch[1].replace(/[\s$,]/g, '');
+      }
+
+      return result;
+    }
+
+    async function processScreenshotFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+
+      const statusEl = document.getElementById('ocr-status');
+      const previewEl = document.getElementById('ocr-preview');
+      const rawWrap = document.getElementById('ocr-raw-wrap');
+      const rawTextEl = document.getElementById('ocr-raw-text');
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewEl.src = e.target.result;
+        previewEl.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+
+      statusEl.classList.remove('hidden');
+      statusEl.className = 'mt-3 text-xs font-mono-num text-blue-400';
+      statusEl.textContent = 'Розпізнаю текст зі скріншота (OCR)...';
+
+      if (typeof Tesseract === 'undefined') {
+        statusEl.className = 'mt-3 text-xs text-amber-400';
+        statusEl.textContent = 'OCR-модуль недоступний офлайн — заповни поля нижче вручну.';
+        return;
+      }
+
+      try {
+        const res = await Tesseract.recognize(file, 'eng', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              statusEl.textContent = `Розпізнавання тексту: ${Math.round((m.progress || 0) * 100)}%`;
+            }
+          }
+        });
+        const text = (res && res.data && res.data.text) ? res.data.text.trim() : '';
+        rawTextEl.textContent = text || '(Текст не знайдено)';
+        rawWrap.classList.remove('hidden');
+
+        const parsed = parseExchangeOcrText(text);
+        if (parsed.asset) document.getElementById('j-asset').value = parsed.asset;
+        if (parsed.market) document.getElementById('j-market').value = parsed.market;
+        if (parsed.entry) document.getElementById('j-entry').value = parsed.entry;
+        if (parsed.exit) document.getElementById('j-exit').value = parsed.exit;
+        if (parsed.lev) document.getElementById('j-lev').value = parsed.lev;
+        if (parsed.pnl) document.getElementById('j-pnl').value = parsed.pnl;
+
+        statusEl.className = 'mt-3 text-xs font-medium text-emerald-400';
+        statusEl.textContent = 'Готово! Перевір розпізнані поля нижче та натисни «Зберегти угоду».';
+      } catch (err) {
+        statusEl.className = 'mt-3 text-xs text-amber-400';
+        statusEl.textContent = 'Не вдалося автоматично розпізнати скріншот — перевір або заповни поля вручну.';
+      }
+    }
+
+    const dropzone = document.getElementById('ocr-dropzone');
+    const fileInput = document.getElementById('ocr-file-input');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => {
+      if (e.target.files && e.target.files[0]) processScreenshotFile(e.target.files[0]);
+    });
+
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+        processScreenshotFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    // Global Ctrl+V paste support when Journal tab is open
+    window.addEventListener('paste', e => {
+      if (activeTab !== 'journal') return;
+      const items = (e.clipboardData && e.clipboardData.items) || [];
+      for (const item of items) {
+        if (item.type && item.type.startsWith('image/')) {
+          processScreenshotFile(item.getAsFile());
+          break;
+        }
+      }
+    });
+
+    document.getElementById('btn-demo-ocr').addEventListener('click', () => {
+      const sampleText = 'BTCUSDT Perpetual  Short 2x\nEntry Price: 61,910.0\nClose Price: 58,800.0\nRealized PNL: +24.80 USDT';
+      document.getElementById('ocr-raw-text').textContent = sampleText;
+      document.getElementById('ocr-raw-wrap').classList.remove('hidden');
+      const parsed = parseExchangeOcrText(sampleText);
+      document.getElementById('j-asset').value = parsed.asset || 'BTCUSDT';
+      document.getElementById('j-market').value = parsed.market || 'Futures Short';
+      document.getElementById('j-entry').value = parsed.entry || '61910';
+      document.getElementById('j-exit').value = parsed.exit || '58800';
+      document.getElementById('j-lev').value = parsed.lev || '2x';
+      document.getElementById('j-pnl').value = parsed.pnl || '24.80';
+      document.getElementById('j-note').value = 'Захисний шорт (демо OCR)';
+      const statusEl = document.getElementById('ocr-status');
+      statusEl.classList.remove('hidden');
+      statusEl.className = 'mt-3 text-xs font-medium text-emerald-400';
+      statusEl.textContent = 'Демо-дані з тексту скріншота розпізнано — натисни «Зберегти угоду».';
+    });
+
+    function showJournalToast(msg) {
+      const el = document.getElementById('j-toast');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 2600);
+    }
+
+    function renderJournal() {
+      const count = journalTrades.length;
+      const wins = journalTrades.filter(t => t.pnl > 0);
+      const losses = journalTrades.filter(t => t.pnl < 0);
+      const totalPnl = journalTrades.reduce((s, t) => s + t.pnl, 0);
+      const wr = count > 0 ? (wins.length / count) * 100 : 0;
+      const avgWin = wins.length > 0 ? wins.reduce((s, t) => s + t.pnl, 0) / wins.length : 0;
+      const avgLoss = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.pnl, 0) / losses.length) : 0;
+
+      document.getElementById('j-kpi-count').textContent = String(count);
+      document.getElementById('j-kpi-wr').textContent = wr.toFixed(1) + '%';
+      const pnlEl = document.getElementById('j-kpi-pnl');
+      pnlEl.textContent = `${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)}`;
+      pnlEl.className = 'font-mono-num text-xl font-bold mt-0.5 ' + (totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400');
+      document.getElementById('j-kpi-ratio').textContent = (avgWin > 0 && avgLoss > 0) ? `1 : ${(avgWin / avgLoss).toFixed(2)}` : '—';
+
+      const tbody = document.getElementById('journal-table-body');
+      if (count === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-500">Поки немає угод. Завантаж скріншот з біржі або натисни «Демо-скрін» ліворуч.</td></tr>';
+      } else {
+        tbody.innerHTML = journalTrades.map(t => `
+          <tr>
+            <td class="py-2.5 text-slate-400 font-mono-num">${t.date}</td>
+            <td class="py-2.5 font-mono-num font-semibold text-white">${t.asset} <span class="text-slate-400 font-normal">${t.lev}</span></td>
+            <td class="py-2.5 text-slate-300">${t.market}</td>
+            <td class="py-2.5 text-right font-mono-num text-slate-300">${t.entry || '—'} → ${t.exit || '—'}</td>
+            <td class="py-2.5 text-right font-mono-num font-bold ${t.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+            <td class="py-2.5 text-right"><button type="button" data-delid="${t.id}" class="del-trade-btn text-rose-400 hover:text-rose-300 text-xs">Видалити</button></td>
+          </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.del-trade-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.delid;
+            journalTrades = journalTrades.filter(x => x.id !== id);
+            saveJournal();
+            renderJournal();
+          });
+        });
+      }
+
+      // Cumulative PnL chart
+      const labels = ['Старт'];
+      const vals = [0];
+      let cum = 0;
+      journalTrades.forEach((t, i) => {
+        cum += t.pnl;
+        labels.push('#' + (i + 1) + ' ' + t.asset);
+        vals.push(Number(cum.toFixed(2)));
+      });
+
+      if (!journalChart) {
+        const ctx = document.getElementById('journalChart').getContext('2d');
+        journalChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Накопичений PnL ($)',
+              data: vals,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.14)',
+              fill: true,
+              tension: 0.2,
+              pointRadius: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#94a3b8', maxTicksLimit: 8 }, grid: { color: 'rgba(148,163,184,0.08)' } },
+              y: { ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            }
+          }
+        });
+      } else {
+        journalChart.data.labels = labels;
+        journalChart.data.datasets[0].data = vals;
+        journalChart.data.datasets[0].borderColor = cum >= 0 ? '#10b981' : '#f43f5e';
+        journalChart.data.datasets[0].backgroundColor = cum >= 0 ? 'rgba(16, 185, 129, 0.14)' : 'rgba(244, 63, 94, 0.14)';
+        journalChart.update();
+      }
+    }
+
+    document.getElementById('btn-add-trade').addEventListener('click', () => {
+      const asset = (document.getElementById('j-asset').value || '').trim().toUpperCase();
+      const market = document.getElementById('j-market').value;
+      const entry = document.getElementById('j-entry').value;
+      const exit = document.getElementById('j-exit').value;
+      const lev = document.getElementById('j-lev').value || '1x';
+      const pnl = parseFloat(document.getElementById('j-pnl').value);
+      const note = document.getElementById('j-note').value.trim();
+
+      if (!asset || isNaN(pnl)) {
+        showJournalToast('Вкажи хоча б пару (наприклад BTCUSDT) та числовий результат PnL ($).');
+        return;
+      }
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' }) + ' ' + now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+
+      journalTrades.push({
+        id: 't_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        date: dateStr,
+        asset,
+        market,
+        entry,
+        exit,
+        lev,
+        pnl,
+        note
+      });
+
+      saveJournal();
+      renderJournal();
+      document.getElementById('j-pnl').value = '';
+      document.getElementById('j-note').value = '';
+      showJournalToast(`Угоду ${asset} (${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}) додано в трекер!`);
+    });
+
+    document.getElementById('btn-clear-journal').addEventListener('click', () => {
+      journalTrades = [];
+      saveJournal();
+      renderJournal();
+      showJournalToast('Журнал угод очищено.');
+    });
+
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      if (journalTrades.length === 0) {
+        showJournalToast('Немає угод для експорту.');
+        return;
+      }
+      const header = 'Date,Asset,Market,Leverage,Entry,Exit,PnL_USD,Note\n';
+      const rows = journalTrades.map(t =>
+        `"${t.date}","${t.asset}","${t.market}","${t.lev}","${t.entry}","${t.exit}",${t.pnl},"${(t.note || '').replace(/"/g, '""')}"`
+      ).join('\n');
+      const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'crypto-trade-journal.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showJournalToast('CSV-файл журналу завантажено.');
+    });
+
+    // ==================== COMPREHENSIVE FULL-STRATEGY CALCULATOR ====================
+    let fullStratStressChart = null;
+    const fullPresets = {
+      hedge:   { spot: 60, fut: 25, mode: 'hedge',   trades: 4,  wr: 45, rr: 2.0, lev: 1.5, dca: 3, days: 30, move: -15 },
+      swing:   { spot: 55, fut: 30, mode: 'swing',   trades: 12, wr: 40, rr: 2.5, lev: 2.0, dca: 2, days: 30, move: -10 },
+      barbell: { spot: 50, fut: 20, mode: 'swing',   trades: 6,  wr: 30, rr: 4.0, lev: 2.5, dca: 2, days: 30, move: 15  },
+      funding: { spot: 50, fut: 50, mode: 'funding', trades: 2,  wr: 70, rr: 1.5, lev: 1.0, dca: 1, days: 30, move: 10  },
+      booster: { spot: 60, fut: 20, mode: 'booster', trades: 8,  wr: 45, rr: 2.5, lev: 2.0, dca: 3, days: 30, move: 20  }
+    };
+
+    function computeFullStrategyAtMove(cfg, movePct) {
+      const m = movePct / 100;
+      const spotCap = (cfg.budget * cfg.spotPct) / 100;
+      const futCap = (cfg.budget * cfg.futPct) / 100;
+      const cashCap = Math.max(0, cfg.budget - spotCap - futCap);
+
+      // Spot DCA effect: splitting into multiple tranches softens drawdowns slightly when market drops
+      const dcaEfficiency = (m < 0 && cfg.dca > 1) ? (1 - Math.min(0.28, (cfg.dca - 1) * 0.08)) : 1;
+      const spotFee = spotCap * 0.002; // 0.1% in + 0.1% out estimate
+      const spotPnl = spotCap * m * dcaEfficiency;
+
+      // Cash yield (conservative 4% APY on idle stablecoins)
+      const cashYield = cashCap * (0.04 * (cfg.days / 365));
+
+      // Futures block PnL depending on strategy mode
+      let futPnl = 0;
+      let futFee = 0;
+      let futLabel = '';
+
+      if (cfg.mode === 'hedge') {
+        // Protective short engages when market drops below -3%, capped by 3% SL on rallies
+        const notional = futCap * cfg.lev;
+        if (m < -0.03) {
+          futPnl = notional * (Math.abs(m) - 0.02);
+        } else if (m > 0.04) {
+          futPnl = -futCap * 0.06; // Small stopped hedge cost on reversal
+        }
+        futFee = notional * 0.001 * Math.max(1, Math.min(4, cfg.trades / 2));
+        futLabel = `Хедж ${cfg.lev}x`;
+      } else if (cfg.mode === 'swing') {
+        // Expectancy across N trades at 1% risk of total budget (capped at 4% of futCap)
+        const riskPerTrade = Math.min(cfg.budget * 0.01, futCap * 0.08);
+        const pWin = cfg.wr / 100;
+        const expR = pWin * cfg.rr - (1 - pWin) * 1;
+        futPnl = cfg.trades * riskPerTrade * expR;
+        futFee = cfg.trades * (riskPerTrade * 0.06);
+        futLabel = `${cfg.trades} угод (${cfg.wr}% WR)`;
+      } else if (cfg.mode === 'funding') {
+        // Delta-neutral short 1x cancels spot move, collects ~0.01% per 8h when market >= -5%, pauses if deeply bearish
+        const notional = Math.min(spotCap, futCap * cfg.lev);
+        const hedgeCancel = -notional * m;
+        const fundingApr = m >= -0.05 ? 0.14 : 0.02;
+        const fundingEarned = notional * fundingApr * (cfg.days / 365);
+        futPnl = hedgeCancel + fundingEarned;
+        futFee = notional * 0.0012;
+        futLabel = 'Фандинг 1x';
+      } else if (cfg.mode === 'booster') {
+        // Trend booster activates long leverage only when market rises > +5%
+        const notional = futCap * cfg.lev;
+        if (m > 0.05) {
+          futPnl = notional * (m - 0.04);
+          futFee = notional * 0.0012;
+        } else {
+          // Stays idle in USDT during downtrends (minor false breakout cost)
+          futPnl = m < -0.05 ? -futCap * 0.03 : 0;
+          futFee = futCap * 0.001;
+        }
+        futLabel = `Бустер ${cfg.lev}x`;
+      }
+
+      // Clamp futures loss to isolated futures allocation (cannot lose more than futCap)
+      if (futPnl < -futCap) futPnl = -futCap;
+
+      const totalFees = spotFee + futFee;
+      const totalPnl = spotPnl + futPnl + cashYield - totalFees;
+      const finalBal = Math.max(0, cfg.budget + totalPnl);
+
+      return { finalBal, totalPnl, spotPnl, futPnl, cashYield, totalFees, cashCap, futLabel };
+    }
+
+    function updateFullStrategyCalc() {
+      const budget = Math.max(100, parseFloat(document.getElementById('fc-budget').value) || 1000);
+      let spotPct = parseFloat(document.getElementById('fc-spot-pct').value) || 0;
+      let futPct = parseFloat(document.getElementById('fc-fut-pct').value) || 0;
+      const warnEl = document.getElementById('fc-split-warn');
+
+      if (spotPct + futPct > 100) {
+        warnEl.classList.remove('hidden');
+        futPct = Math.max(0, 100 - spotPct);
+      } else {
+        warnEl.classList.add('hidden');
+      }
+      const cashPct = Math.max(0, 100 - spotPct - futPct);
+
+      const movePct = parseFloat(document.getElementById('fc-market-move').value) || 0;
+      const cfg = {
+        budget,
+        spotPct,
+        futPct,
+        mode: document.getElementById('fc-fut-mode').value,
+        trades: Math.max(1, parseInt(document.getElementById('fc-trades').value, 10) || 1),
+        wr: Math.min(85, Math.max(10, parseFloat(document.getElementById('fc-wr').value) || 40)),
+        rr: Math.max(0.5, parseFloat(document.getElementById('fc-rr').value) || 2.5),
+        lev: Math.max(1, parseFloat(document.getElementById('fc-lev').value) || 1.5),
+        dca: Math.max(1, parseInt(document.getElementById('fc-dca-tranches').value, 10) || 1),
+        days: Math.max(7, parseInt(document.getElementById('fc-funding-days').value, 10) || 30)
+      };
+
+      document.getElementById('fc-val-spot').textContent = `${spotPct}% ($${((budget * spotPct) / 100).toFixed(0)})`;
+      document.getElementById('fc-val-fut').textContent = `${futPct}% ($${((budget * futPct) / 100).toFixed(0)})`;
+      document.getElementById('fc-val-cash').textContent = `${cashPct}% ($${((budget * cashPct) / 100).toFixed(0)})`;
+      const moveEl = document.getElementById('fc-val-move');
+      moveEl.textContent = `${movePct >= 0 ? '+' : ''}${movePct}%`;
+      moveEl.className = 'font-mono-num font-bold ' + (movePct >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      const res = computeFullStrategyAtMove(cfg, movePct);
+      const pctTotal = (res.totalPnl / budget) * 100;
+
+      document.getElementById('fc-kpi-total').textContent = '$' + res.finalBal.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+      const totPctEl = document.getElementById('fc-kpi-total-pct');
+      totPctEl.textContent = `${res.totalPnl >= 0 ? '+' : ''}$${res.totalPnl.toFixed(0)} (${pctTotal >= 0 ? '+' : ''}${pctTotal.toFixed(1)}%)`;
+      totPctEl.className = 'font-mono-num text-xs ' + (res.totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      const spotEl = document.getElementById('fc-kpi-spot');
+      spotEl.textContent = `${res.spotPnl >= 0 ? '+' : ''}$${res.spotPnl.toFixed(0)}`;
+      spotEl.className = 'font-mono-num text-base font-bold mt-0.5 ' + (res.spotPnl >= 0 ? 'text-emerald-400' : 'text-rose-400');
+      document.getElementById('fc-kpi-spot-sub').textContent = `${cfg.dca} DCA-транші`;
+
+      const futEl = document.getElementById('fc-kpi-fut');
+      futEl.textContent = `${res.futPnl >= 0 ? '+' : ''}$${res.futPnl.toFixed(0)}`;
+      futEl.className = 'font-mono-num text-base font-bold mt-0.5 ' + (res.futPnl >= 0 ? 'text-emerald-400' : 'text-rose-400');
+      document.getElementById('fc-kpi-fut-sub').textContent = res.futLabel;
+
+      const netCashFee = res.cashYield - res.totalFees;
+      document.getElementById('fc-kpi-fees').textContent = `${netCashFee >= 0 ? '+' : ''}$${netCashFee.toFixed(1)}`;
+      document.getElementById('fc-kpi-cash-sub').textContent = `Комісії -$${res.totalFees.toFixed(1)}`;
+
+      // Stress-test curve from -30% to +40%
+      const moves = [-30, -20, -10, 0, 10, 20, 30, 40];
+      const lbls = moves.map(x => (x >= 0 ? '+' : '') + x + '%');
+      const hybridCurve = moves.map(x => Number(computeFullStrategyAtMove(cfg, x).finalBal.toFixed(0)));
+      const spotOnlyCurve = moves.map(x => Number(Math.max(0, budget * (1 + x / 100)).toFixed(0)));
+      const fut3xCurve = moves.map(x => Number(Math.max(0, budget * (1 + (x * 3) / 100)).toFixed(0)));
+
+      if (!fullStratStressChart) {
+        const ctx = document.getElementById('fullStratStressChart').getContext('2d');
+        fullStratStressChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: lbls,
+            datasets: [
+              { label: "Твій гібрид (Спот+Ф'юч+Кеш)", data: hybridCurve, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.12)', fill: true, borderWidth: 2.5, tension: 0.25, pointRadius: 3 },
+              { label: 'Чистий спот 100%', data: spotOnlyCurve, borderColor: '#3b82f6', borderDash: [5, 3], borderWidth: 2, tension: 0.1, pointRadius: 2 },
+              { label: "Чисті ф'ючерси 3x", data: fut3xCurve, borderColor: '#f43f5e', borderDash: [3, 3], borderWidth: 1.8, tension: 0.1, pointRadius: 2 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 150 },
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } } },
+              tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: $${Number(ctx.parsed.y).toLocaleString('uk-UA')}` } }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Зміна ціни ринку (%)', color: '#94a3b8', font: { size: 11 } }, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.08)' } },
+              y: { ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            }
+          }
+        });
+      } else {
+        fullStratStressChart.data.datasets[0].data = hybridCurve;
+        fullStratStressChart.data.datasets[1].data = spotOnlyCurve;
+        fullStratStressChart.data.datasets[2].data = fut3xCurve;
+        fullStratStressChart.update();
+      }
+    }
+
+    document.querySelectorAll('#full-strat-presets button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pr = fullPresets[btn.dataset.fpreset];
+        if (!pr) return;
+        document.querySelectorAll('#full-strat-presets button').forEach(b => {
+          b.className = 'px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+        });
+        btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-medium bg-blue-600 text-white transition';
+        document.getElementById('fc-spot-pct').value = pr.spot;
+        document.getElementById('fc-fut-pct').value = pr.fut;
+        document.getElementById('fc-fut-mode').value = pr.mode;
+        document.getElementById('fc-trades').value = pr.trades;
+        document.getElementById('fc-wr').value = pr.wr;
+        document.getElementById('fc-rr').value = pr.rr;
+        document.getElementById('fc-lev').value = pr.lev;
+        document.getElementById('fc-dca-tranches').value = pr.dca;
+        document.getElementById('fc-funding-days').value = pr.days;
+        document.getElementById('fc-market-move').value = pr.move;
+        updateFullStrategyCalc();
+      });
+    });
+
+    ['fc-budget', 'fc-spot-pct', 'fc-fut-pct', 'fc-fut-mode', 'fc-market-move', 'fc-trades', 'fc-wr', 'fc-rr', 'fc-lev', 'fc-dca-tranches', 'fc-funding-days'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateFullStrategyCalc);
+      document.getElementById(id).addEventListener('change', updateFullStrategyCalc);
+    });
+
+    // ==================== TAB 6: GLOSSARY & MINI-QUIZ ====================
+    const GLOSS_STORAGE_KEY = 'hybrid_crypto_learned_v1';
+    const glossaryTerms = [
+      { id: 'wr', abbr: 'WR (Winrate)', cat: 'math', catLabel: 'Математика і ризик', def: 'Відсоток прибуткових угод від їхньої загальної кількості у серії.', ex: 'Із 30 угод 12 закрилися в плюс, 18 у мінус → Winrate = 40%.' },
+      { id: 'rr', abbr: 'R:R (Risk : Reward)', cat: 'math', catLabel: 'Математика і ризик', def: 'Співвідношення потенційного збитку до потенційного прибутку в одній угоді.', ex: 'R:R 1:2.5 означає: ризикуєш $10 по стопу, щоб заробити $25 по тейку.' },
+      { id: 'r_unit', abbr: '1R (Одиниця ризику)', cat: 'math', catLabel: 'Математика і ризик', def: 'Фіксована сума, яку ти готовий втратити в одній угоді (зазвичай 1% депозиту).', ex: 'Для $1 000 при ризику 1% маємо 1R = $10. Прибуток +2.5R = +$25.' },
+      { id: 'exp', abbr: 'Expectancy (Мат. очікування)', cat: 'math', catLabel: 'Математика і ризик', def: 'Середній очікуваний результат кожної угоди на довгій дистанції: (WR × R:R) − (1 − WR).', ex: 'При 40% WR і R:R 1:2.5: (0.4 × 2.5) − 0.6 = +0.40R (+$4 на угоду в середньому).' },
+      { id: 'be_wr', abbr: 'Break-even WR', cat: 'math', catLabel: 'Математика і ризик', def: 'Мінімальний відсоток прибуткових угод, щоб не втрачати гроші (вийти в нуль): 1 / (1 + R:R).', ex: 'При R:R 1:3 достатньо лише 25% вдалих угод для нуля; все вище — прибуток.' },
+      { id: 'dd', abbr: 'Max Drawdown (Макс. просадка)', cat: 'math', catLabel: 'Математика і ризик', def: 'Найбільше падіння балансу від локального піку до наступного мінімуму.', ex: 'Якщо баланс виріс до $1 100, а потім просів до $990 → просадка становить -10%.' },
+      { id: 'equity', abbr: 'Equity Curve (Крива капіталу)', cat: 'math', catLabel: 'Математика і ризик', def: 'Графік зміни балансу твого рахунку після кожної закритої угоди.', ex: 'Плавна висхідна крива з малими просадками краща за різкі гойдалки.' },
+      { id: 'pnl', abbr: 'PnL (Profit & Loss)', cat: 'math', catLabel: 'Математика і ризик', def: 'Фінансовий результат угоди або портфеля (прибуток чи збиток у доларах або %).', ex: 'Realized PnL — вже зафіксований результат; Unrealized — плаваючий по відкритій угоді.' },
+      { id: 'sl', abbr: 'SL (Stop-Loss)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Захисний ордер, який автоматично закриває угоду, якщо ціна пішла проти тебе.', ex: 'Вхід у BTC по $60 000, SL на $58 500 обмежує втрату на рівні -2.5%.' },
+      { id: 'tp', abbr: 'TP (Take-Profit)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Ордер, який автоматично фіксує прибуток при досягненні цільової ціни.', ex: 'Вхід по $60 000, TP на $63 750 фіксує +6.25% руху без ручного втручання.' },
+      { id: 'trailing', abbr: 'Трейлінг-стоп (Trailing Stop)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Рухомий стоп-лосс, який автоматично підтягується слідом за ціною в прибуткову зону.', ex: 'BTC виріс на +4% — стоп сам пересунувся в беззбиток, захищаючи угоду від розвороту.' },
+      { id: 'isolated', abbr: 'Isolated Margin (Ізольована)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Режим маржі, де під одну угоду виділяється фіксована сума, а решта депозиту захищена.', ex: 'З $1 000 ти виділив $200 у позицію — навіть у найгіршому випадку $800 на балансі не постраждають.' },
+      { id: 'cross', abbr: 'Cross Margin (Крос-маржа)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Режим, де заставою для кожної позиції слугує весь баланс ф\'ючерсного гаманця.', ex: 'Без стоп-лоссу одна збиткова позиція на $200 може поступово «з\'їсти» всі $1 000.' },
+      { id: 'lev', abbr: 'Плече (Leverage: 2x, 5x)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Множник, який дозволяє відкрити позицію більшу за власну маржу.', ex: 'З $200 маржі і плечем 2x обсяг позиції становить $400. Високе плече наближає ліквідацію.' },
+      { id: 'liq', abbr: 'Ліквідація (Liquidation)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Примусове закриття позиції біржею із втратою маржі, коли збиток досягає критичного рівня.', ex: 'При плечі 5x падіння активу приблизно на 19–20% повністю обнуляє маржу позиції.' },
+      { id: 'long_short', abbr: 'Long / Short (Лонг / Шорт)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Лонг — заробіток на зростанні ціни; Шорт — заробіток на падінні ціни.', ex: 'На обвалі BTC з $64K до $58.8K шорт приносить прибуток, компенсуючи мінус споту.' },
+      { id: 'funding', abbr: 'Funding Rate (Фандинг)', cat: 'futures', catLabel: 'Ф\'ючерси і маржа', def: 'Комісія, яку лонги та шорти платять один одному зазвичай кожні 8 годин на безстрокових ф\'ючерсах.', ex: 'Позитивний фандинг (+0.02%): лонги платять шортам; від\'ємний: шорти платять лонгам.' },
+      { id: 'hedge', abbr: 'Хедж (Hedge)', cat: 'strategy', catLabel: 'Спот і стратегії', def: 'Відкриття зустрічної позиції (зазвичай шорту) для страхування спотового портфеля від падіння.', ex: 'Тримаєш $750 BTC на споті та відкриваєш шорт на $375 — просадка портфеля падає вдвічі.' },
+      { id: 'delta', abbr: 'Дельта-нейтральна стратегія', cat: 'strategy', catLabel: 'Спот і стратегії', def: 'Поєднання споту (+1) і шорту 1x (-1) одного активу, де зміна ціни взаємно гаситься.', ex: '$500 BTC спот + $500 BTC шорт 1x: ціна не впливає на баланс, прибуток іде з позитивного фандингу.' },
+      { id: 'spot', abbr: 'Спот (Spot)', cat: 'strategy', catLabel: 'Спот і стратегії', def: 'Пряма купівля або продаж реальної криптовалюти без кредитного плеча і ризику ліквідації.', ex: 'Купив BTC на $350 — навіть при падінні на -50% монети залишаються твоїми.' },
+      { id: 'dca', abbr: 'DCA (Усереднення позиції)', cat: 'strategy', catLabel: 'Спот і стратегії', def: 'Купівля активу не на всю суму одразу, а рівними частинами (траншами) через інтервали або на рівнях.', ex: 'Замість $300 по $60K купуєш по $100 на $60K, $57K та $54K — середня ціна виходить $56.9K.' },
+      { id: 'barbell', abbr: 'Штанга (Barbell-стратегія)', cat: 'strategy', catLabel: 'Спот і стратегії', def: 'Концепція Талеба: 80% у супернадійних активах (BTC + USDT) і 20% у високоасиметричних угодах.', ex: 'Навіть якщо ризикові 20% просядуть, 80% капіталу залишаються надійно захищеними.' },
+      { id: 'ath', abbr: 'ATH (All-Time High)', cat: 'market', catLabel: 'Ринок і графіки', def: 'Історичний максимум ціни активу за весь час торгів.', ex: 'Для WBT ATH становив $87.91 (вересень 2026), тож при $56 токен на -36% нижче піку.' },
+      { id: 'ema', abbr: 'EMA / MA (Ковзна середня)', cat: 'market', catLabel: 'Ринок і графіки', def: 'Лінія середньої ціни за останні N днів (наприклад, 20-EMA або 200-MA), що показує напрямок тренду.', ex: 'Ціна вище 20-EMA — короткостроковий тренд вгору; нижче 200-MA — ведмежа фаза.' },
+      { id: 'rsi', abbr: 'RSI (Індекс сили тренду)', cat: 'market', catLabel: 'Ринок і графіки', def: 'Індикатор імпульсу від 0 до 100: вище 70 — перекупленість, нижче 30 — перепроданість.', ex: 'RSI нижче 30 по BTC сигналізує про виснаження продавців і шанс на технічний відскок.' },
+      { id: 'ocr', abbr: 'OCR (Розпізнавання тексту)', cat: 'market', catLabel: 'Ринок і графіки', def: 'Технологія зчитування тексту із зображень прямо в браузері (використовується у вкладці Журнал).', ex: 'Завантажуєш скріншот угоди з біржі — додаток сам витягує пару, плече, ціни та PnL.' }
+    ];
+
+    const quizBank = [
+      { q: 'При співвідношенні Risk:Reward 1:3 який мінімальний Winrate потрібен, щоб виходити в нуль (без комісій)?', opts: ['50%', '33.3%', '25%', '40%'], ans: 2, why: 'Формула Break-even WR = 1 / (1 + 3) = 25%. Усе, що вище 25% вдалих угод, вже дає плюс.' },
+      { q: 'Чому на депозиті $1 000 для ф\'ючерсів рекомендується режим Isolated, а не Cross?', opts: ['Менша комісія біржі', 'Збиток обмежений лише маржею однієї угоди, а не всім балансом', 'Дає вище плече 100x', 'Не потрібен Stop-Loss'], ans: 1, why: 'У режимі Isolated навіть критичний рух ціни не зачепить вільний залишок на твоєму ф\'ючерсному гаманці.' },
+      { q: 'Що означає «1R» у ризик-менеджменті на депозиті $1 000 при правилі 1%?', opts: ['$100 маржі', '$10 максимального допустимого збитку в угоді', '$1 комісії', 'Плече 1x'], ans: 1, why: '1R — це базова одиниця ризику. 1% від $1 000 = $10. Прибуток +2.5R у такій системі дорівнює +$25.' },
+      { q: 'Коли дельта-нейтральний фандинг-арбітраж (Спот + Шорт 1x) варто поставити на паузу?', opts: ['Коли ціна BTC росте', 'Коли ставка фінансування (Funding Rate) стає стабільно від\'ємною', 'Коли волатильність низька', 'Коли обсяг торгів високий'], ans: 1, why: 'При від\'ємному фандингу шорти самі платять лонгам, тому арбітраж перестає приносити дохід.' },
+      { q: 'Як працює стратегія DCA (усереднення) на спотовому ринку?', opts: ['Вхід усією сумою на пробої ATH', 'Купівля частинами (траншами) на різних рівнях ціни для кращої середньої точки входу', 'Торгівля з плечем 10x', 'Автоматичний шорт на кожній свічці'], ans: 1, why: 'DCA розбиває покупку на 2–4 транші, знижуючи ризик зайти на всю суму перед черговим проливом.' },
+      { q: 'Що показує значення RSI нижче 30 на денному графіку?', opts: ['Ринок перегрітий, час шортити', 'Актив у зоні перепроданості — можливий технічний відскок', 'Фандинг дорівнює 30%', 'Ліквідація позиції'], ans: 1, why: 'RSI < 30 вказує на сильний розпродаж і перепроданість активу, що часто передує локальному відскоку.' }
+    ];
+
+    let glossCat = 'all';
+    let learnedSet = new Set();
+    let quizIdx = 0;
+    let quizCorrect = 0;
+    let quizTotal = 0;
+    let quizAnswered = false;
+
+    function loadLearned() {
+      try {
+        const raw = localStorage.getItem(GLOSS_STORAGE_KEY);
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr)) learnedSet = new Set(arr);
+        }
+      } catch (e) {
+        learnedSet = new Set();
+      }
+      if (hasTgCloud()) {
+        try {
+          getTgWebApp().CloudStorage.getItem(GLOSS_STORAGE_KEY, (err, val) => {
+            if (!err && val) {
+              try {
+                const arr = JSON.parse(val);
+                if (Array.isArray(arr)) {
+                  learnedSet = new Set(arr);
+                  try { localStorage.setItem(GLOSS_STORAGE_KEY, val); } catch (e2) {}
+                  renderGlossary();
+                }
+              } catch (e3) {}
+            }
+          });
+        } catch (e) {}
+      }
+    }
+
+    function saveLearned() {
+      const payload = JSON.stringify(Array.from(learnedSet));
+      try {
+        localStorage.setItem(GLOSS_STORAGE_KEY, payload);
+      } catch (e) {}
+      if (hasTgCloud()) {
+        try {
+          getTgWebApp().CloudStorage.setItem(GLOSS_STORAGE_KEY, payload);
+        } catch (e) {}
+      }
+    }
+
+    function renderGlossary() {
+      const q = (document.getElementById('gloss-search').value || '').trim().toLowerCase();
+      const filtered = glossaryTerms.filter(item => {
+        const catOk = glossCat === 'all' || item.cat === glossCat;
+        const textOk = !q || item.abbr.toLowerCase().includes(q) || item.def.toLowerCase().includes(q) || item.ex.toLowerCase().includes(q);
+        return catOk && textOk;
+      });
+
+      const done = learnedSet.size;
+      const total = glossaryTerms.length;
+      document.getElementById('gloss-progress-text').textContent = `${done} / ${total} вивчено`;
+      document.getElementById('gloss-progress-bar').style.width = `${(done / total) * 100}%`;
+
+      const grid = document.getElementById('gloss-grid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="col-span-full text-center py-8 text-sm text-slate-500">За таким запитом термінів не знайдено.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const isDone = learnedSet.has(item.id);
+        return `
+          <div class="rounded-xl border ${isDone ? 'border-emerald-700/70 bg-emerald-950/20' : 'border-slate-800 bg-slate-950/70'} p-4 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-1.5">
+                <span class="font-mono-num text-sm font-bold text-white">${item.abbr}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 whitespace-nowrap">${item.catLabel}</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed mb-2">${item.def}</p>
+              <div class="text-[11px] text-slate-400 bg-slate-900/90 border border-slate-800/80 rounded-lg p-2.5 leading-relaxed">
+                <span class="text-blue-400 font-semibold">Приклад:</span> ${item.ex}
+              </div>
+            </div>
+            <button type="button" data-learnid="${item.id}" class="learn-btn w-full py-1.5 rounded-lg text-xs font-medium border transition ${isDone ? 'bg-emerald-900/50 border-emerald-700 text-emerald-200' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white'}">
+              ${isDone ? '✓ Вивчено' : 'Позначити як вивчене'}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.learn-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.learnid;
+          if (learnedSet.has(id)) learnedSet.delete(id);
+          else learnedSet.add(id);
+          saveLearned();
+          renderGlossary();
+        });
+      });
+    }
+
+    function renderQuizQuestion() {
+      quizAnswered = false;
+      const item = quizBank[quizIdx % quizBank.length];
+      document.getElementById('quiz-question').textContent = item.q;
+      document.getElementById('quiz-score-badge').textContent = `Рахунок: ${quizCorrect} / ${quizTotal}`;
+      const fb = document.getElementById('quiz-feedback');
+      fb.classList.add('hidden');
+
+      const wrap = document.getElementById('quiz-options');
+      wrap.innerHTML = item.opts.map((opt, idx) => `
+        <button type="button" data-qopt="${idx}" class="quiz-opt-btn text-left p-3 rounded-lg border border-slate-700 bg-slate-900 hover:border-blue-500 text-xs sm:text-sm text-slate-200 transition">
+          ${opt}
+        </button>
+      `).join('');
+
+      wrap.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (quizAnswered) return;
+          quizAnswered = true;
+          quizTotal++;
+          const picked = parseInt(btn.dataset.qopt, 10);
+          const isRight = picked === item.ans;
+          if (isRight) quizCorrect++;
+          document.getElementById('quiz-score-badge').textContent = `Рахунок: ${quizCorrect} / ${quizTotal}`;
+
+          wrap.querySelectorAll('.quiz-opt-btn').forEach((b, i) => {
+            if (i === item.ans) b.className = 'quiz-opt-btn text-left p-3 rounded-lg border border-emerald-500 bg-emerald-950/60 text-xs sm:text-sm text-emerald-200 font-semibold';
+            else if (i === picked) b.className = 'quiz-opt-btn text-left p-3 rounded-lg border border-rose-500 bg-rose-950/60 text-xs sm:text-sm text-rose-200';
+            else b.className = 'quiz-opt-btn text-left p-3 rounded-lg border border-slate-800 bg-slate-900/50 text-xs sm:text-sm text-slate-500';
+          });
+
+          fb.className = 'text-xs sm:text-sm p-3 rounded-lg ' + (isRight ? 'bg-emerald-950/50 border border-emerald-800 text-emerald-200' : 'bg-rose-950/50 border border-rose-800 text-rose-200');
+          fb.textContent = (isRight ? 'Правильно! ' : 'Не зовсім. ') + item.why;
+        });
+      });
+    }
+
+    document.getElementById('gloss-search').addEventListener('input', renderGlossary);
+    document.querySelectorAll('#gloss-cats button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        glossCat = btn.dataset.gcat;
+        document.querySelectorAll('#gloss-cats button').forEach(b => {
+          b.className = 'px-3 py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+        });
+        btn.className = 'px-3 py-2 rounded-lg text-xs font-medium bg-blue-600 text-white transition';
+        renderGlossary();
+      });
+    });
+
+    document.getElementById('btn-toggle-quiz').addEventListener('click', () => {
+      const panel = document.getElementById('gloss-quiz-panel');
+      panel.classList.toggle('hidden');
+      if (!panel.classList.contains('hidden')) renderQuizQuestion();
+    });
+
+    document.getElementById('btn-quiz-next').addEventListener('click', () => {
+      quizIdx = (quizIdx + 1) % quizBank.length;
+      renderQuizQuestion();
+    });
+
+    // ==================== INIT ====================
+    initTelegramMiniApp();
+    loadJournal();
+    buildMatrix();
+    rebuildSim(false);
+    renderStrategyCards();
+    renderStrategyDetail();
+    renderHistFrame(histCases[activeCaseKey].labels.length);
+    updateCalculator();
+    renderChecklist();
+    updateFullStrategyCalc();
+    renderJournal();
+    loadLearned();
+    renderGlossary();
+  </script>
+</body>
+</html>
