@@ -24,6 +24,14 @@
     .font-mono-num {
       font-family: 'JetBrains Mono', monospace;
     }
+    .market-btn.active-crypto {
+      background-color: #2563eb;
+      color: #ffffff;
+    }
+    .market-btn.active-stocks {
+      background-color: #059669;
+      color: #ffffff;
+    }
     .tab-btn.active {
       background-color: #2563eb;
       color: #ffffff;
@@ -67,28 +75,57 @@
   <!-- Header -->
   <header class="border-b border-slate-800 bg-slate-900/85 backdrop-blur sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2.5">
-          <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
-          <h1 class="text-base sm:text-lg font-bold text-white tracking-tight">Гібридні криптостратегії: Спот + Ф'ючерси</h1>
-          <span id="tg-sync-badge" class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono-num bg-slate-800 border border-slate-700 text-slate-300">Локальний режим</span>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+            <h1 class="text-base sm:text-lg font-bold text-white tracking-tight">Трейдинг-хаб: Крипто + Фондовий ринок</h1>
+            <span id="tg-sync-badge" class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono-num bg-slate-800 border border-slate-700 text-slate-300">Локальний режим</span>
+          </div>
+          <p id="header-subtitle" class="text-xs text-slate-400 mt-0.5">Розділ: Крипторинок — гібридні стратегії, 7 активів, симулятор і журнал OCR</p>
         </div>
-        <p class="text-xs text-slate-400 mt-0.5">Порівняння стратегій, 5 гібридних моделей, 7 активів в історії та журнал угод по скріншотах</p>
+
+        <!-- Top-level Market Mode Switcher -->
+        <div class="inline-flex p-1 rounded-xl bg-slate-950 border border-slate-800 self-start">
+          <button id="mode-crypto" type="button" class="market-btn active-crypto px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+            ₿ Крипторинок
+          </button>
+          <button id="mode-stocks" type="button" class="market-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">
+            📈 Фондовий ринок
+          </button>
+        </div>
       </div>
 
       <!-- Navigation Tabs -->
       <nav class="flex flex-wrap gap-1.5" aria-label="Розділи симулятора">
-        <button id="nav-math" type="button" class="tab-btn active px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+        <!-- Crypto-specific tabs -->
+        <button id="nav-math" type="button" class="tab-btn crypto-tab active px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
           1. Симулятор (A vs B)
         </button>
-        <button id="nav-strategies" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+        <button id="nav-strategies" type="button" class="tab-btn crypto-tab px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
           2. 5 Стратегій
         </button>
-        <button id="nav-history" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+        <button id="nav-history" type="button" class="tab-btn crypto-tab px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
           3. Кейси (7 активів)
         </button>
-        <button id="nav-risk" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+        <button id="nav-risk" type="button" class="tab-btn crypto-tab px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
           4. Калькулятор
+        </button>
+
+        <!-- US Stock Market tabs -->
+        <button id="nav-stocks-earnings" type="button" class="tab-btn stock-tab hidden px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+          1. Звітність і Чеклист
+        </button>
+        <button id="nav-stocks-etf" type="button" class="tab-btn stock-tab hidden px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+          2. Відскоки 2x–3x ETF
+        </button>
+        <button id="nav-stocks-calc" type="button" class="tab-btn stock-tab hidden px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+          3. Калькулятор акцій
+        </button>
+
+        <!-- Shared tabs (always visible) -->
+        <button id="nav-scenarios" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-cyan-600/80 text-cyan-300 hover:text-white hover:border-cyan-400 transition">
+          🎯 Трекер сценаріїв
         </button>
         <button id="nav-journal" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-emerald-700/80 text-emerald-300 hover:text-white hover:border-emerald-500 transition">
           5. Журнал (Скріншот OCR)
@@ -99,6 +136,19 @@
       </nav>
     </div>
   </header>
+
+  <!-- LIVE REAL-TIME PRICE TICKER BAR -->
+  <div class="border-b border-slate-800/90 bg-slate-950/90">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div id="live-ticker-strip" class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 text-xs font-mono-num"></div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span id="live-status-text" class="text-[11px] font-mono-num text-slate-400 whitespace-nowrap">Оновлення цін...</span>
+        <button id="btn-refresh-prices" type="button" class="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] font-medium text-slate-200 transition whitespace-nowrap">
+          ↻ Оновити
+        </button>
+      </div>
+    </div>
+  </div>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
@@ -454,7 +504,7 @@
             <div id="hist-kpi-spot" class="font-mono-num text-xl font-bold text-white mt-0.5">$1 000</div>
           </div>
           <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3.5">
-            <div class="text-xs text-emerald-400 font-medium">Гібрид (75% спот + 25% захисний ф'ючерс)</div>
+            <div class="text-xs text-emerald-400 font-medium">Гібрид (75% спот + 25% захисний ф’ючерс)</div>
             <div id="hist-kpi-hybrid" class="font-mono-num text-xl font-bold text-emerald-400 mt-0.5">$1 000</div>
           </div>
           <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3.5">
@@ -504,7 +554,7 @@
             </div>
             <h2 class="text-lg sm:text-xl font-bold text-white">Калькулятор гібридної стратегії: Спот + Ф'ючерси + Кеш</h2>
             <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
-              Рахуй увесь портфель у комплексі: спотове ядро, стейблкоїн-резерв (з усередненням на просадці), серію ф'ючерсних угод або захисний хедж та всі комісії.
+              Рахуй увесь портфель у комплексі: спотове ядро, стейблкоїн-резерв (з усередненням на просадці), серію ф’ючерсних угод або захисний хедж та всі комісії.
             </p>
           </div>
           <div class="flex flex-wrap gap-1.5" id="full-strat-presets">
@@ -526,7 +576,7 @@
                   <input id="fc-budget" type="number" value="1000" min="100" step="100" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 font-mono-num text-sm font-bold text-white focus:border-blue-500 focus:outline-none">
                 </div>
                 <div>
-                  <label for="fc-fut-mode" class="block text-xs text-slate-400 mb-1">Роль ф'ючерсного блоку</label>
+                  <label for="fc-fut-mode" class="block text-xs text-slate-400 mb-1">Роль ф’ючерсного блоку</label>
                   <select id="fc-fut-mode" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:border-blue-500 focus:outline-none">
                     <option value="hedge">Захисний хедж-шорт</option>
                     <option value="swing">Активний свінг (WR × R:R)</option>
@@ -664,7 +714,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
             <div>
-              <label for="calc-dep" class="block text-xs text-slate-400 mb-1">Депозит ф'ючерсів ($)</label>
+              <label for="calc-dep" class="block text-xs text-slate-400 mb-1">Депозит ф’ючерсів ($)</label>
               <input id="calc-dep" type="number" value="1000" min="50" step="50" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white focus:border-blue-500 focus:outline-none">
             </div>
             <div>
@@ -937,15 +987,609 @@
       </div>
     </section>
 
+    <!-- ==================== STOCKS TAB 1: EARNINGS PATTERNS & CHECKLIST ==================== -->
+    <section id="tab-stocks-earnings" class="hidden space-y-6 fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-semibold text-emerald-400 mb-1">
+              <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+              <span>Фондовий ринок США · Відкриття 9:30 EST</span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white">Патерни після звітності (Earnings) та інтерактивний чеклист (+EV)</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
+              За статистикою FactSet (5 років S&amp;P 500) ринок карає за провал EPS утричі сильніше (-3,1% проти +0,9%), а реальний напрямок визначає <strong class="text-slate-200">Guidance</strong> та структура перших 15–30 хвилин щодо <strong class="text-blue-400">VWAP</strong>.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 flex items-center gap-3">
+              <div>
+                <div class="text-[11px] text-slate-400">Готовність до входу</div>
+                <div id="earn-chk-score" class="font-mono-num text-xs font-bold text-emerald-400">0 / 12</div>
+              </div>
+              <div class="w-20 bg-slate-800 rounded-full h-2 overflow-hidden">
+                <div id="earn-chk-bar" class="bg-emerald-500 h-2 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <button id="btn-reset-earn-chk" type="button" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition">Скинути</button>
+          </div>
+        </div>
+
+        <!-- 3-Panel Visual SVG Schematic (Dark Theme) -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-medium text-slate-400 mb-2">Візуальна геометрія трьох +EV сетапів після відкриття (9:30–10:30 EST)</div>
+          <svg viewBox="0 0 720 270" width="100%" role="img" aria-label="Схеми трьох патернів відкриття після звітності США">
+            <line x1="240" y1="8" x2="240" y2="262" stroke="#1e293b" stroke-width="1"></line>
+            <line x1="480" y1="8" x2="480" y2="262" stroke="#1e293b" stroke-width="1"></line>
+
+            <!-- 1. Gap-and-Go -->
+            <text x="12" y="24" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#34d399">1. Gap-and-Go (Лонг 1:3)</text>
+            <text x="12" y="40" font-family="JetBrains Mono, monospace" font-size="11" fill="#94a3b8">Підвищений Guidance · WR &gt;26%</text>
+            <line x1="12" y1="228" x2="224" y2="228" stroke="#475569" stroke-width="1" stroke-dasharray="4,3"></line>
+            <text x="14" y="244" font-family="JetBrains Mono, monospace" font-size="11" fill="#64748b">Вчорашнє закриття</text>
+            <rect x="40" y="128" width="52" height="42" fill="rgba(16,185,129,0.12)" stroke="#10b981" stroke-width="1"></rect>
+            <text x="43" y="122" font-family="JetBrains Mono, monospace" font-size="11" fill="#34d399">15м ORB</text>
+            <path d="M 40 158 Q 118 144, 218 104" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="5,3"></path>
+            <text x="176" y="124" font-family="JetBrains Mono, monospace" font-size="11" fill="#60a5fa">VWAP</text>
+            <polyline points="40,156 58,136 74,162 92,128 128,104 154,112 214,62" fill="none" stroke="#10b981" stroke-width="2.5"></polyline>
+            <circle cx="92" cy="128" r="4" fill="#60a5fa"></circle>
+            <text x="102" y="136" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#93c5fd">Вхід</text>
+            <line x1="82" y1="174" x2="148" y2="174" stroke="#f43f5e" stroke-width="1.5"></line>
+            <text x="152" y="178" font-family="JetBrains Mono, monospace" font-size="11" fill="#fda4af">SL</text>
+            <text x="180" y="58" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#34d399">TP 3R</text>
+
+            <!-- 2. Gap-and-Fade -->
+            <text x="256" y="24" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#fb7185">2. Gap-and-Fade (Шорт 1:2.5)</text>
+            <text x="256" y="40" font-family="JetBrains Mono, monospace" font-size="11" fill="#94a3b8">Перегрітий фаворит · WR &gt;30%</text>
+            <line x1="256" y1="228" x2="466" y2="228" stroke="#475569" stroke-width="1" stroke-dasharray="4,3"></line>
+            <text x="346" y="244" font-family="JetBrains Mono, monospace" font-size="11" fill="#fda4af">Ціль: закриття гепу</text>
+            <rect x="282" y="80" width="52" height="40" fill="rgba(244,63,94,0.12)" stroke="#f43f5e" stroke-width="1"></rect>
+            <text x="285" y="74" font-family="JetBrains Mono, monospace" font-size="11" fill="#fda4af">15м ORB</text>
+            <path d="M 282 102 Q 358 114, 458 166" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="5,3"></path>
+            <text x="416" y="152" font-family="JetBrains Mono, monospace" font-size="11" fill="#60a5fa">VWAP</text>
+            <polyline points="282,104 300,82 320,112 334,122 368,158 392,148 454,220" fill="none" stroke="#f43f5e" stroke-width="2.5"></polyline>
+            <circle cx="334" cy="122" r="4" fill="#60a5fa"></circle>
+            <text x="344" y="128" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#93c5fd">Вхід</text>
+            <line x1="322" y1="76" x2="390" y2="76" stroke="#f43f5e" stroke-width="1.5"></line>
+            <text x="394" y="80" font-family="JetBrains Mono, monospace" font-size="11" fill="#fda4af">SL</text>
+
+            <!-- 3. Gap-Down Drift -->
+            <text x="496" y="24" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#fb7185">3. Gap-Down Drift (Шорт 1:2.5)</text>
+            <text x="496" y="40" font-family="JetBrains Mono, monospace" font-size="11" fill="#94a3b8">Знижений Guidance · WR &gt;30%</text>
+            <line x1="496" y1="72" x2="706" y2="72" stroke="#475569" stroke-width="1" stroke-dasharray="4,3"></line>
+            <text x="498" y="65" font-family="JetBrains Mono, monospace" font-size="11" fill="#64748b">Вчорашнє закриття</text>
+            <path d="M 522 134 Q 598 148, 698 186" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="5,3"></path>
+            <text x="656" y="172" font-family="JetBrains Mono, monospace" font-size="11" fill="#60a5fa">VWAP</text>
+            <polyline points="522,136 546,166 574,144 600,168 640,204 694,242" fill="none" stroke="#f43f5e" stroke-width="2.5"></polyline>
+            <circle cx="600" cy="168" r="4" fill="#60a5fa"></circle>
+            <text x="610" y="174" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#93c5fd">Вхід</text>
+            <line x1="564" y1="138" x2="632" y2="138" stroke="#f43f5e" stroke-width="1.5"></line>
+            <text x="636" y="142" font-family="JetBrains Mono, monospace" font-size="11" fill="#fda4af">SL</text>
+            <text x="640" y="256" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#fb7185">TP 2.5R</text>
+          </svg>
+        </div>
+
+        <!-- Interactive 12-item Checklist -->
+        <div id="earn-checklist-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+        <!-- 3 Red Flags -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+          <div class="bg-rose-950/30 border border-rose-900/60 rounded-xl p-3.5 text-xs">
+            <div class="font-bold text-rose-400 mb-1">1. Жодних ставок ДО звіту</div>
+            <div class="text-slate-300">Нічний геп перестрибує будь-який Stop-Loss; навіть при beat мегакапи часто падають на відкритті.</div>
+          </div>
+          <div class="bg-rose-950/30 border border-rose-900/60 rounded-xl p-3.5 text-xs">
+            <div class="font-bold text-rose-400 mb-1">2. Жодного усереднення збитку</div>
+            <div class="text-slate-300">Якщо ціна пішла проти сценарію після звіту — приймай фіксований -1R і виходь без емоцій.</div>
+          </div>
+          <div class="bg-rose-950/30 border border-rose-900/60 rounded-xl p-3.5 text-xs">
+            <div class="font-bold text-rose-400 mb-1">3. Без 5x плеча на одній акції</div>
+            <div class="text-slate-300">Волатильність у день звітності у 3–5× вища; контролюй ризик розміром позиції (0,5%–1%), а не плечем.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== STOCKS TAB 2: 1x / 2x / 3x ETF REBOUND SIMULATOR ==================== -->
+    <section id="tab-stocks-etf" class="hidden space-y-6 fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-5">
+        <div>
+          <h2 class="text-lg sm:text-xl font-bold text-white">Стратегія відскоків S&amp;P 500 / Nasdaq-100 через 1x, 2x та 3x ETF</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
+            Історично корекція S&amp;P 500 на -10% формується за ~25 днів, а перші 50% падіння відіграються медіанно за 15 днів. Порівняй <span class="text-blue-400 font-medium">SPY/QQQ (1x)</span>, <span class="text-emerald-400 font-medium">SSO/QLD (2x)</span> та <span class="text-amber-400 font-medium">UPRO/TQQQ (3x)</span> з урахуванням volatility decay.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-4 bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-4">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">Бюджет на стратегію</span>
+                <span id="etf-val-budget" class="font-mono-num font-bold text-white">$5 000</span>
+              </div>
+              <input id="etf-budget" type="range" min="1000" max="25000" step="500" value="5000" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">Поточна просадка індексу від піку</span>
+                <span id="etf-val-drop" class="font-mono-num font-bold text-rose-400">-10%</span>
+              </div>
+              <input id="etf-drop" type="range" min="5" max="25" step="1" value="10" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">Тривалість утримання (днів)</span>
+                <span id="etf-val-days" class="font-mono-num font-bold text-amber-400">30 днів</span>
+              </div>
+              <input id="etf-days" type="range" min="5" max="120" step="5" value="30" class="w-full">
+            </div>
+            <div class="pt-3 border-t border-slate-800 space-y-2 text-xs">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Ріст для 50% відскоку:</span>
+                <span id="etf-stat-half" class="font-mono-num font-semibold text-emerald-400">+5.6%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Ріст для повернення на пік:</span>
+                <span id="etf-stat-full" class="font-mono-num font-semibold text-blue-400">+11.1%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Оцінка розмиття (decay 3x):</span>
+                <span id="etf-stat-decay" class="font-mono-num font-semibold text-rose-400">-1.5%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-8 flex flex-col gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+                <div class="text-xs text-blue-400">1x (SPY / QQQ) · 50% відскок</div>
+                <div id="etf-kpi-1x" class="font-mono-num text-lg font-bold text-white mt-0.5">$5 278</div>
+              </div>
+              <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+                <div class="text-xs text-emerald-400">2x (SSO / QLD) · 50% відскок</div>
+                <div id="etf-kpi-2x" class="font-mono-num text-lg font-bold text-emerald-400 mt-0.5">$5 535</div>
+              </div>
+              <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
+                <div class="text-xs text-amber-400">3x (UPRO / TQQQ) · 50% відскок</div>
+                <div id="etf-kpi-3x" class="font-mono-num text-lg font-bold text-amber-400 mt-0.5">$5 780</div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 flex-1">
+              <div class="text-xs font-medium text-slate-400 mb-2">Підсумкова вартість позиції за 4 сценаріями руху індексу (USD)</div>
+              <div class="relative h-64">
+                <canvas id="etfCompareChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cross-Asset Phases Table -->
+        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4">
+          <h3 class="text-sm font-bold text-white mb-2">Міжринковий паттерн просадки та відскоку (VIX · S&amp;P 500 · Золото · BTC)</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-400">
+                  <th class="py-2 text-left">Фаза</th>
+                  <th class="py-2 text-left">VIX (страх)</th>
+                  <th class="py-2 text-left">S&amp;P 500 / Nasdaq</th>
+                  <th class="py-2 text-left">Тактика для 2x/3x ETF</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/70 text-slate-300">
+                <tr><td class="py-2 font-semibold text-white">1. Паніка</td><td class="py-2">Стрибок &gt;25</td><td class="py-2">Падають усі активи разом</td><td class="py-2">Тримати кеш, не ловити першу червону свічку</td></tr>
+                <tr><td class="py-2 font-semibold text-white">2. Капітуляція</td><td class="py-2">Пік 28–35+</td><td class="py-2">Прокол підтримок, RSI &lt;30</td><td class="py-2">Готувати Транш 1 (50%) на розвороті VIX вниз</td></tr>
+                <tr><td class="py-2 font-semibold text-white">3. Перший відскок</td><td class="py-2">Падає &lt;25</td><td class="py-2">Швидкий відіграш ~50% (~15 дн.)</td><td class="py-2 text-emerald-300">Фіксувати 50–70% плечового ETF</td></tr>
+                <tr><td class="py-2 font-semibold text-white">4. Друге дно</td><td class="py-2">Зона 15–20</td><td class="py-2">Повільний ретест на менших обсягах</td><td class="py-2">Переводити прибуток у спокійний 1x (SPY/QQQ)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== STOCKS TAB 3: US STOCKS & ETF POSITION CALCULATOR ==================== -->
+    <section id="tab-stocks-calc" class="hidden space-y-6 fade-in">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-1">Калькулятор позиції для акцій та ETF США (у штуках Shares)</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mb-4">Точний розрахунок кількості акцій від фіксованого ризику 0,5%–1% (1R), щоб не перевищити допустимий стоп у доларах.</p>
+
+        <div class="mb-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div class="text-xs text-slate-400">
+            <span class="text-emerald-400 font-semibold">Live-ціни акцій США (опціонально):</span> встав безкоштовний ключ <span class="font-mono-num text-slate-200">Finnhub API</span> для підтягування реальних котирувань SPY, QQQ, NVDA.
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="finnhub-key-input" type="password" placeholder="Finnhub API Key..." class="w-44 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 font-mono-num text-xs text-white focus:border-emerald-500 focus:outline-none">
+            <button id="btn-fetch-stocks" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition whitespace-nowrap">Оновити акції</button>
+          </div>
+        </div>
+        <div id="finnhub-status" class="hidden mb-3 text-xs font-mono-num text-slate-400"></div>
+
+        <div class="flex flex-wrap gap-1.5 mb-4" id="stk-presets">
+          <button type="button" data-sp="590" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-emerald-600 text-white">SPY $590</button>
+          <button type="button" data-sp="505" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">QQQ $505</button>
+          <button type="button" data-sp="88" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">SSO (2x) $88</button>
+          <button type="button" data-sp="105" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">QLD (2x) $105</button>
+          <button type="button" data-sp="82" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">UPRO (3x) $82</button>
+          <button type="button" data-sp="76" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">TQQQ (3x) $76</button>
+          <button type="button" data-sp="130" class="px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700">NVDA $130</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-6 space-y-4">
+            <div class="flex gap-2">
+              <button id="stk-dir-long" type="button" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white transition">Лонг (Купівля ↑)</button>
+              <button id="stk-dir-short" type="button" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition">Шорт (Продаж ↓)</button>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="stk-dep" class="block text-xs text-slate-400 mb-1">Депозит ($)</label>
+                <input id="stk-dep" type="number" value="5000" min="100" step="100" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white">
+              </div>
+              <div>
+                <label for="stk-risk" class="block text-xs text-slate-400 mb-1">Ризик на угоду (%)</label>
+                <input id="stk-risk" type="number" value="1" min="0.25" max="5" step="0.25" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white">
+              </div>
+              <div>
+                <label for="stk-entry" class="block text-xs text-slate-400 mb-1">Ціна входу ($)</label>
+                <input id="stk-entry" type="number" value="590" min="0.1" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white">
+              </div>
+              <div>
+                <label for="stk-sl" class="block text-xs text-slate-400 mb-1">Stop-Loss ($)</label>
+                <input id="stk-sl" type="number" value="578" min="0.1" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white">
+              </div>
+              <div class="col-span-2">
+                <label for="stk-tp" class="block text-xs text-slate-400 mb-1">Take-Profit ($)</label>
+                <input id="stk-tp" type="number" value="620" min="0.1" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-sm text-white">
+              </div>
+            </div>
+            <div id="stk-alert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+          </div>
+
+          <div class="lg:col-span-6 grid grid-cols-2 gap-3 content-start">
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4">
+              <div class="text-xs text-slate-400">Купити / Продати (акцій)</div>
+              <div id="stk-res-shares" class="font-mono-num text-2xl font-bold text-emerald-400 mt-1">4 шт.</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4">
+              <div class="text-xs text-slate-400">Обсяг позиції ($)</div>
+              <div id="stk-res-val" class="font-mono-num text-2xl font-bold text-white mt-1">$2 360</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4">
+              <div class="text-xs text-slate-400">Фактичний ризик / Профіт</div>
+              <div id="stk-res-pnl" class="font-mono-num text-base font-bold text-slate-200 mt-1">-$48 / +$120</div>
+            </div>
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4">
+              <div class="text-xs text-slate-400">R:R · Мін. Winrate</div>
+              <div id="stk-res-rr" class="font-mono-num text-base font-bold text-amber-400 mt-1">1 : 2.50 (28.6%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <footer class="text-xs text-slate-500 border-t border-slate-800/80 pt-4 pb-6 flex flex-col sm:flex-row justify-between gap-2">
       <span>Освітній аналітичний симулятор. Не є індивідуальною фінансовою порадою.</span>
       <span>Дані 7 активів: Google Finance, CoinGecko, Bybit, CoinMarketCap, MetaMask, Digrin (листопад 2026).</span>
     </footer>
+    <!-- ==================== SHARED TAB: SCENARIO TRACKER & TRADE TRAINING ==================== -->
+    <section id="tab-scenarios" class="hidden space-y-6 fade-in">
+      <!-- STEP 1: ASSET PICKER (ALL 7 CRYPTO + ALL 7 STOCKS) & PORTFOLIO BUDGET -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded-md bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[11px] font-semibold">Усі активи × Усі гібридні стратегії</span>
+              <span class="text-xs text-slate-400">Живе порівняння + план на відхилення</span>
+            </div>
+            <h2 class="text-xl font-bold text-white">Трекер сценаріїв і порівняння всіх стратегій по будь-якому активу</h2>
+            <p class="text-sm text-slate-400 mt-1">Крок 1: обери будь-який актив. Крок 2: порівняй усі 5 гібридних стратегій (або 4 стратегії акцій) в одній таблиці з поясненням, чому яка підходить зараз. Крок 3: рухай ціну, щоб побачити реакцію всіх стратегій і точні ордери.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5">
+              <span class="text-[11px] text-slate-400">Бюджет тесту:</span>
+              <input id="sc-budget-input" type="number" min="100" step="100" value="1000" class="w-20 bg-transparent text-xs font-bold font-mono-num text-cyan-300 outline-none text-right" />
+              <span class="text-xs text-slate-400">$</span>
+            </div>
+            <button id="btn-sc-live-sync" type="button" class="px-3 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/50 text-xs font-semibold text-emerald-300 transition">
+              📡 Жива ціна
+            </button>
+            <button id="btn-sc-toggle-new" type="button" class="px-3 py-2 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/50 text-xs font-semibold text-cyan-200 transition">
+              + Свій план
+            </button>
+          </div>
+        </div>
+
+        <!-- Asset Selector: Crypto (7) + US Stocks (7) -->
+        <div class="space-y-3">
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-blue-300 mb-1.5">Крок 1А · Криптовалюти (7 активів — синхронізація з живими цінами)</div>
+            <div id="sc-crypto-assets" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-emerald-300 mb-1.5">Крок 1Б · Фондовий ринок США (7 активів — ETF та звітність)</div>
+            <div id="sc-stock-assets" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div id="sc-custom-assets-wrap" class="hidden">
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-cyan-300 mb-1.5">Мої збережені ручні сценарії</div>
+            <div id="sc-custom-assets" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+
+        <!-- Collapsible Custom Scenario Form -->
+        <div id="sc-custom-form-wrap" class="hidden mt-4 p-4 rounded-xl bg-slate-950/90 border border-cyan-500/30">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-cyan-300">Створити власний ручний сценарій</h3>
+            <button id="btn-sc-close-new" type="button" class="text-xs text-slate-400 hover:text-white">✕ Закрити</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div>
+              <label class="block text-slate-400 mb-1">Назва сценарію</label>
+              <input id="sc-new-name" type="text" placeholder="Напр. ETH Мій Хедж" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:border-cyan-400 outline-none" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Актив (тікер)</label>
+              <input id="sc-new-asset" type="text" placeholder="ETH, BTC, SOL, NVDA..." class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white uppercase focus:border-cyan-400 outline-none" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Напрямок</label>
+              <select id="sc-new-dir" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:border-cyan-400 outline-none">
+                <option value="long">Long (ріст)</option>
+                <option value="short">Short / Хедж-шорт (падіння)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Точка входу ($)</label>
+              <input id="sc-new-entry" type="number" step="any" placeholder="1720" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono-num focus:border-cyan-400 outline-none" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Попередження / Warning ($)</label>
+              <input id="sc-new-warn" type="number" step="any" placeholder="1775" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono-num focus:border-cyan-400 outline-none" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Інвалідація / Stop-Loss ($)</label>
+              <input id="sc-new-inval" type="number" step="any" placeholder="1820" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono-num focus:border-cyan-400 outline-none" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Ціль TP1 ($)</label>
+              <input id="sc-new-tp1" type="number" step="any" placeholder="1580" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono-num focus:border-cyan-400 outline-none" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Ціль TP2 ($)</label>
+              <input id="sc-new-tp2" type="number" step="any" placeholder="1460" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono-num focus:border-cyan-400 outline-none" />
+            </div>
+          </div>
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <span id="sc-new-error" class="text-xs text-rose-400 hidden"></span>
+            <button id="btn-sc-save-new" type="button" class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-semibold text-white transition">
+              Зберегти сценарій
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: SIDE-BY-SIDE COMPARISON OF ALL STRATEGIES FOR SELECTED ASSET -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h3 id="sc-compare-heading" class="text-base font-bold text-white">Крок 2 · Порівняння всіх стратегій для обраного активу</h3>
+            <p id="sc-compare-sub" class="text-xs text-slate-400 mt-0.5">Натисни на будь-яку стратегію в таблиці, щоб відкрити її детальний план, рівні та ордери нижче. Повзунок ціни оновлює P&amp;L для ВСІХ стратегій одночасно!</p>
+          </div>
+          <span id="sc-asset-profile-badge" class="text-[11px] font-mono-num px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 whitespace-nowrap"></span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-[11px] text-slate-400 uppercase">
+                <th class="py-2.5 pr-3">Стратегія і структура</th>
+                <th class="py-2.5 px-2">Придатність зараз</th>
+                <th class="py-2.5 px-2">Чому саме так для цього активу</th>
+                <th class="py-2.5 px-2 whitespace-nowrap">Вхід / Злам (SL) / TP1</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap">P&amp;L при тест-ціні</th>
+                <th class="py-2.5 pl-2 text-right">Дія</th>
+              </tr>
+            </thead>
+            <tbody id="sc-compare-tbody" class="divide-y divide-slate-800/80"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STEP 3: LIVE STATUS + INTERACTIVE PRICE SIMULATOR FOR SELECTED ASSET x STRATEGY -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- Left: Status Banner, Rationale & Price Ladder -->
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between gap-4">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="sc-dir-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase"></span>
+                <span id="sc-asset-label" class="text-xs font-mono-num text-slate-300 font-semibold"></span>
+                <span id="sc-price-source" class="text-[11px] font-mono-num px-2 py-0.5 rounded bg-slate-800 text-slate-300"></span>
+              </div>
+              <h3 id="sc-title" class="text-lg font-bold text-white mt-1"></h3>
+              <p id="sc-thesis" class="text-xs text-slate-400 mt-0.5"></p>
+            </div>
+            <button id="btn-sc-delete-custom" type="button" class="hidden px-2.5 py-1 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 border border-rose-700/50 text-[11px] text-rose-300 transition">
+              Видалити сценарій
+            </button>
+          </div>
+
+          <!-- Why this strategy fits / doesn't fit this asset -->
+          <div id="sc-why-box" class="rounded-xl p-3.5 bg-slate-950/80 border border-slate-800 text-xs">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+              <span class="font-bold text-cyan-300">Чому ця стратегія обрана / як працює на цьому активі:</span>
+              <span id="sc-fit-pill" class="px-2 py-0.5 rounded text-[10px] font-bold"></span>
+            </div>
+            <p id="sc-why-text" class="text-slate-300 leading-relaxed"></p>
+          </div>
+
+          <!-- Dynamic Status Alert Box -->
+          <div id="sc-status-box" class="rounded-xl p-4 border transition-all">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+              <span id="sc-status-badge" class="text-sm font-bold"></span>
+              <span id="sc-r-multiple" class="text-sm font-mono-num font-bold"></span>
+            </div>
+            <p id="sc-status-desc" class="text-xs leading-relaxed"></p>
+          </div>
+
+          <!-- Visual Price Track Map -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-2">
+              <span>Карта рівнів сценарію (де зараз ціна)</span>
+              <span id="sc-rr-summary" class="font-mono-num text-cyan-300"></span>
+            </div>
+            <div class="relative h-12 flex items-center">
+              <div class="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden relative">
+                <div id="sc-bar-danger" class="absolute top-0 bottom-0 bg-rose-500/40"></div>
+                <div id="sc-bar-warn" class="absolute top-0 bottom-0 bg-amber-500/40"></div>
+                <div id="sc-bar-profit" class="absolute top-0 bottom-0 bg-emerald-500/40"></div>
+              </div>
+              <div id="sc-markers-layer" class="absolute inset-0 pointer-events-none"></div>
+              <div id="sc-current-pin" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 transition-all duration-150">
+                <div class="w-4 h-4 rounded-full bg-white border-2 border-cyan-400 shadow-lg shadow-cyan-500/40"></div>
+              </div>
+            </div>
+            <div id="sc-level-chips" class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-3 text-[11px] font-mono-num"></div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Price Simulator ("What-If" Training) -->
+        <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between gap-4">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-bold text-white">Симулятор ціни (одразу оновлює ВСІ стратегії)</h4>
+              <span class="text-[11px] text-slate-400">Режим тренування</span>
+            </div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="flex-1">
+                <label class="block text-[11px] text-slate-400 mb-1">Поточна / тестова ціна ($)</label>
+                <input id="sc-sim-input" type="number" step="any" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-lg font-bold font-mono-num text-cyan-300 focus:border-cyan-400 outline-none" />
+              </div>
+              <div class="text-right">
+                <div class="text-[11px] text-slate-400">Рух від входу</div>
+                <div id="sc-dist-entry" class="text-base font-bold font-mono-num text-white">0.0%</div>
+              </div>
+            </div>
+            <input id="sc-sim-slider" type="range" min="0" max="100" step="0.5" value="50" class="w-full accent-cyan-400 cursor-pointer" />
+            <div class="flex justify-between text-[10px] font-mono-num text-slate-500 mt-1">
+              <span id="sc-slider-min"></span>
+              <span>Точка входу</span>
+              <span id="sc-slider-max"></span>
+            </div>
+          </div>
+
+          <!-- Quick Jump Scenario Buttons -->
+          <div>
+            <div class="text-[11px] text-slate-400 mb-2">Швидкий тест руху ринку (дивись таблицю вище!):</div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button data-sc-jump="entry" type="button" class="sc-jump-btn px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium transition">🎯 Вхід (0%)</button>
+              <button data-sc-jump="tp1" type="button" class="sc-jump-btn px-2.5 py-2 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-700/50 text-emerald-300 font-medium transition">🚀 По плану (TP1)</button>
+              <button data-sc-jump="warn" type="button" class="sc-jump-btn px-2.5 py-2 rounded-lg bg-amber-950/60 hover:bg-amber-900/60 border border-amber-700/50 text-amber-300 font-medium transition">⚠️ Відхилення</button>
+              <button data-sc-jump="inval" type="button" class="sc-jump-btn px-2.5 py-2 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 border border-rose-700/50 text-rose-300 font-medium transition">🚨 Злам (Stop)</button>
+              <button data-sc-jump="flip" type="button" class="sc-jump-btn col-span-2 px-2.5 py-2 rounded-lg bg-violet-950/60 hover:bg-violet-900/60 border border-violet-700/50 text-violet-300 font-medium transition">🔄 Пробій рівня розвороту (Обернути у прибуток)</button>
+            </div>
+          </div>
+
+          <!-- Entry Timing Box -->
+          <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs">
+            <div class="font-semibold text-cyan-300 mb-1">⏱ Коли приблизно заходити і виходити:</div>
+            <p id="sc-timing-text" class="text-slate-300 leading-relaxed"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-BRANCH DYNAMIC ACTION PLAYBOOK -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div id="sc-branch-ontrack" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 transition-all">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 text-xs font-bold">А · По сценарію (Прибуток)</span>
+            <span id="sc-badge-a" class="hidden text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-500 text-slate-950">АКТИВНО ЗАРАЗ</span>
+          </div>
+          <div id="sc-plan-ontrack" class="space-y-2.5 text-xs text-slate-300"></div>
+        </div>
+
+        <div id="sc-branch-cutloss" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 transition-all">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-300 text-xs font-bold">Б · Не по сценарію → Скоротити збиток</span>
+            <span id="sc-badge-b" class="hidden text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-rose-500 text-white">АКТИВНО ЗАРАЗ</span>
+          </div>
+          <div id="sc-plan-cutloss" class="space-y-2.5 text-xs text-slate-300"></div>
+        </div>
+
+        <div id="sc-branch-flip" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 transition-all">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-violet-500/15 text-violet-300 text-xs font-bold">В · Не по сценарію → Обернути у прибуток</span>
+            <span id="sc-badge-c" class="hidden text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-violet-500 text-white">АКТИВНО ЗАРАЗ</span>
+          </div>
+          <div id="sc-plan-flip" class="space-y-2.5 text-xs text-slate-300"></div>
+        </div>
+      </div>
+
+      <!-- PENDING ORDERS CHEAT SHEET -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h3 class="text-base font-bold text-white">Шпаргалка відкладених ордерів: який обрати і як налаштувати</h3>
+            <p class="text-xs text-slate-400">Правильний тип ордера економить комісію, захищає від просковзування та автоматизує вихід без емоцій.</p>
+          </div>
+          <span class="text-[11px] font-mono-num text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg">Золоте правило: для SL завжди Mark Price + Reduce-Only</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+            <div class="font-bold text-emerald-300 mb-1">1. Buy / Sell Limit</div>
+            <div class="text-[11px] text-slate-400 mb-2">Коли: вхід на відкаті/ретесті або фіксація TP1/TP2.</div>
+            <p class="text-slate-300 leading-relaxed"><strong class="text-white">Як:</strong> ставиш ціну кращу за ринкову (нижче для купівлі, вище для продажу). Для ф’ючерсів на вихід вмикай <code class="text-cyan-300">Reduce-Only</code>.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+            <div class="font-bold text-rose-300 mb-1">2. Stop-Market</div>
+            <div class="text-[11px] text-slate-400 mb-2">Коли: жорсткий Stop-Loss при інвалідації сценарію.</div>
+            <p class="text-slate-300 leading-relaxed"><strong class="text-white">Як:</strong> задаєш ціну тригера (рівень зламу), тригер = <code class="text-amber-300">Mark Price</code> (захист від тіней), галочка <code class="text-cyan-300">Reduce-Only</code>. Виконується гарантовано.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+            <div class="font-bold text-violet-300 mb-1">3. Stop-Limit</div>
+            <div class="text-[11px] text-slate-400 mb-2">Коли: пробійний вхід або розворот (Stop-and-Reverse).</div>
+            <p class="text-slate-300 leading-relaxed"><strong class="text-white">Як:</strong> <code class="text-white">Stop</code> = рівень пробою, <code class="text-white">Limit</code> = на 0.15%–0.3% глибше за рухом (інакше швидка свічка проскочить повз ордер).</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+            <div class="font-bold text-cyan-300 mb-1">4. OCO (Спот)</div>
+            <div class="text-[11px] text-slate-400 mb-2">Коли: одночасний Take-Profit і Stop-Loss на споті.</div>
+            <p class="text-slate-300 leading-relaxed"><strong class="text-white">Як:</strong> вводиш ціну <code class="text-emerald-300">Limit</code> (TP) та пару <code class="text-rose-300">Stop + Limit</code> (SL). Щойно один спрацює — інший автоматично скасується.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+            <div class="font-bold text-amber-300 mb-1">5. Trailing Stop</div>
+            <div class="text-[11px] text-slate-400 mb-2">Коли: супровід залишку 50% після досягнення TP1.</div>
+            <p class="text-slate-300 leading-relaxed"><strong class="text-white">Як:</strong> <code class="text-white">Activation Price</code> = ціна TP1, <code class="text-white">Callback Rate</code> = 1.5%–3% (для крипти) або 1%–1.5% (для акцій) + <code class="text-cyan-300">Reduce-Only</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE TRADE REACTION DRILL -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-base font-bold text-white">Тренінг реакцій: що робити, коли ринок ламає сценарій?</h3>
+            <p class="text-xs text-slate-400">5 практичних ситуацій — обери дію та відкладений ордер, щоб закріпити механіку без ризику реальними грошима.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="sc-drill-progress" class="text-xs font-mono-num px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300">Ситуація 1 / 5 · Рахунок: 0</span>
+            <button id="btn-sc-drill-next" type="button" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-semibold text-white transition">Наступна →</button>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800">
+          <div id="sc-drill-tag" class="text-[11px] font-semibold text-amber-300 mb-1"></div>
+          <div id="sc-drill-question" class="text-sm font-medium text-white mb-4 leading-relaxed"></div>
+          <div id="sc-drill-options" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+          <div id="sc-drill-feedback" class="hidden mt-4 p-3.5 rounded-xl border text-xs leading-relaxed"></div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <script>
     // ==================== STATE & NAVIGATION ====================
-    const tabs = ['math', 'strategies', 'history', 'risk', 'journal', 'glossary'];
+    const tabs = ['math', 'strategies', 'history', 'risk', 'stocks-earnings', 'stocks-etf', 'stocks-calc', 'scenarios', 'journal', 'glossary'];
     let activeTab = 'math';
     let simTimer = null;
     let histTimer = null;
@@ -974,6 +1618,7 @@
         if (fullStratStressChart) fullStratStressChart.resize();
       }
       if (tabId === 'journal' && journalChart) journalChart.resize();
+      if (tabId === 'stocks-etf' && etfCompareChart) etfCompareChart.resize();
     }
 
     tabs.forEach(t => {
@@ -2446,7 +3091,7 @@
             datasets: [
               { label: "Твій гібрид (Спот+Ф'юч+Кеш)", data: hybridCurve, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.12)', fill: true, borderWidth: 2.5, tension: 0.25, pointRadius: 3 },
               { label: 'Чистий спот 100%', data: spotOnlyCurve, borderColor: '#3b82f6', borderDash: [5, 3], borderWidth: 2, tension: 0.1, pointRadius: 2 },
-              { label: "Чисті ф'ючерси 3x", data: fut3xCurve, borderColor: '#f43f5e', borderDash: [3, 3], borderWidth: 1.8, tension: 0.1, pointRadius: 2 }
+              { label: "Чисті ф’ючерси 3x", data: fut3xCurve, borderColor: '#f43f5e', borderDash: [3, 3], borderWidth: 1.8, tension: 0.1, pointRadius: 2 }
             ]
           },
           options: {
@@ -2696,6 +3341,1604 @@
       renderQuizQuestion();
     });
 
+    // ==================== MARKET MODE SWITCHER (CRYPTO vs STOCKS) ====================
+    let activeMarket = 'crypto';
+
+    function switchMarket(mode) {
+      activeMarket = mode;
+      const btnC = document.getElementById('mode-crypto');
+      const btnS = document.getElementById('mode-stocks');
+      const sub = document.getElementById('header-subtitle');
+
+      if (mode === 'crypto') {
+        btnC.className = 'market-btn active-crypto px-3 py-1.5 rounded-lg text-xs font-semibold transition';
+        btnS.className = 'market-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition';
+        sub.textContent = 'Розділ: Крипторинок — гібридні стратегії, 7 активів, симулятор і журнал OCR';
+        document.querySelectorAll('.crypto-tab').forEach(b => b.classList.remove('hidden'));
+        document.querySelectorAll('.stock-tab').forEach(b => b.classList.add('hidden'));
+        if (activeTab.startsWith('stocks-')) switchTab('math');
+      } else {
+        btnS.className = 'market-btn active-stocks px-3 py-1.5 rounded-lg text-xs font-semibold transition';
+        btnC.className = 'market-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition';
+        sub.textContent = 'Розділ: Фондовий ринок США — патерни звітності (+EV), 2x–3x ETF та калькулятор акцій';
+        document.querySelectorAll('.crypto-tab').forEach(b => b.classList.add('hidden'));
+        document.querySelectorAll('.stock-tab').forEach(b => b.classList.remove('hidden'));
+        if (!activeTab.startsWith('stocks-') && activeTab !== 'scenarios' && activeTab !== 'journal' && activeTab !== 'glossary') {
+          switchTab('stocks-earnings');
+        }
+      }
+    }
+
+    document.getElementById('mode-crypto').addEventListener('click', () => switchMarket('crypto'));
+    document.getElementById('mode-stocks').addEventListener('click', () => switchMarket('stocks'));
+
+    // ==================== STOCKS TAB 1: EARNINGS CHECKLIST ====================
+    const earnChecklistItems = [
+      { stage: 'Етап 1 · До 9:30 EST', text: 'Оцінив Guidance (прогноз), а не лише EPS.' },
+      { stage: 'Етап 1 · До 9:30 EST', text: 'Перевірив рух акції за місяць ДО звіту (+15–25% = ризик Fade).' },
+      { stage: 'Етап 1 · До 9:30 EST', text: 'Геп на премаркеті щонайменше ±4%, немає «сірої зони».' },
+      { stage: 'Етап 2 · 9:30–10:00 EST', text: 'Перечекав перші 15 хв (після IV Crush і нічних ордерів).' },
+      { stage: 'Етап 2 · 9:30–10:00 EST', text: 'Наніс межі 15м ORB (High/Low) та лінію VWAP.' },
+      { stage: 'Етап 2 · 9:30–10:00 EST', text: 'Обсяг у перші 15–30 хв у 2–3× вище середнього.' },
+      { stage: 'Етап 3 · Вхід (+EV)', text: 'Чіткий сетап: Gap-and-Go, Gap-and-Fade або Gap-Down Drift.' },
+      { stage: 'Етап 3 · Вхід (+EV)', text: 'Ризик на угоду строго 0,5%–1% банку (1R).' },
+      { stage: 'Етап 3 · Вхід (+EV)', text: 'Співвідношення R:R ≥ 1:2,5, фізичний Stop-Loss виставлено.' },
+      { stage: 'Етап 4 · Вихід', text: 'Заплановано фіксацію 50% на +1.5R…+2R і перенос SL у 0.' },
+      { stage: 'Етап 4 · Вихід', text: 'Внутрішньоденні шорти закриваються до 16:00 EST.' },
+      { stage: 'Етап 4 · Вихід', text: 'Денний ліміт (2 стопи = -2%) сьогодні ще не перевищено.' }
+    ];
+    let earnChecked = earnChecklistItems.map(() => false);
+
+    function renderEarnChecklist() {
+      const grid = document.getElementById('earn-checklist-grid');
+      grid.innerHTML = earnChecklistItems.map((item, idx) => `
+        <label class="flex items-start gap-2.5 p-3 rounded-xl border ${earnChecked[idx] ? 'border-emerald-700/70 bg-emerald-950/30' : 'border-slate-800 bg-slate-950/70'} cursor-pointer hover:border-slate-600 transition">
+          <input type="checkbox" data-eidx="${idx}" ${earnChecked[idx] ? 'checked' : ''} class="mt-0.5 h-4 w-4 rounded border-slate-600 text-emerald-500 focus:ring-0">
+          <div>
+            <div class="text-[10px] font-mono-num text-blue-400">${item.stage}</div>
+            <div class="text-xs ${earnChecked[idx] ? 'text-emerald-200 line-through' : 'text-slate-200'} mt-0.5">${item.text}</div>
+          </div>
+        </label>
+      `).join('');
+
+      grid.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          earnChecked[parseInt(cb.dataset.eidx, 10)] = cb.checked;
+          renderEarnChecklist();
+        });
+      });
+
+      const done = earnChecked.filter(Boolean).length;
+      document.getElementById('earn-chk-score').textContent = `${done} / ${earnChecklistItems.length}`;
+      document.getElementById('earn-chk-bar').style.width = `${(done / earnChecklistItems.length) * 100}%`;
+    }
+
+    document.getElementById('btn-reset-earn-chk').addEventListener('click', () => {
+      earnChecked = earnChecked.map(() => false);
+      renderEarnChecklist();
+    });
+
+    // ==================== STOCKS TAB 2: 1x / 2x / 3x ETF REBOUND CALCULATOR ====================
+    let etfCompareChart = null;
+
+    function updateEtfCalc() {
+      const budget = parseFloat(document.getElementById('etf-budget').value) || 5000;
+      const drop = parseFloat(document.getElementById('etf-drop').value) || 10;
+      const days = parseInt(document.getElementById('etf-days').value, 10) || 30;
+
+      const base = 100 - drop;
+      const halfBounce = ((drop / 2) / base); // e.g. 5 / 90 = 5.56%
+      const fullBounce = (drop / base);       // e.g. 10 / 90 = 11.11%
+
+      // Volatility decay & expense ratio approximation for leveraged ETFs over N days
+      const decay2x = (0.009 * (days / 365)) + (0.00022 * days);
+      const decay3x = (0.0095 * (days / 365)) + (0.00050 * days);
+
+      document.getElementById('etf-val-budget').textContent = '$' + budget.toLocaleString('uk-UA');
+      document.getElementById('etf-val-drop').textContent = '-' + drop + '%';
+      document.getElementById('etf-val-days').textContent = days + ' днів';
+      document.getElementById('etf-stat-half').textContent = '+' + (halfBounce * 100).toFixed(1) + '%';
+      document.getElementById('etf-stat-full').textContent = '+' + (fullBounce * 100).toFixed(1) + '%';
+      document.getElementById('etf-stat-decay').textContent = '-' + (decay3x * 100).toFixed(1) + '%';
+
+      const moves = [-0.10, 0, halfBounce, fullBounce];
+      const v1x = moves.map(m => Math.round(budget * (1 + m)));
+      const v2x = moves.map(m => Math.round(Math.max(0, budget * (1 + m * 2 - decay2x))));
+      const v3x = moves.map(m => Math.round(Math.max(0, budget * (1 + m * 3 - decay3x))));
+
+      document.getElementById('etf-kpi-1x').textContent = '$' + v1x[2].toLocaleString('uk-UA');
+      document.getElementById('etf-kpi-2x').textContent = '$' + v2x[2].toLocaleString('uk-UA');
+      document.getElementById('etf-kpi-3x').textContent = '$' + v3x[2].toLocaleString('uk-UA');
+
+      const labels = ['Стрес -10%', 'Боковик 0%', `Відскок 50% (+${(halfBounce * 100).toFixed(1)}%)`, `Старий пік (+${(fullBounce * 100).toFixed(1)}%)`];
+
+      if (!etfCompareChart) {
+        const ctx = document.getElementById('etfCompareChart').getContext('2d');
+        etfCompareChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: '1x (SPY/QQQ)', data: v1x, backgroundColor: '#3b82f6' },
+              { label: '2x (SSO/QLD)', data: v2x, backgroundColor: '#10b981' },
+              { label: '3x (UPRO/TQQQ)', data: v3x, backgroundColor: '#f59e0b' }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } } } },
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.08)' } },
+              y: { ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            }
+          }
+        });
+      } else {
+        etfCompareChart.data.labels = labels;
+        etfCompareChart.data.datasets[0].data = v1x;
+        etfCompareChart.data.datasets[1].data = v2x;
+        etfCompareChart.data.datasets[2].data = v3x;
+        etfCompareChart.update();
+      }
+    }
+
+    ['etf-budget', 'etf-drop', 'etf-days'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateEtfCalc);
+    });
+
+    // ==================== STOCKS TAB 3: SHARES POSITION CALCULATOR ====================
+    let stkDir = 'long';
+
+    function updateStkCalc() {
+      const dep = parseFloat(document.getElementById('stk-dep').value) || 0;
+      const riskPct = parseFloat(document.getElementById('stk-risk').value) || 0;
+      const entry = parseFloat(document.getElementById('stk-entry').value) || 0;
+      const sl = parseFloat(document.getElementById('stk-sl').value) || 0;
+      const tp = parseFloat(document.getElementById('stk-tp').value) || 0;
+      const alertEl = document.getElementById('stk-alert');
+
+      const slValid = stkDir === 'long' ? sl < entry : sl > entry;
+      const tpValid = stkDir === 'long' ? tp > entry : tp < entry;
+
+      if (dep <= 0 || riskPct <= 0 || entry <= 0 || !slValid || !tpValid) {
+        alertEl.className = 'p-3 rounded-xl text-xs font-medium bg-amber-950/60 border border-amber-800 text-amber-300';
+        alertEl.textContent = stkDir === 'long'
+          ? 'Для Лонгу Stop-Loss має бути нижче ціни входу, а Take-Profit — вище.'
+          : 'Для Шорту Stop-Loss має бути вище ціни входу, а Take-Profit — нижче.';
+        return;
+      }
+
+      const riskUsd = (dep * riskPct) / 100;
+      const riskPerShare = Math.abs(entry - sl);
+      const rewardPerShare = Math.abs(tp - entry);
+      const shares = riskPerShare > 0 ? Math.floor(riskUsd / riskPerShare) : 0;
+      const posVal = shares * entry;
+      const realRisk = shares * riskPerShare;
+      const realReward = shares * rewardPerShare;
+      const rr = realRisk > 0 ? realReward / realRisk : 0;
+      const beWr = rr > 0 ? (1 / (1 + rr)) * 100 : 100;
+
+      if (posVal > dep * 2) {
+        alertEl.className = 'p-3 rounded-xl text-xs font-medium bg-rose-950/60 border border-rose-800 text-rose-300';
+        alertEl.textContent = `Увага: обсяг позиції ($${posVal.toLocaleString('uk-UA')}) перевищує стандартну 2x маржу ($${(dep * 2).toLocaleString('uk-UA')}). Зменш % ризику або розшир стоп.`;
+      } else {
+        alertEl.className = 'p-3 rounded-xl text-xs font-medium bg-emerald-950/60 border border-emerald-800 text-emerald-300';
+        alertEl.textContent = posVal > dep
+          ? `Використовується маржа ${(posVal / dep).toFixed(2)}x від депозиту — у межах безпечного 2x ліміту.`
+          : `Позиція без маржі (1x): задіяно ${((posVal / dep) * 100).toFixed(0)}% депозиту.`;
+      }
+
+      document.getElementById('stk-res-shares').textContent = shares + ' шт.';
+      document.getElementById('stk-res-val').textContent = '$' + posVal.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+      document.getElementById('stk-res-pnl').textContent = `-$${realRisk.toFixed(0)} / +$${realReward.toFixed(0)}`;
+      document.getElementById('stk-res-rr').textContent = `1 : ${rr.toFixed(2)} (${beWr.toFixed(1)}%)`;
+    }
+
+    function applyStkPreset(price) {
+      const p = parseFloat(price);
+      document.getElementById('stk-entry').value = p;
+      document.getElementById('stk-sl').value = (p * (stkDir === 'long' ? 0.98 : 1.02)).toFixed(2);
+      document.getElementById('stk-tp').value = (p * (stkDir === 'long' ? 1.05 : 0.95)).toFixed(2);
+      updateStkCalc();
+    }
+
+    document.querySelectorAll('#stk-presets button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#stk-presets button').forEach(b => {
+          b.className = 'px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700';
+        });
+        btn.className = 'px-2.5 py-1 rounded-md text-xs font-mono-num bg-emerald-600 text-white';
+        applyStkPreset(btn.dataset.sp);
+      });
+    });
+
+    document.getElementById('stk-dir-long').addEventListener('click', () => {
+      stkDir = 'long';
+      document.getElementById('stk-dir-long').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white transition';
+      document.getElementById('stk-dir-short').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition';
+      applyStkPreset(document.getElementById('stk-entry').value || 590);
+    });
+
+    document.getElementById('stk-dir-short').addEventListener('click', () => {
+      stkDir = 'short';
+      document.getElementById('stk-dir-short').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-rose-600 text-white transition';
+      document.getElementById('stk-dir-long').className = 'flex-1 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition';
+      applyStkPreset(document.getElementById('stk-entry').value || 590);
+    });
+
+    ['stk-dep', 'stk-risk', 'stk-entry', 'stk-sl', 'stk-tp'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateStkCalc);
+    });
+
+    // ==================== REAL-TIME LIVE PRICES (COINGECKO + BINANCE FALLBACK + FINNHUB) ====================
+    const liveCrypto = {
+      BTC:  { id: 'bitcoin',          symbol: 'BTCUSDT',  price: 60733,  chg: 3.3 },
+      ETH:  { id: 'ethereum',         symbol: 'ETHUSDT',  price: 1714,   chg: 5.8 },
+      SOL:  { id: 'solana',           symbol: 'SOLUSDT',  price: 70.21,  chg: -0.6 },
+      WBT:  { id: 'whitebit',         symbol: '',         price: 57.33,  chg: 2.3 },
+      BNB:  { id: 'binancecoin',      symbol: 'BNBUSDT',  price: 556.83, chg: 3.9 },
+      XRP:  { id: 'ripple',           symbol: 'XRPUSDT',  price: 0.923,  chg: 1.4 },
+      GRAM: { id: 'the-open-network', symbol: '',         price: 0.985,  chg: 2.6 }
+    };
+
+    function formatLivePrice(p) {
+      if (p >= 1000) return '$' + Math.round(p).toLocaleString('uk-UA');
+      if (p >= 10) return '$' + p.toFixed(2);
+      return '$' + p.toFixed(3);
+    }
+
+    function renderLiveTicker() {
+      const strip = document.getElementById('live-ticker-strip');
+      if (!strip) return;
+      strip.innerHTML = Object.keys(liveCrypto).map(sym => {
+        const item = liveCrypto[sym];
+        const isUp = item.chg >= 0;
+        const chgStr = `${isUp ? '+' : ''}${item.chg.toFixed(1)}%`;
+        return `
+          <button type="button" data-ticksym="${sym}" class="live-tick-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-blue-500 transition whitespace-nowrap">
+            <span class="font-bold text-white">${sym}</span>
+            <span class="text-slate-200">${formatLivePrice(item.price)}</span>
+            <span class="${isUp ? 'text-emerald-400' : 'text-rose-400'} text-[11px]">${chgStr}</span>
+          </button>
+        `;
+      }).join('');
+
+      strip.querySelectorAll('.live-tick-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sym = btn.dataset.ticksym;
+          const item = liveCrypto[sym];
+          if (!item) return;
+          switchMarket('crypto');
+          switchTab('risk');
+          applyCalcAsset(item.price);
+          document.querySelectorAll('#calc-asset-pills button').forEach(b => {
+            if (b.dataset.casset === sym) {
+              b.className = 'px-2.5 py-1 rounded-md text-xs font-mono-num bg-blue-600 text-white';
+            } else {
+              b.className = 'px-2.5 py-1 rounded-md text-xs font-mono-num bg-slate-800 text-slate-300 hover:bg-slate-700';
+            }
+          });
+        });
+      });
+
+      // Sync Scenario Tracker if live-linked
+      if (typeof syncScenarioLivePrice === 'function') syncScenarioLivePrice();
+
+      // Sync Calculator quick-select pills with live prices
+      document.querySelectorAll('#calc-asset-pills button').forEach(b => {
+        const sym = b.dataset.casset;
+        if (sym && liveCrypto[sym]) {
+          b.dataset.cprice = liveCrypto[sym].price;
+          b.textContent = `${sym} ${formatLivePrice(liveCrypto[sym].price)}`;
+        }
+      });
+    }
+
+    async function fetchLiveCryptoPrices() {
+      const statusEl = document.getElementById('live-status-text');
+      const nowStr = () => new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      // 1. Try CoinGecko public CORS API (supports all 7 coins including WBT & GRAM)
+      try {
+        const ids = Object.values(liveCrypto).map(x => x.id).join(',');
+        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`;
+        const resp = await fetch(url);
+        if (resp.ok) {
+          const data = await resp.json();
+          let updated = 0;
+          Object.keys(liveCrypto).forEach(sym => {
+            const id = liveCrypto[sym].id;
+            if (data[id] && typeof data[id].usd === 'number') {
+              liveCrypto[sym].price = data[id].usd;
+              if (typeof data[id].usd_24h_change === 'number') {
+                liveCrypto[sym].chg = data[id].usd_24h_change;
+              }
+              updated++;
+            }
+          });
+          if (updated > 0) {
+            renderLiveTicker();
+            statusEl.textContent = `● Live CoinGecko (${nowStr()})`;
+            statusEl.className = 'text-[11px] font-mono-num text-emerald-400 whitespace-nowrap';
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // 2. Fallback: Binance public CORS API for major pairs
+      try {
+        const syms = encodeURIComponent(JSON.stringify(['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT']));
+        const resp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${syms}`);
+        if (resp.ok) {
+          const arr = await resp.json();
+          if (Array.isArray(arr)) {
+            arr.forEach(row => {
+              const key = Object.keys(liveCrypto).find(k => liveCrypto[k].symbol === row.symbol);
+              if (key && row.lastPrice) {
+                liveCrypto[key].price = parseFloat(row.lastPrice);
+                liveCrypto[key].chg = parseFloat(row.priceChangePercent) || 0;
+              }
+            });
+            renderLiveTicker();
+            statusEl.textContent = `● Live Binance (${nowStr()})`;
+            statusEl.className = 'text-[11px] font-mono-num text-emerald-400 whitespace-nowrap';
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // 3. Offline / rate-limit fallback
+      renderLiveTicker();
+      statusEl.textContent = '● Офлайн / базові ціни (22.11)';
+      statusEl.className = 'text-[11px] font-mono-num text-amber-400 whitespace-nowrap';
+    }
+
+    document.getElementById('btn-refresh-prices').addEventListener('click', () => {
+      const st = document.getElementById('live-status-text');
+      st.textContent = 'Оновлення...';
+      fetchLiveCryptoPrices();
+    });
+
+    // Optional Finnhub live US stocks fetch
+    const FINNHUB_STORAGE_KEY = 'hybrid_finnhub_key_v1';
+    try {
+      const savedKey = localStorage.getItem(FINNHUB_STORAGE_KEY);
+      if (savedKey) document.getElementById('finnhub-key-input').value = savedKey;
+    } catch (e) {}
+
+    document.getElementById('btn-fetch-stocks').addEventListener('click', async () => {
+      const key = (document.getElementById('finnhub-key-input').value || '').trim();
+      const st = document.getElementById('finnhub-status');
+      st.classList.remove('hidden');
+      if (!key) {
+        st.className = 'mb-3 text-xs font-mono-num text-amber-400';
+        st.textContent = 'Введи безкоштовний API-ключ із finnhub.io, щоб завантажити live-ціни акцій США.';
+        return;
+      }
+      try { localStorage.setItem(FINNHUB_STORAGE_KEY, key); } catch (e) {}
+      st.className = 'mb-3 text-xs font-mono-num text-blue-400';
+      st.textContent = 'Завантажую котирування SPY, QQQ, SSO, QLD, UPRO, TQQQ, NVDA...';
+
+      const tickers = ['SPY', 'QQQ', 'SSO', 'QLD', 'UPRO', 'TQQQ', 'NVDA'];
+      const buttons = document.querySelectorAll('#stk-presets button');
+      let okCount = 0;
+
+      for (let i = 0; i < tickers.length; i++) {
+        try {
+          const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${tickers[i]}&token=${encodeURIComponent(key)}`);
+          if (r.ok) {
+            const d = await r.json();
+            if (d && typeof d.c === 'number' && d.c > 0 && buttons[i]) {
+              buttons[i].dataset.sp = d.c.toFixed(2);
+              const suffix = tickers[i] === 'SSO' || tickers[i] === 'QLD' ? ' (2x)' : (tickers[i] === 'UPRO' || tickers[i] === 'TQQQ' ? ' (3x)' : '');
+              buttons[i].textContent = `${tickers[i]}${suffix} $${d.c.toFixed(2)}`;
+              okCount++;
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (okCount > 0) {
+        st.className = 'mb-3 text-xs font-mono-num text-emerald-400';
+        st.textContent = `● Оновлено ${okCount} тікерів США через Finnhub (${new Date().toLocaleTimeString('uk-UA')}).`;
+      } else {
+        st.className = 'mb-3 text-xs font-mono-num text-rose-400';
+        st.textContent = 'Не вдалося отримати дані — перевір правильність ключа Finnhub або з\'єднання.';
+      }
+    });
+
+    // ==================== SCENARIO TRACKER & TRADE TRAINING (ALL ASSETS x ALL STRATEGIES) ====================
+    const SCENARIOS_STORAGE_KEY = 'hybrid_scenarios_v1';
+
+    // 7 Crypto + 7 US Stocks catalog with volatility & strategy suitability profiles
+    const scAssetCatalog = {
+      // CRYPTO
+      BTC:  { market: 'crypto', sym: 'BTC',  name: 'Bitcoin',       basePrice: 60733, vol: 0.045, volLabel: 'Помірна волатильність (4–5%)', futLiq: 'high',
+              fitMap: {
+                'core-hedge':  { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Найглибша ліквідність на споті й ф’ючерсах — ідеальне ядро для хеджування просідання нижче $60K.' },
+                'swing-40':    { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Чіткі рівні $58K–$64K дають стабільні свінги 1:2.5 без хаотичних сквізів.' },
+                'barbell':     { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: '50% спот BTC + 30% USDT дають високий захист, а 20% ловлять вихід із діапазону.' },
+                'funding':     { badge: 'Пауза',      cls: 'bg-rose-500/20 text-rose-300',       why: 'На корекції фандинг близький до 0% або негативний — арбітраж зараз майже не платить.' },
+                'dca-booster': { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Безпечний набір споту на $58K–$60K, а 2x бустер вмикається лише після закріплення >20-EMA.' }
+              }},
+      ETH:  { market: 'crypto', sym: 'ETH',  name: 'Ethereum',      basePrice: 1714,  vol: 0.058, volLabel: 'Висока волатильність (6–8%)', futLiq: 'high',
+              fitMap: {
+                'core-hedge':  { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'ETH впав сильніше за BTC (-12.4% за тиждень): захисний хедж-шорт 2x найкраще згладжує ризик ретесту дна.' },
+                'swing-40':    { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Амплітуда 6–8% ідеальна для асиметричних свінгів 1:2.5 від рівнів $1 600–$1 820.' },
+                'barbell':     { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Снайперський пробій 1:4 добре працює на шорт-сквізах ETH після зняття ліквідності.' },
+                'funding':     { badge: 'Пауза',      cls: 'bg-rose-500/20 text-rose-300',       why: 'У ведмежій фазі ставка фінансування часто негативна — шорт-нога може платити замість заробітку.' },
+                'dca-booster': { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Спот-DCA на $1 580/$1 460 знижує середню ціну, але бустер 2x чекає повернення вище $1 820.' }
+              }},
+      SOL:  { market: 'crypto', sym: 'SOL',  name: 'Solana',        basePrice: 70.21, vol: 0.075, volLabel: 'Висока бета (7–10%)', futLiq: 'high',
+              fitMap: {
+                'core-hedge':  { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'SOL падає в 1.5× швидше за BTC — хедж-шорт ефективно захищає спот, але потребує ширшого стопу.' },
+                'swing-40':    { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Висока бета дає швидке досягнення TP1/TP2 (1:2.5) за 1–3 дні при строгому контролі 1% ризику.' },
+                'barbell':     { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Ідеальний кандидат для 20%-ї снайперської частини (пробої 1:4), поки 80% лежить у BTC/USDT.' },
+                'funding':     { badge: 'Пауза',      cls: 'bg-rose-500/20 text-rose-300',       why: 'Різкі свічки SOL можуть вимагати доливу маржі на шорт-нозі, а фандинг зараз слабкий.' },
+                'dca-booster': { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Добре накопичувати частинами на проливах, але бустер 2x вмикати тільки коли BTC > $62K.' }
+              }},
+      WBT:  { market: 'crypto', sym: 'WBT',  name: 'WhiteBIT Coin', basePrice: 57.33, vol: 0.052, volLabel: 'Помірна / трендова (5%)', futLiq: 'low',
+              fitMap: {
+                'core-hedge':  { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Ліквідність ф’ючерсів WBT нижча, а дефляційне спалення (33 821 WBT) підтримує ціну — шортити ризиковано.' },
+                'swing-40':    { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Краще торгувати свінги від підтримки на споті без плеча, уникаючи тонкого стакану ф’ючерсів.' },
+                'barbell':     { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Підходить як частина захисного спот-ядра завдяки слабшій кореляції з панікою ринку.' },
+                'funding':     { badge: 'Не підходить', cls: 'bg-rose-500/20 text-rose-300',     why: 'Біржовий токен із нижчою деривативною ліквідністю не підходить для дельта-нейтрального арбітражу.' },
+                'dca-booster': { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Найкраща модель для WBT: спот-DCA після спалень + вихід частинами на імпульсах без ризику ліквідації.' }
+              }},
+      BNB:  { market: 'crypto', sym: 'BNB',  name: 'BNB',           basePrice: 556.83, vol: 0.048, volLabel: 'Стабільна (4–5%)', futLiq: 'high',
+              fitMap: {
+                'core-hedge':  { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'BNB тримається краще за ринок (-7.5% за тиждень): спот + легкий хедж 1.5x дає дуже рівну криву.' },
+                'swing-40':    { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Плавні рухи дозволяють ставити акуратний стоп -4.5% і спокійно забирати 1:2.5.' },
+                'barbell':     { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Спокійне ядро для 80%-ї бази, хоча для 1:4 пробоїв SOL/ETH рухаються швидше.' },
+                'funding':     { badge: 'Пауза',      cls: 'bg-rose-500/20 text-rose-300',       why: 'Висока ліквідність дозволяє арбітраж на бичачому ринку, але зараз фандинг низький.' },
+                'dca-booster': { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Ідеальний баланс для поетапного спот-набору й трендового підсилення після розвороту.' }
+              }},
+      XRP:  { market: 'crypto', sym: 'XRP',  name: 'XRP',           basePrice: 0.923, vol: 0.072, volLabel: 'Різкі імпульси (7–9%)', futLiq: 'high',
+              fitMap: {
+                'core-hedge':  { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'XRP часто дає різкі новинні свічки вгору, які легко вибивають тісні хедж-шорти.' },
+                'swing-40':    { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Працює на відбоях від круглих рівнів ($0.85 / $1.00) при строгому ліміті ризику 1%.' },
+                'barbell':     { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'XRP довго стоїть у боковику, а потім стріляє на +20–30% — класичний актив для снайперської 20%-ї ноги 1:4.' },
+                'funding':     { badge: 'Пауза',      cls: 'bg-rose-500/20 text-rose-300',       why: 'Різкі сплески волатильності створюють ризик перекосу маржі без достатнього фандингу.' },
+                'dca-booster': { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Не варто тримати велику частку ядра в XRP — краще обмежити алокацію 5–8% портфеля.' }
+              }},
+      GRAM: { market: 'crypto', sym: 'GRAM', name: 'GRAM (ex-TON)', basePrice: 0.985, vol: 0.085, volLabel: 'Високий ризик (8–12%)', futLiq: 'med',
+              fitMap: {
+                'core-hedge':  { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Спекулятивний актив після ребрендингу — не підходить як основне ядро портфеля (макс 3–5%).' },
+                'swing-40':    { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Дає сильні відскоки від круглої зони $0.90–$1.00, але плече тримай ≤ 1.5x.' },
+                'barbell':     { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Модель Штанги ідеальна: обмежуєш ставку малою часткою (до 5–10%) заради асиметрії 1:4.' },
+                'funding':     { badge: 'Не підходить', cls: 'bg-rose-500/20 text-rose-300',     why: 'Нестабільна ставка фінансування та високі спреди на деривативах з’їдають прибуток.' },
+                'dca-booster': { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Усереднювати високоризиковий альткоїн на падінні небезпечно — краще працювати лише зі стопом.' }
+              }},
+
+      // US STOCKS & ETFs
+      SPY:  { market: 'stocks', sym: 'SPY',  name: 'S&P 500 (1x ETF)', basePrice: 590.0, vol: 0.025, volLabel: 'Низька (індекс 1x)', futLiq: 'high',
+              fitMap: {
+                'etf-rebound': { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Без волатильного розпаду (decay) — безпечний базовий актив для поетапного викупу корекцій.' },
+                'earn-go':     { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Індекс не має власної звітності; Gap-and-Go краще працює на макроданих (CPI/ФРС) або окремих акціях.' },
+                'earn-fade':   { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Гепи по SPY зазвичай менші (±1–2%), тому потенціал Fade обмежений.' },
+                'def-rebal':   { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Найкращий «тихий причал», куди переливати капітал із 2x/3x ETF при зростанні VIX > 28.' }
+              }},
+      QQQ:  { market: 'stocks', sym: 'QQQ',  name: 'Nasdaq-100 (1x)',  basePrice: 505.0, vol: 0.032, volLabel: 'Помірна (техсектор 1x)', futLiq: 'high',
+              fitMap: {
+                'etf-rebound': { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Сильніша амплітуда відскоку, ніж у SPY, але без щоденного decay плечових фондів.' },
+                'earn-go':     { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Добре відпрацьовує 15m ORB у дні звітів техногігантів (NVDA, MSFT, AAPL).' },
+                'earn-fade':   { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Надмірні перегріті відкриття техсектору часто повертаються до VWAP.' },
+                'def-rebal':   { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Надійна заміна TQQQ/QLD при переході ринку у затяжний боковик.' }
+              }},
+      SSO:  { market: 'stocks', sym: 'SSO',  name: '2x S&P 500 ETF',   basePrice: 82.0,  vol: 0.050, volLabel: 'Підвищена (2x плече)', futLiq: 'high',
+              fitMap: {
+                'etf-rebound': { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Золота середина для відскоку після -10% по S&P 500: дає ~+21% на поверненні до піку з помірним decay.' },
+                'earn-go':     { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Підсилює трендові дні після позитивних макроданих (15m ORB).' },
+                'earn-fade':   { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Шортити 2x ETF внутрішньоденно краще лише при пробої VWAP на високому VIX.' },
+                'def-rebal':   { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Обов’язкова страховка: виходити в 1x SPY або кеш, якщо корекція перевищує -13%.' }
+              }},
+      QLD:  { market: 'stocks', sym: 'QLD',  name: '2x Nasdaq-100',    basePrice: 98.0,  vol: 0.062, volLabel: 'Висока (2x техсектор)', futLiq: 'high',
+              fitMap: {
+                'etf-rebound': { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Найкраще співвідношення дохідності й ризику для викупу корекцій Nasdaq-100 (-10%…-15%).' },
+                'earn-go':     { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Ідеальний інструмент для сильних трендових відкриттів техсектору.' },
+                'earn-fade':   { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Швидка реалізація пробою VWAP вниз на слабких звітах Big Tech.' },
+                'def-rebal':   { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Чіткий стоп і перехід у QQQ рятує від розпаду при пилі.' }
+              }},
+      UPRO: { market: 'stocks', sym: 'UPRO', name: '3x S&P 500 ETF',   basePrice: 86.0,  vol: 0.075, volLabel: 'Дуже висока (3x плече)', futLiq: 'high',
+              fitMap: {
+                'etf-rebound': { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Потужний відскок (+30%+), але при ще -10% індексу втрачає ~29% — заходити лише траншами зі стопом.' },
+                'earn-go':     { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Підходить для коротких 1–3 денних імпульсів, не для довгого утримання у флеті.' },
+                'earn-fade':   { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Висока волатильність вимагає вдвічі меншого розміру позиції.' },
+                'def-rebal':   { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Для 3x ETF захисний стоп і швидка фіксація TP1 — критична умова виживання капіталу.' }
+              }},
+      TQQQ: { market: 'stocks', sym: 'TQQQ', name: '3x Nasdaq-100',    basePrice: 74.0,  vol: 0.090, volLabel: 'Екстремальна (3x тех)', futLiq: 'high',
+              fitMap: {
+                'etf-rebound': { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Максимальний прибуток на V-відскоку, але дуже жорсткий decay у боковику — тримати лише короткостроково.' },
+                'earn-go':     { badge: 'Оптимально', cls: 'bg-emerald-500/20 text-emerald-300', why: 'Топовий інструмент для швидкого внутрішньоденного 15m ORB на сильних звітах техсектору.' },
+                'earn-fade':   { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Висока амплітуда дозволяє забирати 1:3 за одну сесію при втраті VWAP.' },
+                'def-rebal':   { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Обов’язковий стоп-лосс і перенесення прибутку в QQQ/кеш після першого імпульсу.' }
+              }},
+      NVDA: { market: 'stocks', sym: 'NVDA', name: 'NVIDIA (Звітність)', basePrice: 142.0, vol: 0.068, volLabel: 'Висока (акція росту)', futLiq: 'high',
+              fitMap: {
+                'etf-rebound': { badge: 'Обережно',   cls: 'bg-amber-500/20 text-amber-300',     why: 'Це окрема акція, а не індекс — ризик специфічних новин вищий, ніж у ETF.' },
+                'earn-go':     { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Класичний лідер постзвітних трендів: пробій 15m ORB High вище VWAP після підвищеного Guidance.' },
+                'earn-fade':   { badge: 'Топ вибір',  cls: 'bg-emerald-500/25 text-emerald-200', why: 'Якщо акція зросла +20% ДО звіту й пробила VWAP вниз після гепу — сильний сетап «Sell the News».' },
+                'def-rebal':   { badge: 'Добре',      cls: 'bg-cyan-500/20 text-cyan-300',       why: 'Захист від перенесення збиткової звітної угоди через ніч.' }
+              }}
+    };
+
+    // 5 Hybrid Crypto Strategies + 4 US Stock Strategies templates
+    const scStrategyDefs = {
+      crypto: [
+        {
+          id: 'core-hedge',
+          name: '1. Ядро + Захисний хедж',
+          allocLabel: '60% Спот / 15% Кеш / 25% Шорт 2x',
+          dir: 'short',
+          rrLabel: 'Хедж + 1:2.0',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 + v * 0.65),
+            inval: p * (1 + v * 1.15),
+            flip: p * (1 + v * 1.35),
+            tp1: p * (1 - v * 1.45),
+            tp2: p * (1 - v * 2.55)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const spotPnl = budget * 0.60 * pct;
+            const slPct = (lv.inval - baseP) / baseP;
+            const futNotional = budget * 0.25 * 2;
+            const futPnl = pct >= slPct ? (-futNotional * slPct) : (futNotional * (-pct));
+            return { usd: spotPnl + futPnl, note: pct >= slPct ? 'Хедж-шорт закрито по SL, спот у плюсі' : (pct < 0 ? 'Хедж-шорт перекриває падіння споту' : 'Спот росте, хедж у легкому мінусі') };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Гібрид для ${sym}: 60% базовий спот + 15% USDT-резерв + 25% захисний шорт 2x від ${fmt(lv.entry)}, щоб згладити падіння і докупити спот дешевше.`,
+            timing: `Вхід у хедж-шорт: на відбої від ${fmt(lv.entry)} після закриття 1H свічки (особливо 16:30 за Києвом на відкритті США). Спот-докупка — на TP1 (${fmt(lv.tp1)}) і TP2 (${fmt(lv.tp2)}).`,
+            ontrack: [
+              `<strong>Вхід (Шорт-хедж 2x):</strong> <code>Sell Limit</code> біля ${fmt(lv.entry)} (Ізольована маржа, плече 1x–2x).`,
+              `<strong>TP1 (${fmt(lv.tp1)}):</strong> закрий 50% шорту через <code>Buy Limit (Reduce-Only)</code> і на цей прибуток + кеш вистав <code>Buy Limit</code> на спот ${sym}.`,
+              `<strong>Супровід до TP2 (${fmt(lv.tp2)}):</strong> перенеси <code>Stop-Market (Reduce-Only)</code> у беззбиток (${fmt(lv.entry)}) + <code>Trailing Stop</code> 2.5%.`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> ${sym} закріплюється вище Warning (${fmt(lv.warn)}) і пробиває ${fmt(lv.inval)} — ринок переходить у ріст, шорт більше не потрібен.`,
+              `<strong>Дія захисту:</strong> не усереднюй шорт! Його збиток на ${fmt(lv.inval)} обмежений, а твоє 60%-е спот-ядро в цей момент уже заробляє прибуток.`,
+              `<strong>Відкладений ордер:</strong> <code>Stop-Market (Buy)</code> на ${fmt(lv.inval)}, тригер <code>Mark Price</code>, <code>Reduce-Only = ON</code>.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> пробій ${fmt(lv.flip)} на обсязі >1.5× означає шорт-сквіз і зміну тренду вгору — знімай хедж і вмикай трендовий Long (ризик 0.5R).`,
+              `<strong>Точка розвороту:</strong> після закриття 1H свічки вище ${fmt(lv.flip)} або на ретесті ${fmt(lv.inval)} зверху.`,
+              `<strong>Відкладений ордер:</strong> <code>Buy Stop-Limit</code> (Stop: ${fmt(lv.flip)}, Limit: +0.25%) + новий SL <code>Stop-Market</code> під ${fmt(lv.warn)}.`
+            ]
+          })
+        },
+        {
+          id: 'swing-40',
+          name: '2. Спот + Свінг 40% WR',
+          allocLabel: '55% Спот / 15% Кеш / 30% Свінг 2x',
+          dir: 'long',
+          rrLabel: '1 : 2.5',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 - v * 0.60),
+            inval: p * (1 - v * 1.00),
+            flip: p * (1 - v * 1.18),
+            tp1: p * (1 + v * 1.40),
+            tp2: p * (1 + v * 2.50)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const spotPnl = budget * 0.55 * pct;
+            const slPct = (baseP - lv.inval) / baseP;
+            const futNotional = budget * 0.30 * 2;
+            const futPnl = pct <= -slPct ? (-futNotional * slPct) : (futNotional * pct);
+            return { usd: spotPnl + futPnl, note: pct <= -slPct ? 'Ф’ючерсний свінг вибило по SL (-1R), спот лишається' : (pct > 0 ? 'І спот, і свінг-лонг у плюсі' : 'Свінг у просіданні до рівня SL') };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Гібрид для ${sym}: 55% спот + 15% кеш + 30% активний свінг-лонг 2x від підтримки ${fmt(lv.entry)} із ціллю R:R 1:2.5.`,
+            timing: `Вхід: на відбої від підтримки ${fmt(lv.entry)} (підтвердження на 15m/1H свічці). Денний ліміт: 2 стопи поспіль = пауза 24 год.`,
+            ontrack: [
+              `<strong>Вхід:</strong> <code>Buy Limit</code> на ${fmt(lv.entry)} (ризик на ф’ючерсну ногу строго 1% від усього банку).`,
+              `<strong>TP1 (${fmt(lv.tp1)}):</strong> <code>Sell Limit (Reduce-Only)</code> на 50% свінгу + перенос стопу в беззбиток (${fmt(lv.entry)}).`,
+              `<strong>TP2 (${fmt(lv.tp2)}):</strong> фіксація залишку або <code>Trailing Stop</code> 2% — прибуток >+10% переливай у спот.`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> пробій ${fmt(lv.warn)} (Warning) і закриття 1H нижче ${fmt(lv.inval)} скасовує відскок.`,
+              `<strong>Дія захисту:</strong> ф’ючерсна нога закривається автоматично; спот не чіпаємо або страхуємо кешем нижче.`,
+              `<strong>Відкладений ордер:</strong> <code>Stop-Market (Sell)</code> на ${fmt(lv.inval)}, тригер <code>Mark Price</code>, <code>Reduce-Only = ON</code>.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> якщо ${sym} ламає ${fmt(lv.flip)} на високому обсязі — підтримка стає опором, відкривається імпульсний шорт.`,
+              `<strong>Точка розвороту:</strong> шорт на пробої ${fmt(lv.flip)} або на слабкому ретесті ${fmt(lv.inval)} знизу (ризик 0.5R).`,
+              `<strong>Відкладений ордер:</strong> <code>Sell Stop-Limit</code> (Stop: ${fmt(lv.flip)}, Limit: -0.25%) + SL <code>Stop-Market</code> над ${fmt(lv.warn)}.`
+            ]
+          })
+        },
+        {
+          id: 'barbell',
+          name: '3. Штанга (Барбел 1:4)',
+          allocLabel: '50% Спот / 30% Кеш / 20% Снайпер 3x',
+          dir: 'long',
+          rrLabel: '1 : 4.0',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 - v * 0.50),
+            inval: p * (1 - v * 0.85),
+            flip: p * (1 - v * 1.05),
+            tp1: p * (1 + v * 1.70),
+            tp2: p * (1 + v * 3.40)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const spotPnl = budget * 0.50 * pct;
+            const slPct = (baseP - lv.inval) / baseP;
+            const futNotional = budget * 0.20 * 3;
+            const futPnl = pct <= -slPct ? (-futNotional * slPct) : (futNotional * pct);
+            return { usd: spotPnl + futPnl, note: pct <= -slPct ? 'Снайпер закрито по короткому SL, 30% кешу цілі' : (pct > 0 ? 'Снайпер 3x прискорює прибуток до 1:4' : 'Захист за рахунок 30% USDT') };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Модель Талеба для ${sym}: 80% у захисті (50% спот + 30% USDT) і 20% снайперський пробійний лонг 3x із коротким стопом і ціллю 1:4.`,
+            timing: `Вхід: тільки на виході з вузької консолідації з обсягом >1.5×. Максимум 1 снайперська угода одночасно.`,
+            ontrack: [
+              `<strong>Вхід (Снайпер 20%):</strong> <code>Buy Stop-Limit</code> або <code>Buy Limit</code> на ретесті ${fmt(lv.entry)}.`,
+              `<strong>TP1 (${fmt(lv.tp1)} / +2R):</strong> закрий 40% через <code>Sell Limit (Reduce-Only)</code> і переведи стоп у беззбиток.`,
+              `<strong>TP2 (${fmt(lv.tp2)} / +4R):</strong> веди залишок 60% через <code>Trailing Stop</code> 2.5% для захоплення великого тренду.`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> швидке повернення під ${fmt(lv.inval)} означає хибний пробій («пила»).`,
+              `<strong>Дія захисту:</strong> короткий стоп забирає мінімум капіталу, а 30% USDT залишаються недоторканими.`,
+              `<strong>Відкладений ордер:</strong> <code>Stop-Market (Sell)</code> на ${fmt(lv.inval)}, <code>Mark Price</code>, <code>Reduce-Only</code>.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> хибний вихід вгору + різкий злам ${fmt(lv.flip)} часто запускає сильний зворотний рух на стопах покупців.`,
+              `<strong>Точка розвороту:</strong> контр-шорт нижче ${fmt(lv.flip)} (ризик 0.5R) або відкуп споту за 30% кешу значно нижче.`,
+              `<strong>Відкладений ордер:</strong> <code>Sell Stop-Limit</code> на ${fmt(lv.flip)} або спотовий <code>Buy Limit</code> на -12% від входу.`
+            ]
+          })
+        },
+        {
+          id: 'funding',
+          name: '4. Дельта-нейтральний фандинг',
+          allocLabel: '50% Спот / 50% Шорт 1x',
+          dir: 'short',
+          rrLabel: 'Арбітраж 0Δ',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 + v * 1.40),
+            inval: p * (1 + v * 2.50),
+            flip: p * (1 + v * 2.90),
+            tp1: p * (1 - v * 1.00),
+            tp2: p * (1 - v * 2.00)
+          }),
+          calcPnl: (budget, baseP, simP) => {
+            const pct = (simP - baseP) / baseP;
+            const spotPnl = budget * 0.50 * pct;
+            const shortPnl = budget * 0.50 * (-pct);
+            const feeDrag = -budget * 0.0015;
+            return { usd: spotPnl + shortPnl + feeDrag, note: 'Ціновий рух нейтралізовано (0Δ), результат залежить від funding rate' };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Нейтральна конструкція для ${sym}: 50% спот + 50% шорт 1x. Рух ціни повністю перекривається, дохід дає позитивний funding кожні 8 год.`,
+            timing: `Вхід: ТІЛЬКИ коли funding rate > +0.015%/8год (бичачий перегрів). Зараз на корекції краще тримати на паузі!`,
+            ontrack: [
+              `<strong>Вхід:</strong> одночасна купівля споту і відкриття шорту 1x на рівну суму біля ${fmt(lv.entry)}.`,
+              `<strong>Утримання:</strong> ціна може ходити від ${fmt(lv.tp2)} до ${fmt(lv.warn)} — сумарний баланс у $ лишається стабільним.`,
+              `<strong>Вихід:</strong> закривай ОБИДВІ ноги одночасно, коли фандинг падає до 0% на 3+ інтервали поспіль.`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> різкий памп >${fmt(lv.inval)} створює ризик перекосу маржі на ф’ючерсній нозі або фандинг стає від’ємним.`,
+              `<strong>Дія захисту:</strong> закрий обидві ноги синхронно або додай маржу, щоб ліквідація шорту була >+90%.`,
+              `<strong>Відкладений ордер:</strong> тримай алерт на ${fmt(lv.warn)} і захисний <code>Stop-Market (Buy)</code> на ${fmt(lv.inval)} + спотовий <code>Sell Stop-Limit</code> там же.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> якщо ціна впала до ${fmt(lv.tp2)} і фандинг став сильно негативним — закрий прибутковий шорт 1x і залиш чистий спот на відскок!`,
+              `<strong>Точка розвороту:</strong> на сильній підтримці ${fmt(lv.tp2)} при появі бичачої дивергенції.`,
+              `<strong>Відкладений ордер:</strong> <code>Buy Limit (Reduce-Only)</code> на ${fmt(lv.tp2)} для зняття шорт-ноги, перетворюючи позицію на чистий Long.`
+            ]
+          })
+        },
+        {
+          id: 'dca-booster',
+          name: '5. Спот-DCA + Трендовий бустер',
+          allocLabel: '60% Спот / 20% Кеш / 20% Бустер 2x',
+          dir: 'long',
+          rrLabel: '1 : 2.5',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 - v * 0.80),
+            inval: p * (1 - v * 1.45),
+            flip: p * (1 - v * 1.80),
+            tp1: p * (1 + v * 1.25),
+            tp2: p * (1 + v * 2.60)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const spotPnl = budget * 0.60 * pct;
+            const boostTrigger = (lv.tp1 - baseP) / baseP * 0.45;
+            const boostPnl = pct > boostTrigger ? (budget * 0.20 * 2 * (pct - boostTrigger)) : 0;
+            const dcaTrigger = -0.07;
+            const dcaPnl = pct < dcaTrigger ? (budget * 0.20 * (pct - dcaTrigger)) : 0;
+            return { usd: spotPnl + boostPnl + dcaPnl, note: pct > boostTrigger ? 'Тренд підтверджено — 2x бустер активний!' : 'Бустер 2x у кеші (без ризику стопу на падінні)' };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Адаптивний гібрид для ${sym}: 60% спот-DCA + 20% кеш на глибокий пролив + 20% ф’ючерсний бустер 2x, який вмикається ЛИШЕ після підтвердження росту.`,
+            timing: `Спот-вхід: частинами біля ${fmt(lv.entry)} і ${fmt(lv.warn)}. Бустер 2x: ТІЛЬКИ після пробою й закріплення вище ${fmt(lv.entry * 1.035)}.`,
+            ontrack: [
+              `<strong>Спот + Бустер:</strong> тримай спот 60%, а на пробій вгору постав <code>Buy Stop-Limit</code> для 2x бустера вище ${fmt(lv.entry * 1.035)}.`,
+              `<strong>TP1 (${fmt(lv.tp1)}):</strong> зафіксуй 50% бустера через <code>Sell Limit (Reduce-Only)</code> і підтягни стоп бустера в беззбиток.`,
+              `<strong>TP2 (${fmt(lv.tp2)}):</strong> супроводжуй залишок бустера через <code>Trailing Stop</code> 2.5%, спот тримай за трендом.`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> падіння під ${fmt(lv.inval)} означає продовження ведмежої фази — бустер 2x взагалі НЕ вмикаємо!`,
+              `<strong>Дія захисту:</strong> ти уникаєш серії ф’ючерсних стопів; спот можна захистити частковим <code>OCO</code> або перечекати з 20% кешу.`,
+              `<strong>Відкладений ордер:</strong> на споті вистав <code>OCO</code> (TP ${fmt(lv.tp2)} / SL ${fmt(lv.inval)}), а 20% бустера лишай у USDT.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> якщо ціна проливається до ${fmt(lv.flip)} — залучай резервні 20% USDT для дешевого DCA-викупу паніки.`,
+              `<strong>Точка перехоплення:</strong> коли 4H свічка залишає довгу нижню тінь біля ${fmt(lv.flip)} і повертається вище ${fmt(lv.inval)}.`,
+              `<strong>Відкладений ордер:</strong> спотовий <code>Buy Limit</code> у зоні ${fmt(lv.flip)} (на 20% кеш-резерву) для зниження середньої ціни входу.`
+            ]
+          })
+        }
+      ],
+      stocks: [
+        {
+          id: 'etf-rebound',
+          name: '1. Відскок на корекції -10% (DCA)',
+          allocLabel: '50% Транш 1 / 50% Кеш-резерв',
+          dir: 'long',
+          rrLabel: '1 : 2.0',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 - v * 0.70),
+            inval: p * (1 - v * 1.30),
+            flip: p * (1 - v * 1.65),
+            tp1: p * (1 + v * 1.35),
+            tp2: p * (1 + v * 2.40)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const slPct = (baseP - lv.inval) / baseP;
+            const pnl = pct <= -slPct ? (-budget * 0.50 * slPct) : (budget * 0.50 * pct);
+            return { usd: pnl, note: pct <= -slPct ? 'Спрацював захисний стоп, 50% кешу збережено' : (pct > 0 ? 'Транш 1 заробляє на відскоку' : 'Транш 1 у просіданні, 50% кешу в резерві') };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Викуп корекції по ${sym} двома рівними траншами з контролем VIX та захистом від volatility decay.`,
+            timing: `Вхід: після 10:00 EST (17:00 за Києвом), коли індекс тестує -10%, а VIX починає розвертатися вниз.`,
+            ontrack: [
+              `<strong>Вхід:</strong> <code>Buy Limit</code> ${fmt(lv.entry)} на 50% виділеної суми.`,
+              `<strong>TP1 (${fmt(lv.tp1)}):</strong> фіксація 50% позиції через <code>Sell Limit</code> на середині відскоку + стоп у беззбиток.`,
+              `<strong>TP2 (${fmt(lv.tp2)}):</strong> повний вихід при поверненні індексу на максимум (не тримати 2x/3x ETF у боковику).`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> пробій ${fmt(lv.inval)} при VIX > 30 означає ризик глибокої корекції (-15%…-20%).`,
+              `<strong>Дія захисту:</strong> вийти з першого траншу, щоб не накопичувати розпад (decay) у плечовому ETF.`,
+              `<strong>Відкладений ордер:</strong> брокерський <code>Stop-Market (Sell)</code> на ${fmt(lv.inval)} (діє в основну сесію RTH).`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> перечекай капітуляцію в кеші й перезайди значно нижче біля ${fmt(lv.flip)} після першого дня розвороту.`,
+              `<strong>Точка перезаходу:</strong> пробій максимуму попереднього дня після капітуляції.`,
+              `<strong>Відкладений ордер:</strong> <code>Buy Stop-Limit</code> вище локального максимуму розворотної денної свічки.`
+            ]
+          })
+        },
+        {
+          id: 'earn-go',
+          name: '2. Звітність: Gap-and-Go (15m ORB)',
+          allocLabel: '100% Позиція · Ризик 1% (1R)',
+          dir: 'long',
+          rrLabel: '1 : 2.5',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 - v * 0.45),
+            inval: p * (1 - v * 0.75),
+            flip: p * (1 - v * 0.90),
+            tp1: p * (1 + v * 1.15),
+            tp2: p * (1 + v * 2.00)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const slPct = (baseP - lv.inval) / baseP;
+            const pnl = pct <= -slPct ? (-budget * slPct) : (budget * pct);
+            return { usd: pnl, note: pct <= -slPct ? 'Стоп на пробої 15m Low / VWAP' : (pct > 0 ? 'Імпульс Gap-and-Go вище VWAP' : 'Відкат до VWAP') };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Продовження тренду по ${sym} після позитивного гепу та підвищеного прогнозу (Guidance) через пробій 15m ORB High.`,
+            timing: `Строго ПІСЛЯ 9:45 EST (16:45 за Києвом): перечекай 15 хв IV Crush і впевнись, що обсяг у 2–3× вищий за середній.`,
+            ontrack: [
+              `<strong>Вхід:</strong> <code>Buy Stop-Limit</code> на $0.10 вище 15m ORB High (${fmt(lv.entry)}).`,
+              `<strong>TP1 (${fmt(lv.tp1)}):</strong> <code>Sell Limit</code> на 50% акцій + стоп у беззбиток.`,
+              `<strong>TP2 (${fmt(lv.tp2)}):</strong> трейлінг під 5-хвилинним VWAP до закриття сесії.`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> повернення нижче VWAP і пробій ${fmt(lv.inval)} — пастка «Sell the News».`,
+              `<strong>Дія захисту:</strong> негайний вихід, не переносити збиткову звітну позицію через ніч.`,
+              `<strong>Відкладений ордер:</strong> <code>Stop-Market (Sell)</code> на ${fmt(lv.inval)} одразу при відкритті.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> пробій ${fmt(lv.flip)} і VWAP вниз активує зворотний сетап <strong>Gap-and-Fade</strong>.`,
+              `<strong>Точка розвороту:</strong> шорт нижче ${fmt(lv.flip)} із ціллю часткового закриття гепу.`,
+              `<strong>Відкладений ордер:</strong> <code>Sell Stop-Limit</code> на ${fmt(lv.flip)} + SL над VWAP (${fmt(lv.warn)}). Закрити до 16:00 EST.`
+            ]
+          })
+        },
+        {
+          id: 'earn-fade',
+          name: '3. Звітність: Gap-and-Fade (Шорт)',
+          allocLabel: '100% Інтрадей-шорт · Ризик 1%',
+          dir: 'short',
+          rrLabel: '1 : 2.5',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 + v * 0.45),
+            inval: p * (1 + v * 0.75),
+            flip: p * (1 + v * 0.90),
+            tp1: p * (1 - v * 1.15),
+            tp2: p * (1 - v * 2.00)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const slPct = (lv.inval - baseP) / baseP;
+            const pnl = pct >= slPct ? (-budget * slPct) : (budget * (-pct));
+            return { usd: pnl, note: pct >= slPct ? 'Шорт закрито по SL над VWAP' : (pct < 0 ? 'Геп закривається — шорт у прибутку' : 'Відскок проти шорту') };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Шорт перегрітого відкриття ${sym} («Sell the News»), коли ціна втрачає VWAP і 15m ORB Low.`,
+            timing: `Вхід: 9:45–10:30 EST після пробою VWAP вниз. ОБОВ’ЯЗКОВО закрити шорт до 15:55 EST (не лишати на ніч!).`,
+            ontrack: [
+              `<strong>Вхід:</strong> <code>Sell Stop-Limit</code> на пробої ${fmt(lv.entry)} вниз (нижче VWAP).`,
+              `<strong>TP1 (${fmt(lv.tp1)}):</strong> <code>Buy Limit</code> на 50% позиції + стоп у беззбиток.`,
+              `<strong>TP2 (${fmt(lv.tp2)}):</strong> фіксація біля ціни закриття вчорашнього дня (закриття гепу).`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> повернення вище VWAP і пробій ${fmt(lv.inval)} означає, що покупці викупили пролив.`,
+              `<strong>Дія захисту:</strong> суворий стоп без усереднення шорту проти сильного тренду.`,
+              `<strong>Відкладений ордер:</strong> <code>Stop-Market (Buy)</code> на ${fmt(lv.inval)}.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> якщо ${sym} відбивається від VWAP і пробиває ${fmt(lv.flip)} — це реверс у Gap-and-Go (шорт-сквіз).`,
+              `<strong>Точка розвороту:</strong> перехід у Long вище ${fmt(lv.flip)} (ризик 0.5R).`,
+              `<strong>Відкладений ордер:</strong> <code>Buy Stop-Limit</code> на ${fmt(lv.flip)} + SL під VWAP (${fmt(lv.warn)}).`
+            ]
+          })
+        },
+        {
+          id: 'def-rebal',
+          name: '4. Захисний стоп + Ребаланс у кеш/1x',
+          allocLabel: '70% 1x База / 30% Кеш',
+          dir: 'long',
+          rrLabel: 'Захист капіталу',
+          buildLevels: (p, v) => ({
+            entry: p,
+            warn: p * (1 - v * 0.55),
+            inval: p * (1 - v * 1.00),
+            flip: p * (1 - v * 1.40),
+            tp1: p * (1 + v * 1.00),
+            tp2: p * (1 + v * 1.80)
+          }),
+          calcPnl: (budget, baseP, simP, lv) => {
+            const pct = (simP - baseP) / baseP;
+            const slPct = (baseP - lv.inval) / baseP;
+            const pnl = pct <= -slPct ? (-budget * 0.70 * slPct) : (budget * 0.70 * pct);
+            return { usd: pnl, note: pct <= -slPct ? 'Переведено в кеш на рівні захисту' : 'Спокійне утримання 70% + 30% кеш-подушки' };
+          },
+          buildPlan: (sym, lv, fmt) => ({
+            thesis: `Консервативний режим для ${sym}: збереження капіталу під час турбулентності (VIX > 25) із 30% кеш-резервом.`,
+            timing: `Перевірка 1 раз на день після 15:30 EST (перед закриттям ринку США).`,
+            ontrack: [
+              `<strong>Утримання:</strong> 70% у базовому активі біля ${fmt(lv.entry)}, 30% у кеші/коротких облігаціях.`,
+              `<strong>TP1 (${fmt(lv.tp1)}):</strong> підтягни захисний <code>Trailing Stop</code> 2%–3% під локальні мінімуми.`,
+              `<strong>TP2 (${fmt(lv.tp2)}):</strong> ребалансування прибутку назад у кеш-резерв.`
+            ],
+            cutloss: [
+              `<strong>Ознака зламу:</strong> денне закриття нижче ${fmt(lv.inval)} (пробій ключової підтримки).`,
+              `<strong>Дія захисту:</strong> скорочення ризику вдвічі або повний вихід у кеш / 1x SPY.`,
+              `<strong>Відкладений ордер:</strong> <code>Stop-Limit (Sell)</code> біля ${fmt(lv.inval)}.`
+            ],
+            flip: [
+              `<strong>Як обернути в прибуток:</strong> залучай 30% кешу для поступової купівлі на глибокій знижці біля ${fmt(lv.flip)}.`,
+              `<strong>Точка входу:</strong> після стабілізації 2 денних свічок поспіль вище мінімуму.`,
+              `<strong>Відкладений ордер:</strong> <code>Buy Limit</code> на ${fmt(lv.flip)} частинами.`
+            ]
+          })
+        }
+      ]
+    };
+
+    let customScenarios = [];
+    let scActiveMode = 'matrix'; // 'matrix' or 'custom'
+    let scSelectedAsset = 'ETH';
+    let scSelectedStratId = 'core-hedge';
+    let scSelectedCustomId = null;
+    let scSimPrice = 1714;
+    let scUsingLive = true;
+    let scBudget = 1000;
+
+    function loadCustomScenarios() {
+      try {
+        const raw = localStorage.getItem(SCENARIOS_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) customScenarios = parsed;
+        }
+      } catch (e) {}
+      try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.CloudStorage) {
+          window.Telegram.WebApp.CloudStorage.getItem(SCENARIOS_STORAGE_KEY, (err, val) => {
+            if (!err && val) {
+              try {
+                const parsed = JSON.parse(val);
+                if (Array.isArray(parsed) && parsed.length > customScenarios.length) {
+                  customScenarios = parsed;
+                  renderScenarioAssetPills();
+                }
+              } catch (e) {}
+            }
+          });
+        }
+      } catch (e) {}
+    }
+
+    function saveCustomScenarios() {
+      const payload = JSON.stringify(customScenarios);
+      try { localStorage.setItem(SCENARIOS_STORAGE_KEY, payload); } catch (e) {}
+      try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.CloudStorage) {
+          window.Telegram.WebApp.CloudStorage.setItem(SCENARIOS_STORAGE_KEY, payload);
+        }
+      } catch (e) {}
+    }
+
+    function fmtScPrice(p) {
+      if (p >= 1000) return '$' + Math.round(p).toLocaleString('uk-UA');
+      if (p >= 10) return '$' + p.toFixed(2);
+      return '$' + p.toFixed(3);
+    }
+
+    function getAssetBasePrice(sym) {
+      if (liveCrypto && liveCrypto[sym] && liveCrypto[sym].price > 0) return liveCrypto[sym].price;
+      return scAssetCatalog[sym] ? scAssetCatalog[sym].basePrice : 100;
+    }
+
+    function buildActiveScenarioObject() {
+      if (scActiveMode === 'custom') {
+        const c = customScenarios.find(x => x.id === scSelectedCustomId);
+        if (c) return c;
+        scActiveMode = 'matrix';
+      }
+      const assetObj = scAssetCatalog[scSelectedAsset] || scAssetCatalog.ETH;
+      const list = scStrategyDefs[assetObj.market];
+      const strat = list.find(s => s.id === scSelectedStratId) || list[0];
+      scSelectedStratId = strat.id;
+      const baseP = getAssetBasePrice(assetObj.sym);
+      const lv = strat.buildLevels(baseP, assetObj.vol);
+      const plan = strat.buildPlan(assetObj.sym, lv, fmtScPrice);
+      const fit = assetObj.fitMap[strat.id] || { badge: 'Добре', cls: 'bg-cyan-500/20 text-cyan-300', why: '' };
+      return {
+        id: `${assetObj.sym}__${strat.id}`,
+        isCustom: false,
+        market: assetObj.market,
+        asset: assetObj.sym,
+        name: `${assetObj.sym} · ${strat.name}`,
+        stratId: strat.id,
+        stratName: strat.name,
+        allocLabel: strat.allocLabel,
+        dir: strat.dir,
+        entry: lv.entry,
+        warn: lv.warn,
+        inval: lv.inval,
+        flip: lv.flip,
+        tp1: lv.tp1,
+        tp2: lv.tp2,
+        fit,
+        thesis: plan.thesis,
+        timing: plan.timing,
+        ontrack: plan.ontrack,
+        cutloss: plan.cutloss,
+        flipPlan: plan.flip,
+        calcPnl: (simP) => strat.calcPnl(scBudget, baseP, simP, lv)
+      };
+    }
+
+    function syncScenarioLivePrice() {
+      if (!scUsingLive) return;
+      const sym = scActiveMode === 'custom'
+        ? (customScenarios.find(x => x.id === scSelectedCustomId)?.asset || scSelectedAsset)
+        : scSelectedAsset;
+      if (liveCrypto && liveCrypto[sym]) {
+        scSimPrice = liveCrypto[sym].price;
+        renderScenarioAssetPills();
+        renderScenarioView();
+      }
+    }
+
+    function selectMatrixAsset(sym) {
+      scActiveMode = 'matrix';
+      scSelectedAsset = sym;
+      const assetObj = scAssetCatalog[sym];
+      const list = scStrategyDefs[assetObj.market];
+      if (!list.some(s => s.id === scSelectedStratId)) {
+        scSelectedStratId = list[0].id;
+      }
+      scSimPrice = getAssetBasePrice(sym);
+      scUsingLive = Boolean(liveCrypto && liveCrypto[sym]);
+      renderScenarioAssetPills();
+      renderScenarioView();
+    }
+
+    function selectMatrixStrategy(stratId) {
+      scActiveMode = 'matrix';
+      scSelectedStratId = stratId;
+      renderScenarioView();
+    }
+
+    function selectCustomScenario(cid) {
+      const c = customScenarios.find(x => x.id === cid);
+      if (!c) return;
+      scActiveMode = 'custom';
+      scSelectedCustomId = cid;
+      scSimPrice = (liveCrypto && liveCrypto[c.asset]) ? liveCrypto[c.asset].price : c.entry;
+      scUsingLive = Boolean(liveCrypto && liveCrypto[c.asset]);
+      renderScenarioAssetPills();
+      renderScenarioView();
+    }
+
+    function renderScenarioAssetPills() {
+      const cryptoWrap = document.getElementById('sc-crypto-assets');
+      const stockWrap = document.getElementById('sc-stock-assets');
+      const customWrap = document.getElementById('sc-custom-assets');
+      const customSection = document.getElementById('sc-custom-assets-wrap');
+      if (!cryptoWrap || !stockWrap) return;
+
+      const makeBtn = (a) => {
+        const active = scActiveMode === 'matrix' && scSelectedAsset === a.sym;
+        const p = getAssetBasePrice(a.sym);
+        return `<button type="button" data-sc-asset="${a.sym}" class="px-3 py-1.5 rounded-xl text-xs font-medium border transition flex items-center gap-1.5 ${
+          active
+            ? 'bg-cyan-500/20 border-cyan-400 text-white shadow-sm shadow-cyan-500/20'
+            : 'bg-slate-950/70 border-slate-800 text-slate-300 hover:border-slate-600 hover:text-white'
+        }">
+          <span class="font-bold">${a.sym}</span>
+          <span class="font-mono-num text-[11px] text-slate-400">${fmtScPrice(p)}</span>
+        </button>`;
+      };
+
+      const allAssets = Object.values(scAssetCatalog);
+      cryptoWrap.innerHTML = allAssets.filter(a => a.market === 'crypto').map(makeBtn).join('');
+      stockWrap.innerHTML = allAssets.filter(a => a.market === 'stocks').map(makeBtn).join('');
+
+      cryptoWrap.querySelectorAll('button[data-sc-asset]').forEach(b => b.addEventListener('click', () => selectMatrixAsset(b.dataset.scAsset)));
+      stockWrap.querySelectorAll('button[data-sc-asset]').forEach(b => b.addEventListener('click', () => selectMatrixAsset(b.dataset.scAsset)));
+
+      if (customScenarios.length > 0) {
+        customSection.classList.remove('hidden');
+        customWrap.innerHTML = customScenarios.map(c => {
+          const active = scActiveMode === 'custom' && scSelectedCustomId === c.id;
+          return `<button type="button" data-sc-cid="${c.id}" class="px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+            active
+              ? 'bg-cyan-500/20 border-cyan-400 text-white'
+              : 'bg-slate-950/70 border-slate-800 text-slate-300 hover:border-slate-600 hover:text-white'
+          }">★ ${c.name} (${c.asset})</button>`;
+        }).join('');
+        customWrap.querySelectorAll('button[data-sc-cid]').forEach(b => b.addEventListener('click', () => selectCustomScenario(b.dataset.scCid)));
+      } else {
+        customSection.classList.add('hidden');
+      }
+    }
+
+    function renderComparisonTable() {
+      const tbody = document.getElementById('sc-compare-tbody');
+      if (!tbody) return;
+      const assetObj = scAssetCatalog[scSelectedAsset] || scAssetCatalog.ETH;
+      const list = scStrategyDefs[assetObj.market];
+      const baseP = getAssetBasePrice(assetObj.sym);
+      const testP = scActiveMode === 'matrix' ? scSimPrice : baseP;
+
+      document.getElementById('sc-compare-heading').textContent =
+        `Крок 2 · Порівняння всіх ${list.length} стратегій для ${assetObj.sym} (${assetObj.name}) при бюджеті $${scBudget.toLocaleString('uk-UA')}`;
+      document.getElementById('sc-asset-profile-badge').textContent = `${assetObj.sym} · ${assetObj.volLabel}`;
+
+      tbody.innerHTML = list.map(st => {
+        const lv = st.buildLevels(baseP, assetObj.vol);
+        const fit = assetObj.fitMap[st.id] || { badge: 'Добре', cls: 'bg-cyan-500/20 text-cyan-300', why: '' };
+        const pnl = st.calcPnl(scBudget, baseP, testP, lv);
+        const pnlPct = (pnl.usd / scBudget) * 100;
+        const isSel = scActiveMode === 'matrix' && scSelectedStratId === st.id;
+        const pnlCls = pnl.usd >= 0 ? 'text-emerald-300' : 'text-rose-300';
+        const sign = pnl.usd >= 0 ? '+' : '';
+        return `<tr data-st-row="${st.id}" class="cursor-pointer transition ${isSel ? 'bg-cyan-950/35' : 'hover:bg-slate-800/40'}">
+          <td class="py-3 pr-3 align-top">
+            <div class="font-bold text-white flex items-center gap-1.5">
+              ${isSel ? '<span class="w-2 h-2 rounded-full bg-cyan-400"></span>' : ''}
+              <span>${st.name}</span>
+            </div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${st.allocLabel}</div>
+          </td>
+          <td class="py-3 px-2 align-top whitespace-nowrap">
+            <span class="px-2 py-0.5 rounded-md text-[11px] font-bold ${fit.cls}">${fit.badge}</span>
+          </td>
+          <td class="py-3 px-2 align-top text-slate-300 leading-snug max-w-xs">
+            <div>${fit.why}</div>
+            <div class="text-[10px] text-slate-400 mt-1">${pnl.note}</div>
+          </td>
+          <td class="py-3 px-2 align-top font-mono-num text-[11px] whitespace-nowrap">
+            <div class="text-cyan-300">IN: ${fmtScPrice(lv.entry)}</div>
+            <div class="text-rose-300">SL: ${fmtScPrice(lv.inval)}</div>
+            <div class="text-emerald-300">TP1: ${fmtScPrice(lv.tp1)}</div>
+          </td>
+          <td class="py-3 px-2 align-top text-right font-mono-num whitespace-nowrap">
+            <div class="font-bold ${pnlCls}">${sign}$${Math.round(pnl.usd)}</div>
+            <div class="text-[11px] ${pnlCls}">${sign}${pnlPct.toFixed(1)}%</div>
+          </td>
+          <td class="py-3 pl-2 align-top text-right whitespace-nowrap">
+            <button type="button" data-st-pick="${st.id}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition ${
+              isSel
+                ? 'bg-cyan-500 text-slate-950 border-cyan-400'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+            }">${isSel ? 'Обрано ✓' : 'Детальніше'}</button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('tr[data-st-row]').forEach(tr => {
+        tr.addEventListener('click', () => selectMatrixStrategy(tr.dataset.stRow));
+      });
+    }
+
+    function evaluateScenarioState(sc, price) {
+      const isLong = sc.dir === 'long';
+      const riskPerUnit = Math.max(Math.abs(sc.entry - sc.inval), 0.0001);
+      const rawPnl = isLong ? (price - sc.entry) : (sc.entry - price);
+      const rMult = rawPnl / riskPerUnit;
+      const pctFromEntry = ((price - sc.entry) / sc.entry) * 100;
+      const entryBand = riskPerUnit * 0.22;
+
+      let badge = '🟢 ПО СЦЕНАРІЮ (В роботі)';
+      let desc = 'Ціна рухається у запланованому напрямку. Тримай план, не чіпай стоп і готуйся до часткової фіксації на TP1.';
+      let boxClass = 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200';
+      let activeBranch = 'a';
+
+      const pastFlip = isLong ? (price <= sc.flip) : (price >= sc.flip);
+      const pastInval = isLong ? (price <= sc.inval) : (price >= sc.inval);
+      const pastWarn = isLong ? (price <= sc.warn) : (price >= sc.warn);
+      const hitTp2 = isLong ? (price >= sc.tp2) : (price <= sc.tp2);
+      const hitTp1 = isLong ? (price >= sc.tp1) : (price <= sc.tp1);
+      const nearEntry = Math.abs(price - sc.entry) <= entryBand;
+
+      if (pastFlip) {
+        badge = '🔄 ЗЛАМ + ТОЧКА РОЗВОРОТУ (Обернути у прибуток)';
+        desc = 'Основний сценарій інвалідовано, ціна пройшла рівень розвороту. Збиткову ногу вже має бути закрито — активуй Гілку В (Stop-and-Reverse або перехоплення).';
+        boxClass = 'bg-violet-950/50 border-violet-500/60 text-violet-200';
+        activeBranch = 'c';
+      } else if (pastInval) {
+        badge = '🚨 НЕ ПО СЦЕНАРІЮ — ІНВАЛІДАЦІЯ (Ріж збиток!)';
+        desc = 'Ціна досягла рівня зламу сценарію! Тут має спрацювати жорсткий Stop-Market (Mark Price). Переходь до Гілки Б.';
+        boxClass = 'bg-rose-950/50 border-rose-500/60 text-rose-200';
+        activeBranch = 'b';
+      } else if (pastWarn) {
+        badge = '⚠️ УВАГА — ВІДХИЛЕННЯ ВІД СЦЕНАРІЮ';
+        desc = 'Ціна зайшла в зону попередження. Перевір наявність Stop-Market на інвалідації та підготуй план захисту (Гілка Б).';
+        boxClass = 'bg-amber-950/45 border-amber-500/55 text-amber-200';
+        activeBranch = 'b';
+      } else if (hitTp2) {
+        badge = '🏆 ЦІЛЬ TP2 ДОСЯГНУТА (Повна фіксація)';
+        desc = 'Сценарій відпрацював на максимум! Зафіксуй основний прибуток або підтягни жорсткий Trailing Stop.';
+        boxClass = 'bg-emerald-950/60 border-emerald-400/70 text-emerald-100';
+        activeBranch = 'a';
+      } else if (hitTp1) {
+        badge = '🎯 ЦІЛЬ TP1 ДОСЯГНУТА (Зафіксуй 50% + Беззбиток)';
+        desc = 'Перша ціль виконана! Закрий 50% обсягу лімітним ордером, переведи Stop-Loss у беззбиток і супроводжуй залишок.';
+        boxClass = 'bg-emerald-950/50 border-emerald-500/60 text-emerald-200';
+        activeBranch = 'a';
+      } else if (nearEntry) {
+        badge = '🔵 ЗОНА ВХОДУ (Активація сценарію)';
+        desc = 'Ціна прямо в робочій зоні входу. Перевір таймінг (свічка/обсяг) і вистав відкладений ордер входу разом зі Stop-Loss.';
+        boxClass = 'bg-cyan-950/45 border-cyan-500/55 text-cyan-200';
+        activeBranch = 'a';
+      }
+
+      return { badge, desc, boxClass, activeBranch, rMult, pctFromEntry };
+    }
+
+    function renderScenarioView() {
+      renderComparisonTable();
+      const sc = buildActiveScenarioObject();
+      if (!sc) return;
+
+      const isLong = sc.dir === 'long';
+      const dirBadge = document.getElementById('sc-dir-badge');
+      dirBadge.textContent = isLong ? 'LONG / ГІБРИД' : 'SHORT / ХЕДЖ';
+      dirBadge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold uppercase ' +
+        (isLong ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40');
+
+      document.getElementById('sc-asset-label').textContent = `${sc.asset}${sc.allocLabel ? ' · ' + sc.allocLabel : ''}`;
+      const srcEl = document.getElementById('sc-price-source');
+      srcEl.textContent = (scUsingLive && liveCrypto && liveCrypto[sc.asset]) ? '● Live ціна' : '● Режим симуляції';
+      srcEl.className = 'text-[11px] font-mono-num px-2 py-0.5 rounded ' +
+        ((scUsingLive && liveCrypto && liveCrypto[sc.asset]) ? 'bg-emerald-500/15 text-emerald-300' : 'bg-amber-500/15 text-amber-300');
+
+      document.getElementById('sc-title').textContent = sc.name;
+      document.getElementById('sc-thesis').textContent = sc.thesis;
+      document.getElementById('sc-timing-text').textContent = sc.timing;
+
+      const whyBox = document.getElementById('sc-why-box');
+      if (sc.fit && sc.fit.why) {
+        whyBox.classList.remove('hidden');
+        const fitPill = document.getElementById('sc-fit-pill');
+        fitPill.textContent = sc.fit.badge;
+        fitPill.className = 'px-2 py-0.5 rounded text-[10px] font-bold ' + sc.fit.cls;
+        document.getElementById('sc-why-text').textContent = sc.fit.why;
+      } else {
+        whyBox.classList.add('hidden');
+      }
+
+      document.getElementById('btn-sc-delete-custom').classList.toggle('hidden', !sc.isCustom);
+
+      const allVals = [sc.entry, sc.warn, sc.inval, sc.flip, sc.tp1, sc.tp2];
+      const minV = Math.min(...allVals);
+      const maxV = Math.max(...allVals);
+      const pad = (maxV - minV) * 0.18 || sc.entry * 0.1;
+      const sMin = Math.max(0.001, minV - pad);
+      const sMax = maxV + pad;
+
+      const slider = document.getElementById('sc-sim-slider');
+      slider.min = sMin;
+      slider.max = sMax;
+      slider.step = (sMax - sMin) / 250;
+      slider.value = Math.min(Math.max(scSimPrice, sMin), sMax);
+
+      document.getElementById('sc-slider-min').textContent = fmtScPrice(sMin);
+      document.getElementById('sc-slider-max').textContent = fmtScPrice(sMax);
+
+      const inputEl = document.getElementById('sc-sim-input');
+      if (document.activeElement !== inputEl) {
+        inputEl.value = scSimPrice >= 100 ? scSimPrice.toFixed(1) : (scSimPrice >= 10 ? scSimPrice.toFixed(2) : scSimPrice.toFixed(3));
+      }
+
+      const ev = evaluateScenarioState(sc, scSimPrice);
+      const box = document.getElementById('sc-status-box');
+      box.className = 'rounded-xl p-4 border transition-all ' + ev.boxClass;
+      document.getElementById('sc-status-badge').textContent = ev.badge;
+      document.getElementById('sc-status-desc').textContent = ev.desc;
+
+      const rEl = document.getElementById('sc-r-multiple');
+      if (sc.calcPnl) {
+        const pnl = sc.calcPnl(scSimPrice);
+        const pSign = pnl.usd >= 0 ? '+' : '';
+        rEl.textContent = `Портфель: ${pSign}$${Math.round(pnl.usd)} (${pSign}${((pnl.usd / scBudget) * 100).toFixed(1)}%)`;
+        rEl.className = 'text-sm font-mono-num font-bold ' + (pnl.usd >= 0 ? 'text-emerald-300' : 'text-rose-300');
+      } else {
+        const rSign = ev.rMult >= 0 ? '+' : '';
+        rEl.textContent = `P&L: ${rSign}${ev.rMult.toFixed(2)}R`;
+        rEl.className = 'text-sm font-mono-num font-bold ' + (ev.rMult >= 0 ? 'text-emerald-300' : 'text-rose-300');
+      }
+
+      const distEl = document.getElementById('sc-dist-entry');
+      const dSign = ev.pctFromEntry >= 0 ? '+' : '';
+      distEl.textContent = `${dSign}${ev.pctFromEntry.toFixed(2)}%`;
+      distEl.className = 'text-base font-bold font-mono-num ' + (ev.pctFromEntry >= 0 ? 'text-emerald-300' : 'text-rose-300');
+
+      const rr1 = Math.abs(sc.tp1 - sc.entry) / Math.max(Math.abs(sc.entry - sc.inval), 0.0001);
+      const rr2 = Math.abs(sc.tp2 - sc.entry) / Math.max(Math.abs(sc.entry - sc.inval), 0.0001);
+      document.getElementById('sc-rr-summary').textContent = `R:R до TP1 = 1:${rr1.toFixed(1)} · до TP2 = 1:${rr2.toFixed(1)}`;
+
+      const toPct = v => Math.min(98, Math.max(2, ((v - sMin) / (sMax - sMin)) * 100));
+      const pInval = toPct(sc.inval);
+      const pWarn = toPct(sc.warn);
+      const pEntry = toPct(sc.entry);
+      const pTp1 = toPct(sc.tp1);
+      const pTp2 = toPct(sc.tp2);
+      const pCurr = toPct(scSimPrice);
+
+      const barDanger = document.getElementById('sc-bar-danger');
+      const barWarn = document.getElementById('sc-bar-warn');
+      const barProfit = document.getElementById('sc-bar-profit');
+
+      if (isLong) {
+        barDanger.style.left = '0%';
+        barDanger.style.width = pInval + '%';
+        barWarn.style.left = pInval + '%';
+        barWarn.style.width = Math.max(0, pEntry - pInval) + '%';
+        barProfit.style.left = pEntry + '%';
+        barProfit.style.width = Math.max(0, 100 - pEntry) + '%';
+      } else {
+        barProfit.style.left = '0%';
+        barProfit.style.width = pEntry + '%';
+        barWarn.style.left = pEntry + '%';
+        barWarn.style.width = Math.max(0, pInval - pEntry) + '%';
+        barDanger.style.left = pInval + '%';
+        barDanger.style.width = Math.max(0, 100 - pInval) + '%';
+      }
+
+      document.getElementById('sc-current-pin').style.left = pCurr + '%';
+
+      const markers = [
+        { lbl: 'SL', pos: pInval, cls: 'bg-rose-500 text-rose-300' },
+        { lbl: 'W', pos: pWarn, cls: 'bg-amber-400 text-amber-300' },
+        { lbl: 'IN', pos: pEntry, cls: 'bg-cyan-400 text-cyan-300' },
+        { lbl: 'TP1', pos: pTp1, cls: 'bg-emerald-400 text-emerald-300' },
+        { lbl: 'TP2', pos: pTp2, cls: 'bg-emerald-500 text-emerald-200' }
+      ];
+      document.getElementById('sc-markers-layer').innerHTML = markers.map(m =>
+        `<div style="left:${m.pos}%" class="absolute top-0 bottom-0 -translate-x-1/2 flex flex-col items-center justify-between">
+          <span class="text-[9px] font-mono-num font-bold ${m.cls.split(' ')[1]}">${m.lbl}</span>
+          <span class="w-0.5 h-4 ${m.cls.split(' ')[0]} opacity-80"></span>
+        </div>`
+      ).join('');
+
+      document.getElementById('sc-level-chips').innerHTML = `
+        <div class="p-2 rounded-lg bg-rose-950/40 border border-rose-800/50">
+          <div class="text-[10px] text-rose-400">Злам / SL</div>
+          <div class="font-bold text-white">${fmtScPrice(sc.inval)}</div>
+        </div>
+        <div class="p-2 rounded-lg bg-amber-950/40 border border-amber-800/50">
+          <div class="text-[10px] text-amber-400">Warning</div>
+          <div class="font-bold text-white">${fmtScPrice(sc.warn)}</div>
+        </div>
+        <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-800/50">
+          <div class="text-[10px] text-cyan-400">Вхід (Entry)</div>
+          <div class="font-bold text-white">${fmtScPrice(sc.entry)}</div>
+        </div>
+        <div class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-800/50">
+          <div class="text-[10px] text-emerald-400">TP1 (50%)</div>
+          <div class="font-bold text-white">${fmtScPrice(sc.tp1)}</div>
+        </div>
+        <div class="p-2 rounded-lg bg-emerald-950/60 border border-emerald-700/60">
+          <div class="text-[10px] text-emerald-300">TP2 (Ціль)</div>
+          <div class="font-bold text-white">${fmtScPrice(sc.tp2)}</div>
+        </div>
+      `;
+
+      document.getElementById('sc-plan-ontrack').innerHTML = sc.ontrack.map(t => `<p class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 leading-relaxed">${t}</p>`).join('');
+      document.getElementById('sc-plan-cutloss').innerHTML = sc.cutloss.map(t => `<p class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 leading-relaxed">${t}</p>`).join('');
+      const flipArr = sc.flipPlan || sc.flip;
+      document.getElementById('sc-plan-flip').innerHTML = (Array.isArray(flipArr) ? flipArr : []).map(t => `<p class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 leading-relaxed">${t}</p>`).join('');
+
+      const bA = document.getElementById('sc-branch-ontrack');
+      const bB = document.getElementById('sc-branch-cutloss');
+      const bC = document.getElementById('sc-branch-flip');
+      bA.className = 'bg-slate-900 rounded-2xl p-5 transition-all border ' + (ev.activeBranch === 'a' ? 'border-emerald-400 ring-1 ring-emerald-400/40 shadow-lg shadow-emerald-950/50' : 'border-slate-800 opacity-75');
+      bB.className = 'bg-slate-900 rounded-2xl p-5 transition-all border ' + (ev.activeBranch === 'b' ? 'border-rose-400 ring-1 ring-rose-400/40 shadow-lg shadow-rose-950/50' : 'border-slate-800 opacity-75');
+      bC.className = 'bg-slate-900 rounded-2xl p-5 transition-all border ' + (ev.activeBranch === 'c' ? 'border-violet-400 ring-1 ring-violet-400/40 shadow-lg shadow-violet-950/50' : 'border-slate-800 opacity-75');
+
+      document.getElementById('sc-badge-a').classList.toggle('hidden', ev.activeBranch !== 'a');
+      document.getElementById('sc-badge-b').classList.toggle('hidden', ev.activeBranch !== 'b');
+      document.getElementById('sc-badge-c').classList.toggle('hidden', ev.activeBranch !== 'c');
+    }
+
+    // Event bindings
+    document.getElementById('sc-budget-input').addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      if (!isNaN(v) && v >= 50) {
+        scBudget = v;
+        renderScenarioView();
+      }
+    });
+
+    document.getElementById('sc-sim-slider').addEventListener('input', e => {
+      scUsingLive = false;
+      scSimPrice = parseFloat(e.target.value);
+      renderScenarioView();
+    });
+
+    document.getElementById('sc-sim-input').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      if (!isNaN(val) && val > 0) {
+        scUsingLive = false;
+        scSimPrice = val;
+        renderScenarioView();
+      }
+    });
+
+    document.querySelectorAll('.sc-jump-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sc = buildActiveScenarioObject();
+        if (!sc) return;
+        scUsingLive = false;
+        const target = btn.dataset.scJump;
+        if (target === 'entry') scSimPrice = sc.entry;
+        if (target === 'tp1') scSimPrice = sc.tp1;
+        if (target === 'warn') scSimPrice = sc.warn;
+        if (target === 'inval') scSimPrice = sc.inval;
+        if (target === 'flip') scSimPrice = sc.flip;
+        renderScenarioView();
+      });
+    });
+
+    document.getElementById('btn-sc-live-sync').addEventListener('click', () => {
+      scUsingLive = true;
+      const sc = buildActiveScenarioObject();
+      if (liveCrypto && liveCrypto[sc.asset]) {
+        scSimPrice = liveCrypto[sc.asset].price;
+        renderScenarioView();
+      } else {
+        fetchLiveCryptoPrices();
+      }
+    });
+
+    document.getElementById('btn-sc-toggle-new').addEventListener('click', () => {
+      document.getElementById('sc-custom-form-wrap').classList.toggle('hidden');
+    });
+    document.getElementById('btn-sc-close-new').addEventListener('click', () => {
+      document.getElementById('sc-custom-form-wrap').classList.add('hidden');
+    });
+
+    document.getElementById('btn-sc-save-new').addEventListener('click', () => {
+      const name = (document.getElementById('sc-new-name').value || '').trim();
+      const asset = (document.getElementById('sc-new-asset').value || '').trim().toUpperCase();
+      const dir = document.getElementById('sc-new-dir').value;
+      const entry = parseFloat(document.getElementById('sc-new-entry').value);
+      const warn = parseFloat(document.getElementById('sc-new-warn').value);
+      const inval = parseFloat(document.getElementById('sc-new-inval').value);
+      const tp1 = parseFloat(document.getElementById('sc-new-tp1').value);
+      const tp2 = parseFloat(document.getElementById('sc-new-tp2').value);
+      const errEl = document.getElementById('sc-new-error');
+
+      if (!name || !asset || [entry, warn, inval, tp1, tp2].some(v => isNaN(v) || v <= 0)) {
+        errEl.textContent = 'Заповни всі поля коректними числами більшими за 0.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (dir === 'long' && !(inval < entry && tp1 > entry && tp2 >= tp1)) {
+        errEl.textContent = 'Для Long потрібно: Інвалідація < Вхід < TP1 ≤ TP2.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (dir === 'short' && !(inval > entry && tp1 < entry && tp2 <= tp1)) {
+        errEl.textContent = 'Для Short потрібно: Інвалідація > Вхід > TP1 ≥ TP2.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      errEl.classList.add('hidden');
+      const flipOffset = Math.abs(entry - inval) * 0.12;
+      const flip = dir === 'long' ? (inval - flipOffset) : (inval + flipOffset);
+      const isCryptoAsset = Boolean(liveCrypto && liveCrypto[asset]);
+      const newSc = {
+        id: 'custom-' + Date.now(),
+        isCustom: true,
+        market: isCryptoAsset ? 'crypto' : 'stocks',
+        asset,
+        name,
+        dir,
+        entry,
+        warn,
+        inval,
+        flip,
+        tp1,
+        tp2,
+        thesis: `Власний ручний план по ${asset} (${dir.toUpperCase()}). Вхід ${fmtScPrice(entry)}, стоп ${fmtScPrice(inval)}, цілі ${fmtScPrice(tp1)} / ${fmtScPrice(tp2)}.`,
+        timing: 'Вхід: після підтвердження рівня на закритті 15m/1H свічки та перевірки обсягу. Вихід: 50% на TP1 + перенос стопу в беззбиток.',
+        ontrack: [
+          `<strong>Вхід:</strong> <code>${dir === 'long' ? 'Buy' : 'Sell'} Limit</code> на ${fmtScPrice(entry)}.`,
+          `<strong>TP1 (${fmtScPrice(tp1)}):</strong> фіксація 50% через <code>${dir === 'long' ? 'Sell' : 'Buy'} Limit (Reduce-Only)</code>.`,
+          `<strong>Супровід:</strong> перенос <code>Stop-Market</code> у беззбиток (${fmtScPrice(entry)}) та <code>Trailing Stop</code> до ${fmtScPrice(tp2)}.`
+        ],
+        cutloss: [
+          `<strong>Ознака зламу:</strong> ціна проходить Warning (${fmtScPrice(warn)}) і ламає рівень ${fmtScPrice(inval)}.`,
+          '<strong>Дія захисту:</strong> суворий вихід за стопом без усереднення проти ринку.',
+          `<strong>Відкладений ордер:</strong> <code>Stop-Market (${dir === 'long' ? 'Sell' : 'Buy'})</code> на ${fmtScPrice(inval)}, тригер <code>Mark Price</code>, <code>Reduce-Only = ON</code>.`
+        ],
+        flipPlan: [
+          `<strong>Як обернути в прибуток:</strong> при пробої ${fmtScPrice(flip)} на високому обсязі розглянь зворотний вхід (${dir === 'long' ? 'Short' : 'Long'}) ризиком 0.5R.`,
+          `<strong>Точка розвороту:</strong> після закриття свічки за рівнем ${fmtScPrice(flip)} або на ретесті ${fmtScPrice(inval)} з іншого боку.`,
+          `<strong>Відкладений ордер:</strong> <code>${dir === 'long' ? 'Sell' : 'Buy'} Stop-Limit</code> біля ${fmtScPrice(flip)} із новим стопом за ${fmtScPrice(warn)}.`
+        ]
+      };
+
+      customScenarios.push(newSc);
+      saveCustomScenarios();
+      document.getElementById('sc-custom-form-wrap').classList.add('hidden');
+      selectCustomScenario(newSc.id);
+    });
+
+    document.getElementById('btn-sc-delete-custom').addEventListener('click', () => {
+      customScenarios = customScenarios.filter(c => c.id !== scSelectedCustomId);
+      saveCustomScenarios();
+      selectMatrixAsset('ETH');
+    });
+
+    // ==================== INTERACTIVE TRADE REACTION DRILL ====================
+    const scDrillBank = [
+      {
+        tag: 'ETH · Хедж-шорт · Злам сценарію',
+        q: 'Ти в захисному шорті ETH від $1 720 (SL $1 820). На новинах ФРС ціна пробиває $1 825 великою зеленою свічкою з обсягом ×2.5. Яка найграмотніша дія?',
+        opts: [
+          { t: 'Долити ще шорт на $1 825, щоб покращити середню ціну входу', ok: false, why: 'Усереднення збиткового шорту на імпульсному пробої з обсягом — найшвидший шлях до ліквідації. Сценарій уже зламано.' },
+          { t: 'Дати спрацювати Stop-Market на $1 820 і розглянути Buy Stop-Limit у Long (0.5R) після підтвердження або ретесту $1 815', ok: true, why: 'Точно! Жорсткий Stop-Market (Mark Price, Reduce-Only) обмежує збиток 1R, а пробій опору з високим обсягом дозволяє обернути рух у прибуток зменшеним ризиком 0.5R.' },
+          { t: 'Зняти Stop-Loss і просто чекати кілька днів, поки ціна повернеться', ok: false, why: 'Зняття стопу перетворює контрольовану угоду на неконтрольований ризик без плану.' }
+        ]
+      },
+      {
+        tag: 'BTC · Позиція в плюсі · Супровід',
+        q: 'Твій Long BTC від $60 400 дійшов до TP1 ($63 500, +1.2R). Як захистити прибуток і не вилетіти на випадковому відкаті?',
+        opts: [
+          { t: 'Зафіксувати 50% через Sell Limit (Reduce-Only), перевести Stop-Market у $60 500 і поставити Trailing Stop 2% на залишок', ok: true, why: 'Ідеально: ти вже зафіксував живий прибуток, прибрав ризик збитку (угода безризикова) і дав залишку шанс дійти до TP2 ($66 800).' },
+          { t: 'Тримати 100% позиції без змін і взагалі не рухати стоп із $57 800', ok: false, why: 'Якщо ринок розвернеться від опору $63 500, ти перетвориш +1.2R прибутку назад на -1R збитку.' },
+          { t: 'Одразу перевернутися в агресивний шорт на 5x без підтвердження розвороту', ok: false, why: 'Шорт проти сильного висхідного імпульсу на першому опорі без підтвердження слабкості має низьке матсподівання.' }
+        ]
+      },
+      {
+        tag: 'Відкладені ордери · Захист від тіней',
+        q: 'Ти ставиш захисний Stop-Loss на ф’ючерсах SOL ($64.50). Які налаштування ордера захистять від випадкового «сквізу» і не відкриють зайву позицію?',
+        opts: [
+          { t: 'Звичайний Sell Limit на $64.50 без додаткових галочок', ok: false, why: 'Sell Limit нижче ринкової ціни виконається МИТТЄВО по ринку і закриє твою позицію одразу!' },
+          { t: 'Stop-Market (Sell), Trigger = Mark Price, Reduce-Only = ON', ok: true, why: 'Саме так! Stop-Market гарантує вихід при інвалідації, Mark Price захищає від локальних сквізів на одній біржі, а Reduce-Only гарантує, що ордер лише закриє позицію.' },
+          { t: 'Buy Stop-Limit по Last Price без Reduce-Only', ok: false, why: 'Для закриття Long потрібен Sell, а Last Price вразливий до секундних тіней.' }
+        ]
+      },
+      {
+        tag: 'NVDA · Звітність · Gap-and-Fade',
+        q: 'NVDA відкрилася гепом +7% після звіту, але через 20 хв пробила вниз 15m ORB Low ($137.50) і пішла нижче VWAP. Що це означає і як діяти?',
+        opts: [
+          { t: 'Це «Sell the News» (Gap-and-Fade): закрити Long за стопом і виставити Sell Stop-Limit у шорт нижче $137.00 зі стопом над VWAP', ok: true, why: 'Правильно! Коли акція після сильного гепу втрачає VWAP і 15m Low, фонди фіксують прибуток — це високоімовірний сетап на закриття гепу.' },
+          { t: 'Купити ще більше акцій, бо вони стали «дешевшими» на 3% від відкриття', ok: false, why: 'Ловити падаючий ніж нижче VWAP у день звітності — одна з найдорожчих помилок.' },
+          { t: 'Залишити збитковий Long на тиждень, щоб пересидіти падіння', ok: false, why: 'Звітні угоди без плану виходу часто тягнуть до багатотижневого дрейфу вниз.' }
+        ]
+      },
+      {
+        tag: 'Спот-торгівля · Автоматизація виходу',
+        q: 'Ти купив WBT на споті по $57.30 і хочеш одночасно мати автоматичний Take-Profit на $63.00 і Stop-Loss на $51.50, поки спиш. Який ордер обрати?',
+        opts: [
+          { t: 'Два окремих звичайних Market-ордери', ok: false, why: 'Market-ордер виконується миттєво, його не можна поставити як відкладений.' },
+          { t: 'Ордер OCO (One-Cancels-the-Other): Limit $63.00 + Stop-Limit $51.50 / $51.20', ok: true, why: 'Точно! На споті OCO зв’язує TP і SL в одну пару: щойно ціна досягне одного рівня, другий ордер автоматично скасується.' },
+          { t: 'Лише Buy Limit на $63.00', ok: false, why: 'Buy Limit на $63.00 купить дорожче по ринку замість того, щоб продати з прибутком.' }
+        ]
+      }
+    ];
+
+    let scDrillIdx = 0;
+    let scDrillScore = 0;
+    let scDrillAnswered = false;
+
+    function renderScDrill() {
+      const item = scDrillBank[scDrillIdx];
+      scDrillAnswered = false;
+      document.getElementById('sc-drill-progress').textContent = `Ситуація ${scDrillIdx + 1} / ${scDrillBank.length} · Рахунок: ${scDrillScore}`;
+      document.getElementById('sc-drill-tag').textContent = item.tag;
+      document.getElementById('sc-drill-question').textContent = item.q;
+      const fb = document.getElementById('sc-drill-feedback');
+      fb.classList.add('hidden');
+
+      const optsWrap = document.getElementById('sc-drill-options');
+      optsWrap.innerHTML = item.opts.map((o, idx) =>
+        `<button type="button" data-didx="${idx}" class="text-left p-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/60 text-xs text-slate-200 leading-relaxed transition">
+          <span class="font-bold text-cyan-400 mr-1">${String.fromCharCode(65 + idx)}.</span> ${o.t}
+        </button>`
+      ).join('');
+
+      optsWrap.querySelectorAll('button[data-didx]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (scDrillAnswered) return;
+          scDrillAnswered = true;
+          const chosen = item.opts[parseInt(btn.dataset.didx, 10)];
+          if (chosen.ok) {
+            scDrillScore++;
+            btn.className = 'text-left p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-400 text-xs text-emerald-100 leading-relaxed';
+            fb.className = 'mt-4 p-3.5 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-200 text-xs leading-relaxed';
+            fb.innerHTML = `<strong>✓ Правильно!</strong> ${chosen.why}`;
+          } else {
+            btn.className = 'text-left p-3.5 rounded-xl bg-rose-950/60 border border-rose-400 text-xs text-rose-100 leading-relaxed';
+            fb.className = 'mt-4 p-3.5 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-200 text-xs leading-relaxed';
+            fb.innerHTML = `<strong>✕ Не найкращий хід.</strong> ${chosen.why}`;
+            const okIdx = item.opts.findIndex(x => x.ok);
+            const okBtn = optsWrap.querySelector(`button[data-didx="${okIdx}"]`);
+            if (okBtn) okBtn.className = 'text-left p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/70 text-xs text-emerald-200 leading-relaxed';
+          }
+          fb.classList.remove('hidden');
+          document.getElementById('sc-drill-progress').textContent = `Ситуація ${scDrillIdx + 1} / ${scDrillBank.length} · Рахунок: ${scDrillScore}`;
+        });
+      });
+    }
+
+    document.getElementById('btn-sc-drill-next').addEventListener('click', () => {
+      scDrillIdx = (scDrillIdx + 1) % scDrillBank.length;
+      if (scDrillIdx === 0) scDrillScore = 0;
+      renderScDrill();
+    });
+
+    function initScenarioTracker() {
+      loadCustomScenarios();
+      selectMatrixAsset('ETH');
+      renderScDrill();
+    }
+
     // ==================== INIT ====================
     initTelegramMiniApp();
     loadJournal();
@@ -2710,6 +4953,13 @@
     renderJournal();
     loadLearned();
     renderGlossary();
+    renderEarnChecklist();
+    updateEtfCalc();
+    updateStkCalc();
+    initScenarioTracker();
+    renderLiveTicker();
+    fetchLiveCryptoPrices();
+    setInterval(fetchLiveCryptoPrices, 30000);
   </script>
 </body>
 </html>
