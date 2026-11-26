@@ -870,8 +870,13 @@
               <input id="pos-asset" type="text" value="ETH" placeholder="ETH, BTC, USDT..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white uppercase outline-none focus:border-cyan-400">
             </div>
             <div>
-              <label for="pos-amount" class="block text-[11px] text-slate-400 mb-1">Сума / Маржа ($)</label>
-              <input id="pos-amount" type="number" step="any" placeholder="500" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white outline-none focus:border-cyan-400">
+              <label for="pos-amount" class="block text-[11px] text-slate-400 mb-1">
+                <select id="pos-amt-mode" class="bg-transparent text-[11px] text-cyan-300 font-semibold outline-none cursor-pointer">
+                  <option value="margin" class="bg-slate-900 text-white">Маржа (власні $)</option>
+                  <option value="notional" class="bg-slate-900 text-white">Обсяг (з плечем $)</option>
+                </select>
+              </label>
+              <input id="pos-amount" type="number" step="any" placeholder="120" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white outline-none focus:border-cyan-400">
             </div>
             <div>
               <label for="pos-entry" class="block text-[11px] text-slate-400 mb-1">Ціна входу ($)</label>
@@ -977,6 +982,25 @@
             </div>
           </div>
 
+          <!-- Edit / Add SL & TP Fields -->
+          <div id="pos-drawer-sltp-fields" class="hidden space-y-3 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+              <div>
+                <label for="pos-edit-sl" class="block text-[11px] text-rose-300 mb-1">Stop-Loss ($)</label>
+                <input id="pos-edit-sl" type="number" step="any" placeholder="Вкажи ціну SL" class="w-full bg-slate-900 border border-rose-800/70 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-rose-400 outline-none">
+              </div>
+              <div>
+                <label for="pos-edit-tp" class="block text-[11px] text-emerald-300 mb-1">Take-Profit ($)</label>
+                <input id="pos-edit-tp" type="number" step="any" placeholder="Вкажи ціну TP" class="w-full bg-slate-900 border border-emerald-800/70 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-emerald-400 outline-none">
+              </div>
+              <div>
+                <button id="btn-pos-sl-be" type="button" class="w-full py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] text-cyan-300 font-medium transition">
+                  SL у беззбиток (Вхід)
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Live Calculation Preview + Confirm Button -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800">
             <div id="pos-drawer-preview" class="text-xs font-mono-num text-cyan-200 leading-relaxed"></div>
@@ -1045,8 +1069,13 @@
                 <input id="j-entry" type="number" step="any" placeholder="1720" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white focus:border-blue-500 focus:outline-none">
               </div>
               <div id="j-open-amount-wrap">
-                <label for="j-open-amount" class="block text-xs text-slate-400 mb-1">Сума / Маржа ($)</label>
-                <input id="j-open-amount" type="number" step="any" placeholder="250" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white focus:border-cyan-400 focus:outline-none">
+                <label for="j-open-amount" class="block text-xs text-slate-400 mb-1">
+                  <select id="j-open-amt-mode" class="bg-transparent text-xs text-cyan-300 font-semibold outline-none cursor-pointer">
+                    <option value="margin" class="bg-slate-900 text-white">Маржа ($)</option>
+                    <option value="notional" class="bg-slate-900 text-white">Обсяг ($)</option>
+                  </select>
+                </label>
+                <input id="j-open-amount" type="number" step="any" placeholder="120" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white focus:border-cyan-400 focus:outline-none">
               </div>
               <div id="j-closed-exit-wrap" class="hidden">
                 <label for="j-exit" class="block text-xs text-slate-400 mb-1">Вихід ($)</label>
@@ -3205,9 +3234,44 @@
             <td class="py-2.5 text-slate-300">${t.market}</td>
             <td class="py-2.5 text-right font-mono-num text-slate-300">${t.entry || '—'} → ${t.exit || '—'}</td>
             <td class="py-2.5 text-right font-mono-num font-bold ${t.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
-            <td class="py-2.5 text-right"><button type="button" data-delid="${t.id}" class="del-trade-btn text-rose-400 hover:text-rose-300 text-xs">Видалити</button></td>
+            <td class="py-2.5 text-right whitespace-nowrap">
+              <button type="button" data-editpnl="${t.id}" class="edit-trade-pnl-btn text-cyan-400 hover:text-cyan-300 text-xs mr-2" title="Скоригувати PnL під точну цифру з біржі">✏️ PnL</button>
+              <button type="button" data-delid="${t.id}" class="del-trade-btn text-rose-400 hover:text-rose-300 text-xs">Видалити</button>
+            </td>
           </tr>
         `).join('');
+
+        tbody.querySelectorAll('.edit-trade-pnl-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tr = journalTrades.find(x => x.id === btn.dataset.editpnl);
+            if (!tr) return;
+            const row = btn.closest('tr');
+            const pnlCell = row ? row.children[4] : null;
+            if (!pnlCell) return;
+            pnlCell.innerHTML = `<div class="inline-flex items-center justify-end gap-1">
+              <input type="text" value="${tr.pnl}" class="inline-pnl-input w-20 bg-slate-950 border border-cyan-400 rounded px-1.5 py-0.5 text-right font-mono-num text-xs text-white outline-none">
+              <button type="button" class="inline-pnl-save px-1.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold">✓</button>
+            </div>`;
+            const inp = pnlCell.querySelector('.inline-pnl-input');
+            const saveBtn = pnlCell.querySelector('.inline-pnl-save');
+            inp.focus();
+            inp.select();
+            const commit = () => {
+              const parsed = parseFloat((inp.value || '').replace(',', '.').replace(/[^0-9.-]/g, ''));
+              if (isNaN(parsed)) { renderJournal(); return; }
+              tr.pnl = parseFloat(parsed.toFixed(2));
+              saveJournal();
+              renderJournal();
+              if (typeof renderDashboard === 'function') renderDashboard();
+              showJournalToast(`PnL по ${tr.asset} оновлено на ${tr.pnl >= 0 ? '+' : ''}$${tr.pnl.toFixed(2)}.`);
+            };
+            saveBtn.addEventListener('click', commit);
+            inp.addEventListener('keydown', ev => {
+              if (ev.key === 'Enter') commit();
+              if (ev.key === 'Escape') renderJournal();
+            });
+          });
+        });
 
         tbody.querySelectorAll('.del-trade-btn').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -3215,6 +3279,7 @@
             journalTrades = journalTrades.filter(x => x.id !== id);
             saveJournal();
             renderJournal();
+            if (typeof renderDashboard === 'function') renderDashboard();
           });
         });
       }
@@ -3284,13 +3349,18 @@
         let posType = 'spot';
         if (market === 'Futures Long') posType = 'fut-long';
         else if (market === 'Futures Short') posType = 'fut-short';
+        const oAmtMode = (document.getElementById('j-open-amt-mode')?.value || 'margin');
+        const effLev = posType === 'spot' ? 1 : levNum;
+        const marginAmt = (posType !== 'spot' && oAmtMode === 'notional')
+          ? parseFloat((amount / effLev).toFixed(2))
+          : amount;
         portfolioPositions.push({
           id: 'pos-' + Date.now(),
           type: posType,
           asset: cleanAsset,
-          amount,
+          amount: marginAmt,
           entry,
-          lev: posType === 'spot' ? 1 : levNum,
+          lev: effLev,
           sl: !isNaN(slVal) && slVal > 0 ? slVal : null,
           tp: !isNaN(tpVal) && tpVal > 0 ? tpVal : null,
           note
@@ -5631,17 +5701,27 @@
             return `<tr>
               <td class="py-2.5">${typeBadges[p.type] || p.type}</td>
               <td class="py-2.5 font-mono-num font-bold text-white">${p.asset}${dcaBadge}</td>
-              <td class="py-2.5 text-right font-mono-num text-slate-200">$${Math.round(p.amount).toLocaleString('uk-UA')}${p.lev > 1 ? ` <span class="text-amber-300">(${p.lev}x)</span>` : ''}</td>
+              <td class="py-2.5 text-right font-mono-num text-slate-200">
+                <div>$${Math.round(p.amount).toLocaleString('uk-UA')}${p.lev > 1 ? ` <span class="text-amber-300">(${p.lev}x)</span>` : ''}</div>
+                ${p.lev > 1 ? `<div class="text-[10px] text-slate-400">Обсяг: $${Math.round(p.notional).toLocaleString('uk-UA')}</div>` : ''}
+              </td>
               <td class="py-2.5 text-right font-mono-num text-slate-300">${p.type === 'cash' ? '$1.00' : `${fmtScPrice(p.entry)} → <span class="text-cyan-300">${fmtScPrice(p.liveP)}</span>`}</td>
               <td class="py-2.5 text-right font-mono-num text-[11px]">
-                <div class="flex flex-col items-end gap-1">
-                  ${p.type !== 'cash' && p.sl
-                    ? `<button type="button" data-pos-exec-sl="${p.id}" title="Натисни, якщо спрацював Stop-Loss — автоматично занесе в історію угод" class="px-2 py-0.5 rounded bg-rose-950/80 hover:bg-rose-800/80 border border-rose-700/70 text-rose-200 font-semibold transition cursor-pointer">SL ${fmtScPrice(p.sl)}</button>`
-                    : '<span class="text-slate-600">SL —</span>'}
-                  ${p.type !== 'cash' && p.tp
-                    ? `<button type="button" data-pos-exec-tp="${p.id}" title="Натисни, якщо спрацював Take-Profit — автоматично занесе в історію угод" class="px-2 py-0.5 rounded bg-emerald-950/80 hover:bg-emerald-800/80 border border-emerald-700/70 text-emerald-200 font-semibold transition cursor-pointer">TP ${fmtScPrice(p.tp)}</button>`
-                    : '<span class="text-slate-600">TP —</span>'}
-                </div>
+                ${p.type === 'cash'
+                  ? '<span class="text-slate-600">—</span>'
+                  : `<div class="flex flex-col items-end gap-1">
+                      <div class="flex items-center gap-1">
+                        ${p.sl
+                          ? `<button type="button" data-pos-exec-sl="${p.id}" title="Натисни, якщо спрацював Stop-Loss — автоматично занесе в історію угод" class="px-2 py-0.5 rounded bg-rose-950/80 hover:bg-rose-800/80 border border-rose-700/70 text-rose-200 font-semibold transition cursor-pointer">SL ${fmtScPrice(p.sl)}</button>`
+                          : `<button type="button" data-pos-edit-sltp="${p.id}" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-rose-950/70 border border-dashed border-rose-800/70 text-rose-300/90 text-[10px] transition cursor-pointer">+ Додати SL</button>`}
+                      </div>
+                      <div class="flex items-center gap-1">
+                        ${p.tp
+                          ? `<button type="button" data-pos-exec-tp="${p.id}" title="Натисни, якщо спрацював Take-Profit — автоматично занесе в історію угод" class="px-2 py-0.5 rounded bg-emerald-950/80 hover:bg-emerald-800/80 border border-emerald-700/70 text-emerald-200 font-semibold transition cursor-pointer">TP ${fmtScPrice(p.tp)}</button>`
+                          : `<button type="button" data-pos-edit-sltp="${p.id}" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-emerald-950/70 border border-dashed border-emerald-800/70 text-emerald-300/90 text-[10px] transition cursor-pointer">+ Додати TP</button>`}
+                      </div>
+                      ${(p.sl || p.tp) ? `<button type="button" data-pos-edit-sltp="${p.id}" class="text-[10px] text-slate-400 hover:text-cyan-300 transition cursor-pointer">✏️ змінити SL/TP</button>` : ''}
+                    </div>`}
               </td>
               <td class="py-2.5 text-right font-mono-num font-bold ${pCls}">${p.type === 'cash' ? '0%' : `${sgn}$${Math.round(p.upnl)} (${sgn}${p.upnlPct.toFixed(1)}%)`}${lockedHtml}</td>
               <td class="py-2.5 text-right whitespace-nowrap">
@@ -5672,6 +5752,9 @@
           });
           tbody.querySelectorAll('button[data-pos-exec-tp]').forEach(b => {
             b.addEventListener('click', () => executePositionOrder(b.dataset.posExecTp, 'tp'));
+          });
+          tbody.querySelectorAll('button[data-pos-edit-sltp]').forEach(b => {
+            b.addEventListener('click', () => openPosDrawer('sltp', b.dataset.posEditSltp));
           });
         }
       }
@@ -5742,28 +5825,40 @@
       const title = document.getElementById('pos-drawer-title');
       const pFields = document.getElementById('pos-drawer-partial-fields');
       const dFields = document.getElementById('pos-drawer-dca-fields');
+      const sFields = document.getElementById('pos-drawer-sltp-fields');
       const confirmBtn = document.getElementById('btn-pos-drawer-confirm');
       const errEl = document.getElementById('pos-drawer-err');
       errEl.classList.add('hidden');
 
       dr.classList.remove('hidden');
+      pFields.classList.add('hidden');
+      dFields.classList.add('hidden');
+      sFields.classList.add('hidden');
+
       if (mode === 'partial') {
         badge.textContent = '✂ Часткове / повне закриття';
         badge.className = 'px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-emerald-500/20 text-emerald-300';
-        title.textContent = `${p.asset} · Поточна сума $${Math.round(p.amount).toLocaleString('uk-UA')} (Вхід ${fmtScPrice(p.entry)})`;
+        title.textContent = `${p.asset} · Поточна маржа $${Math.round(p.amount).toLocaleString('uk-UA')} (Вхід ${fmtScPrice(p.entry)})`;
         pFields.classList.remove('hidden');
-        dFields.classList.add('hidden');
         document.getElementById('pos-pclose-pct').value = '50';
         document.getElementById('pos-pclose-price').value = p.liveP >= 100 ? p.liveP.toFixed(1) : (p.liveP >= 10 ? p.liveP.toFixed(2) : p.liveP.toFixed(4));
         document.getElementById('pos-pclose-be').checked = false;
         confirmBtn.textContent = 'Підтвердити закриття частки';
         confirmBtn.className = 'px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white whitespace-nowrap transition';
+      } else if (mode === 'sltp') {
+        badge.textContent = '🎯 Налаштування SL / TP';
+        badge.className = 'px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-cyan-500/20 text-cyan-300';
+        title.textContent = `${p.asset} · Вхід ${fmtScPrice(p.entry)} · Live ${fmtScPrice(p.liveP)}`;
+        sFields.classList.remove('hidden');
+        document.getElementById('pos-edit-sl').value = p.sl ? p.sl : '';
+        document.getElementById('pos-edit-tp').value = p.tp ? p.tp : '';
+        confirmBtn.textContent = 'Зберегти SL / TP';
+        confirmBtn.className = 'px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-semibold text-white whitespace-nowrap transition';
       } else {
         badge.textContent = '+ Усереднення (DCA)';
         badge.className = 'px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-amber-500/20 text-amber-300';
         title.textContent = `${p.asset} · Поточний середній вхід ${fmtScPrice(p.entry)} ($${Math.round(p.amount).toLocaleString('uk-UA')})`;
         dFields.classList.remove('hidden');
-        pFields.classList.add('hidden');
         document.getElementById('pos-dca-amount').value = Math.round(p.amount);
         document.getElementById('pos-dca-price').value = p.liveP >= 100 ? p.liveP.toFixed(1) : (p.liveP >= 10 ? p.liveP.toFixed(2) : p.liveP.toFixed(4));
         confirmBtn.textContent = 'Застосувати усереднення';
@@ -5804,6 +5899,27 @@
         const diffPct = ((newEntry - p.entry) / p.entry) * 100;
         const dSgn = diffPct >= 0 ? '+' : '';
         prevEl.innerHTML = `Нова сума: <strong>$${Math.round(newAmt).toLocaleString('uk-UA')}</strong> · Середній вхід: ${fmtScPrice(p.entry)} → <strong class="text-amber-300">${fmtScPrice(newEntry)}</strong> (${dSgn}${diffPct.toFixed(2)}%)`;
+      } else if (posDrawerState.mode === 'sltp') {
+        const slV = parseFloat(document.getElementById('pos-edit-sl').value);
+        const tpV = parseFloat(document.getElementById('pos-edit-tp').value);
+        const calcAt = (targetP) => {
+          const pctM = p.type === 'fut-short' ? ((p.entry - targetP) / p.entry) : ((targetP - p.entry) / p.entry);
+          return p.amount * p.lev * pctM;
+        };
+        const parts = [];
+        let slPnl = null, tpPnl = null;
+        if (!isNaN(slV) && slV > 0) {
+          slPnl = calcAt(slV);
+          parts.push(`При SL: <strong class="${slPnl >= 0 ? 'text-emerald-300' : 'text-rose-300'}">${slPnl >= 0 ? '+' : ''}$${slPnl.toFixed(2)}</strong>`);
+        }
+        if (!isNaN(tpV) && tpV > 0) {
+          tpPnl = calcAt(tpV);
+          parts.push(`При TP: <strong class="${tpPnl >= 0 ? 'text-emerald-300' : 'text-rose-300'}">${tpPnl >= 0 ? '+' : ''}$${tpPnl.toFixed(2)}</strong>`);
+        }
+        if (slPnl !== null && tpPnl !== null && slPnl < 0 && tpPnl > 0) {
+          parts.push(`R:R = <strong class="text-cyan-300">1:${(tpPnl / Math.abs(slPnl)).toFixed(2)}</strong>`);
+        }
+        prevEl.innerHTML = parts.length > 0 ? parts.join(' · ') : 'Вкажи ціну Stop-Loss і/або Take-Profit (порожнє поле прибирає ордер).';
       }
     }
 
@@ -5835,7 +5951,14 @@
       });
     });
 
-    ['pos-pclose-pct', 'pos-pclose-price', 'pos-dca-amount', 'pos-dca-price'].forEach(id => {
+    document.getElementById('btn-pos-sl-be').addEventListener('click', () => {
+      const p = portfolioPositions.find(x => x.id === posDrawerState.posId);
+      if (!p) return;
+      document.getElementById('pos-edit-sl').value = p.entry >= 100 ? p.entry.toFixed(2) : p.entry.toFixed(4);
+      updatePosDrawerPreview();
+    });
+
+    ['pos-pclose-pct', 'pos-pclose-price', 'pos-dca-amount', 'pos-dca-price', 'pos-edit-sl', 'pos-edit-tp', 'pos-edit-sl', 'pos-edit-tp'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', updatePosDrawerPreview);
     });
@@ -5929,6 +6052,24 @@
         renderPortfolioPositions();
         renderDashboard();
         showJournalToast(`Позицію ${pos.asset} усереднено: новий середній вхід ${fmtScPrice(pos.entry)}, сума $${Math.round(pos.amount).toLocaleString('uk-UA')}.`);
+      } else if (posDrawerState.mode === 'sltp') {
+        const slRaw = (document.getElementById('pos-edit-sl').value || '').trim();
+        const tpRaw = (document.getElementById('pos-edit-tp').value || '').trim();
+        const slVal = slRaw ? parseFloat(slRaw) : null;
+        const tpVal = tpRaw ? parseFloat(tpRaw) : null;
+        if ((slRaw && (isNaN(slVal) || slVal <= 0)) || (tpRaw && (isNaN(tpVal) || tpVal <= 0))) {
+          errEl.textContent = 'Вкажи коректні ціни більші за 0 або залиш поле порожнім.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        errEl.classList.add('hidden');
+        pos.sl = slVal;
+        pos.tp = tpVal;
+        savePortfolioPositions();
+        closePosDrawer();
+        renderPortfolioPositions();
+        renderDashboard();
+        showJournalToast(`Ордери SL/TP для ${pos.asset} збережено.`);
       }
     });
 
@@ -6141,11 +6282,15 @@
         return;
       }
       errEl.classList.add('hidden');
+      const amtMode = (document.getElementById('pos-amt-mode')?.value || 'margin');
+      const marginAmount = (type !== 'spot' && type !== 'cash' && amtMode === 'notional')
+        ? parseFloat((amount / lev).toFixed(2))
+        : amount;
       portfolioPositions.push({
         id: 'pos-' + Date.now(),
         type,
         asset,
-        amount,
+        amount: marginAmount,
         entry,
         lev,
         sl: !isNaN(slVal) && slVal > 0 ? slVal : null,
