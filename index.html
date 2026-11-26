@@ -72,9 +72,9 @@
 </head>
 <body class="min-h-screen antialiased">
 
-  <!-- Header -->
-  <header class="border-b border-slate-800 bg-slate-900/85 backdrop-blur sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
+  <!-- Header (compact, scrolls away so sticky price bar stays clean at top) -->
+  <header class="border-b border-slate-800 bg-slate-900/90">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <div>
           <div class="flex items-center gap-2.5">
@@ -84,9 +84,11 @@
           </div>
           <p id="header-subtitle" class="text-xs text-slate-400 mt-0.5">Розділ: Крипторинок — гібридні стратегії, 7 активів, симулятор і журнал OCR</p>
         </div>
+      </div>
 
+      <div class="flex items-center gap-2">
         <!-- Top-level Market Mode Switcher -->
-        <div class="inline-flex p-1 rounded-xl bg-slate-950 border border-slate-800 self-start">
+        <div class="inline-flex p-1 rounded-xl bg-slate-950 border border-slate-800">
           <button id="mode-crypto" type="button" class="market-btn active-crypto px-3 py-1.5 rounded-lg text-xs font-semibold transition">
             ₿ Крипторинок
           </button>
@@ -94,66 +96,37 @@
             📈 Фондовий ринок
           </button>
         </div>
+        <!-- Mobile right-sidebar toggle -->
+        <button id="btn-mobile-nav-open" type="button" class="lg:hidden px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-white transition">
+          ☰ Розділи
+        </button>
       </div>
-
-      <!-- Navigation Tabs -->
-      <nav class="flex flex-wrap gap-1.5" aria-label="Розділи симулятора">
-        <!-- Crypto-specific tabs -->
-        <button id="nav-math" type="button" class="tab-btn crypto-tab active px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
-          1. Симулятор (A vs B)
-        </button>
-        <button id="nav-strategies" type="button" class="tab-btn crypto-tab px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
-          2. 5 Стратегій
-        </button>
-        <button id="nav-history" type="button" class="tab-btn crypto-tab px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
-          3. Кейси (7 активів)
-        </button>
-        <button id="nav-risk" type="button" class="tab-btn crypto-tab px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
-          4. Калькулятор
-        </button>
-
-        <!-- US Stock Market tabs -->
-        <button id="nav-stocks-earnings" type="button" class="tab-btn stock-tab hidden px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
-          1. Звітність і Чеклист
-        </button>
-        <button id="nav-stocks-etf" type="button" class="tab-btn stock-tab hidden px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
-          2. Відскоки 2x–3x ETF
-        </button>
-        <button id="nav-stocks-calc" type="button" class="tab-btn stock-tab hidden px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
-          3. Калькулятор акцій
-        </button>
-
-        <!-- Shared tabs (always visible) -->
-        <button id="nav-dashboard" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-500/80 bg-blue-500/10 text-blue-200 hover:text-white hover:border-blue-400 transition">
-          📊 Зведення
-        </button>
-        <button id="nav-scenarios" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-cyan-600/80 text-cyan-300 hover:text-white hover:border-cyan-400 transition">
-          🎯 Трекер сценаріїв
-        </button>
-        <button id="nav-journal" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-emerald-700/80 text-emerald-300 hover:text-white hover:border-emerald-500 transition">
-          5. Журнал (Скріншот OCR)
-        </button>
-        <button id="nav-glossary" type="button" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-amber-700/80 text-amber-300 hover:text-white hover:border-amber-500 transition">
-          6. Словник і навчання
-        </button>
-      </nav>
     </div>
   </header>
 
-  <!-- LIVE REAL-TIME PRICE TICKER BAR -->
-  <div class="border-b border-slate-800/90 bg-slate-950/90">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-      <div id="live-ticker-strip" class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 text-xs font-mono-num"></div>
+  <!-- STICKY LIVE REAL-TIME PRICE TICKER BAR (always visible when scrolling down) -->
+  <div id="sticky-price-bar" class="sticky top-0 z-40 border-b border-slate-800/95 bg-slate-950/95 backdrop-blur-md shadow-lg shadow-slate-950/60">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-2 flex items-center justify-between gap-2">
+      <div id="live-ticker-strip" class="flex items-center gap-2 overflow-x-auto pb-0.5 text-xs font-mono-num flex-1 min-w-0"></div>
       <div class="flex items-center gap-2 flex-shrink-0">
-        <span id="live-status-text" class="text-[11px] font-mono-num text-slate-400 whitespace-nowrap">Оновлення цін...</span>
+        <span id="live-status-text" class="hidden sm:inline text-[11px] font-mono-num text-slate-400 whitespace-nowrap">Оновлення цін...</span>
         <button id="btn-refresh-prices" type="button" class="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] font-medium text-slate-200 transition whitespace-nowrap">
           ↻ Оновити
+        </button>
+        <button id="btn-sticky-nav-open" type="button" class="lg:hidden px-2.5 py-1 rounded-md bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-[11px] font-semibold text-blue-200 transition whitespace-nowrap">
+          ☰ Меню
         </button>
       </div>
     </div>
   </div>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+  <!-- Mobile Right-Sidebar Backdrop -->
+  <div id="mobile-nav-backdrop" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-40 lg:hidden"></div>
+
+  <!-- App Shell: Main Content (Left) + Sticky Right Sidebar Navigation -->
+  <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-6 lg:grid lg:grid-cols-12 lg:gap-6 items-start">
+
+    <main class="lg:col-span-9 xl:col-span-10 min-w-0 space-y-6">
 
     <!-- ==================== TAB 1: MATH & STRATEGY A vs B SIMULATOR ==================== -->
     <section id="tab-math" class="space-y-6 fade-in">
@@ -1944,7 +1917,76 @@
       </div>
     </section>
 
-  </main>
+    </main>
+
+    <!-- RIGHT-HAND SIDEBAR NAVIGATION (Sticky on Desktop, Slide-over Drawer on Mobile) -->
+    <aside id="right-nav-sidebar" aria-label="Розділи додатка" class="fixed top-0 right-0 bottom-0 w-72 z-50 translate-x-full transition-transform duration-200 ease-out bg-slate-900 border-l border-slate-800 p-4 overflow-y-auto lg:static lg:translate-x-0 lg:w-auto lg:z-auto lg:col-span-3 xl:col-span-2 lg:sticky lg:top-16 lg:rounded-2xl lg:border lg:border-slate-800 lg:bg-slate-900/90 lg:p-3.5 lg:max-h-[calc(100vh-5rem)]">
+      <div class="flex items-center justify-between lg:hidden mb-3 pb-2.5 border-b border-slate-800">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Навігація</span>
+        <button id="btn-mobile-nav-close" type="button" class="px-2 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white">✕</button>
+      </div>
+
+      <nav class="space-y-4" aria-label="Розділи симулятора">
+        <!-- Core Workspace Tools -->
+        <div>
+          <div class="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Пульт і контроль</div>
+          <div class="flex flex-col gap-1.5">
+            <button id="nav-dashboard" type="button" class="tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold border border-blue-500/70 bg-blue-500/10 text-blue-200 hover:text-white hover:border-blue-400 transition">
+              📊 Зведення
+            </button>
+            <button id="nav-scenarios" type="button" class="tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-cyan-600/70 text-cyan-300 hover:text-white hover:border-cyan-400 transition">
+              🎯 Трекер сценаріїв
+            </button>
+            <button id="nav-journal" type="button" class="tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-emerald-700/70 text-emerald-300 hover:text-white hover:border-emerald-500 transition">
+              5. Журнал (OCR)
+            </button>
+          </div>
+        </div>
+
+        <!-- Market-specific Tools -->
+        <div>
+          <div class="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Інструменти ринку</div>
+          <div class="flex flex-col gap-1.5">
+            <!-- Crypto-specific tabs -->
+            <button id="nav-math" type="button" class="tab-btn crypto-tab active w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+              1. Симулятор (A vs B)
+            </button>
+            <button id="nav-strategies" type="button" class="tab-btn crypto-tab w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+              2. 5 Стратегій
+            </button>
+            <button id="nav-history" type="button" class="tab-btn crypto-tab w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+              3. Кейси (7 активів)
+            </button>
+            <button id="nav-risk" type="button" class="tab-btn crypto-tab w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+              4. Калькулятор
+            </button>
+
+            <!-- US Stock Market tabs -->
+            <button id="nav-stocks-earnings" type="button" class="tab-btn stock-tab hidden w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+              1. Звітність і Чеклист
+            </button>
+            <button id="nav-stocks-etf" type="button" class="tab-btn stock-tab hidden w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+              2. Відскоки 2x–3x ETF
+            </button>
+            <button id="nav-stocks-calc" type="button" class="tab-btn stock-tab hidden w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 transition">
+              3. Калькулятор акцій
+            </button>
+          </div>
+        </div>
+
+        <!-- Learning -->
+        <div>
+          <div class="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">База знань</div>
+          <div class="flex flex-col gap-1.5">
+            <button id="nav-glossary" type="button" class="tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium border border-amber-700/70 text-amber-300 hover:text-white hover:border-amber-500 transition">
+              6. Словник і навчання
+            </button>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+  </div>
 
   <script>
     // ==================== STATE & NAVIGATION ====================
@@ -1980,8 +2022,32 @@
       if (tabId === 'stocks-etf' && etfCompareChart) etfCompareChart.resize();
       if (tabId === 'dashboard' && typeof renderDashboard === 'function') renderDashboard();
       if (tabId === 'journal' && typeof renderJournalCrossAnalysis === 'function') renderJournalCrossAnalysis();
+      if (typeof closeMobileNav === 'function') closeMobileNav();
       if (typeof saveAppStateDebounced === 'function') saveAppStateDebounced();
     }
+
+    function openMobileNav() {
+      const sb = document.getElementById('right-nav-sidebar');
+      const bd = document.getElementById('mobile-nav-backdrop');
+      if (sb) sb.classList.remove('translate-x-full');
+      if (bd) bd.classList.remove('hidden');
+    }
+
+    function closeMobileNav() {
+      const sb = document.getElementById('right-nav-sidebar');
+      const bd = document.getElementById('mobile-nav-backdrop');
+      if (sb) sb.classList.add('translate-x-full');
+      if (bd) bd.classList.add('hidden');
+    }
+
+    ['btn-mobile-nav-open', 'btn-sticky-nav-open'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', openMobileNav);
+    });
+    ['btn-mobile-nav-close', 'mobile-nav-backdrop'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', closeMobileNav);
+    });
 
     tabs.forEach(t => {
       document.getElementById('nav-' + t).addEventListener('click', () => switchTab(t));
