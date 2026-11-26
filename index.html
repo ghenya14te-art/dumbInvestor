@@ -855,7 +855,7 @@
 
         <!-- Add Open Position Form -->
         <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5 text-xs items-end">
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-xs items-end">
             <div>
               <label for="pos-type" class="block text-[11px] text-slate-400 mb-1">Тип позиції</label>
               <select id="pos-type" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white outline-none focus:border-cyan-400">
@@ -882,8 +882,12 @@
               <input id="pos-lev" type="number" min="1" max="20" step="0.5" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white outline-none focus:border-cyan-400">
             </div>
             <div>
-              <label for="pos-sl" class="block text-[11px] text-slate-400 mb-1">Stop-Loss ($)</label>
-              <input id="pos-sl" type="number" step="any" placeholder="Опційно" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white outline-none focus:border-cyan-400">
+              <label for="pos-sl" class="block text-[11px] text-rose-300 mb-1">Stop-Loss ($)</label>
+              <input id="pos-sl" type="number" step="any" placeholder="Опційно" class="w-full bg-slate-900 border border-rose-800/60 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white outline-none focus:border-rose-400">
+            </div>
+            <div>
+              <label for="pos-tp" class="block text-[11px] text-emerald-300 mb-1">Take-Profit ($)</label>
+              <input id="pos-tp" type="number" step="any" placeholder="Опційно" class="w-full bg-slate-900 border border-emerald-800/60 rounded-lg px-2.5 py-2 font-mono-num text-xs text-white outline-none focus:border-emerald-400">
             </div>
             <div>
               <button id="btn-add-position" type="button" class="w-full py-2 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold transition">
@@ -910,6 +914,77 @@
             </thead>
             <tbody id="positions-table-body" class="divide-y divide-slate-800/70"></tbody>
           </table>
+        </div>
+
+        <!-- Inline Action Drawer: Partial Close & DCA Averaging -->
+        <div id="pos-action-drawer" class="hidden p-4 rounded-xl bg-slate-950/95 border border-cyan-500/50 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span id="pos-drawer-badge" class="px-2 py-0.5 rounded text-[11px] font-bold uppercase"></span>
+              <h3 id="pos-drawer-title" class="text-sm font-bold text-white"></h3>
+            </div>
+            <button id="btn-pos-drawer-close" type="button" class="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-900 border border-slate-800">✕ Закрити</button>
+          </div>
+
+          <!-- Partial Close Fields -->
+          <div id="pos-drawer-partial-fields" class="hidden space-y-3 text-xs">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-slate-400 mr-1">Частка закриття:</span>
+              <button type="button" data-pclose-pct="25" class="pclose-pct-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 font-mono-num text-slate-200 transition">25%</button>
+              <button type="button" data-pclose-pct="50" class="pclose-pct-btn px-2.5 py-1 rounded-lg bg-cyan-600/30 border border-cyan-400 font-mono-num text-cyan-200 font-semibold transition">50%</button>
+              <button type="button" data-pclose-pct="75" class="pclose-pct-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 font-mono-num text-slate-200 transition">75%</button>
+              <button type="button" data-pclose-pct="100" class="pclose-pct-btn px-2.5 py-1 rounded-lg bg-emerald-950/70 hover:bg-emerald-900/70 border border-emerald-700/60 font-mono-num text-emerald-300 transition">100% (Уся)</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label for="pos-pclose-pct" class="block text-[11px] text-slate-400 mb-1">Відсоток закриття (%)</label>
+                <input id="pos-pclose-pct" type="number" min="1" max="100" step="1" value="50" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-cyan-400 outline-none">
+              </div>
+              <div>
+                <label for="pos-pclose-price" class="block text-[11px] text-slate-400 mb-1">Ціна закриття ($)</label>
+                <input id="pos-pclose-price" type="number" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-cyan-400 outline-none">
+              </div>
+              <div class="flex flex-col justify-center gap-1.5 pt-2 sm:pt-4">
+                <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                  <input id="pos-pclose-to-cash" type="checkbox" checked class="rounded border-slate-600 text-emerald-500 focus:ring-0">
+                  <span>Повернути суму + PnL у Кеш</span>
+                </label>
+                <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                  <input id="pos-pclose-be" type="checkbox" class="rounded border-slate-600 text-cyan-500 focus:ring-0">
+                  <span>Перенести SL залишку в беззбиток</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- DCA Averaging Fields -->
+          <div id="pos-drawer-dca-fields" class="hidden space-y-3 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label for="pos-dca-amount" class="block text-[11px] text-slate-400 mb-1">Додаткова сума / маржа ($)</label>
+                <input id="pos-dca-amount" type="number" step="any" placeholder="250" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-amber-400 outline-none">
+              </div>
+              <div>
+                <label for="pos-dca-price" class="block text-[11px] text-slate-400 mb-1">Ціна докупки ($)</label>
+                <input id="pos-dca-price" type="number" step="any" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 font-mono-num text-xs text-white focus:border-amber-400 outline-none">
+              </div>
+              <div class="flex items-center pt-2 sm:pt-4">
+                <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                  <input id="pos-dca-from-cash" type="checkbox" checked class="rounded border-slate-600 text-amber-500 focus:ring-0">
+                  <span>Списати суму з Кеш-резерву</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Calculation Preview + Confirm Button -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800">
+            <div id="pos-drawer-preview" class="text-xs font-mono-num text-cyan-200 leading-relaxed"></div>
+            <button id="btn-pos-drawer-confirm" type="button" class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-semibold text-white whitespace-nowrap transition">
+              Підтвердити
+            </button>
+          </div>
+          <div id="pos-drawer-err" class="hidden text-xs text-rose-400"></div>
         </div>
       </div>
 
@@ -1745,10 +1820,19 @@
             <p class="text-xs text-slate-400 mt-1">Усе найголовніше на одному екрані — без перемикання між вкладками.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
+            <button id="btn-dash-copy-report" type="button" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 border border-blue-400/70 text-xs font-semibold text-white shadow-sm shadow-blue-900/40 transition">📋 Скопіювати звіт для аналізу</button>
             <button id="btn-dash-goto-sc" type="button" class="px-3 py-2 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-xs font-semibold text-cyan-200 transition">🎯 Трекер сценаріїв</button>
             <button id="btn-dash-goto-j" type="button" class="px-3 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-xs font-semibold text-emerald-200 transition">5. Журнал і позиції</button>
             <button id="btn-reset-app-state" type="button" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 transition" title="Скинути збережені повзунки та параметри вкладок до стандартних">↺ Скинути параметри</button>
           </div>
+        </div>
+        <!-- Copy Report Toast & Fallback Preview -->
+        <div id="dash-report-box" class="hidden mt-3 pt-3 border-t border-slate-800 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span id="dash-report-status" class="text-xs font-semibold text-emerald-300">✓ Звіт скопійовано в буфер — просто встав його в чат!</span>
+            <button id="btn-dash-report-hide" type="button" class="text-[11px] text-slate-400 hover:text-white">✕ Сховати</button>
+          </div>
+          <textarea id="dash-report-text" rows="6" readonly class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono-num text-[11px] text-slate-300 outline-none focus:border-blue-500"></textarea>
         </div>
       </div>
 
@@ -5540,18 +5624,28 @@
           tbody.innerHTML = sum.enriched.map(p => {
             const pCls = p.upnl >= 0 ? 'text-emerald-300' : 'text-rose-300';
             const sgn = p.upnl >= 0 ? '+' : '';
+            const dcaBadge = p.dcaCount ? `<span class="ml-1 px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px]">DCA ×${p.dcaCount}</span>` : '';
+            const lockedHtml = (p.realizedPnl && Math.abs(p.realizedPnl) >= 0.01)
+              ? `<div class="text-[10px] font-normal ${p.realizedPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">Зафікс: ${p.realizedPnl >= 0 ? '+' : ''}$${Math.round(p.realizedPnl)}</div>`
+              : '';
             return `<tr>
               <td class="py-2.5">${typeBadges[p.type] || p.type}</td>
-              <td class="py-2.5 font-mono-num font-bold text-white">${p.asset}</td>
+              <td class="py-2.5 font-mono-num font-bold text-white">${p.asset}${dcaBadge}</td>
               <td class="py-2.5 text-right font-mono-num text-slate-200">$${Math.round(p.amount).toLocaleString('uk-UA')}${p.lev > 1 ? ` <span class="text-amber-300">(${p.lev}x)</span>` : ''}</td>
               <td class="py-2.5 text-right font-mono-num text-slate-300">${p.type === 'cash' ? '$1.00' : `${fmtScPrice(p.entry)} → <span class="text-cyan-300">${fmtScPrice(p.liveP)}</span>`}</td>
               <td class="py-2.5 text-right font-mono-num text-[11px]">
-                <div class="text-rose-300">${p.sl ? 'SL ' + fmtScPrice(p.sl) : 'SL —'}</div>
-                <div class="text-emerald-300">${p.tp ? 'TP ' + fmtScPrice(p.tp) : 'TP —'}</div>
+                <div class="flex flex-col items-end gap-1">
+                  ${p.type !== 'cash' && p.sl
+                    ? `<button type="button" data-pos-exec-sl="${p.id}" title="Натисни, якщо спрацював Stop-Loss — автоматично занесе в історію угод" class="px-2 py-0.5 rounded bg-rose-950/80 hover:bg-rose-800/80 border border-rose-700/70 text-rose-200 font-semibold transition cursor-pointer">SL ${fmtScPrice(p.sl)}</button>`
+                    : '<span class="text-slate-600">SL —</span>'}
+                  ${p.type !== 'cash' && p.tp
+                    ? `<button type="button" data-pos-exec-tp="${p.id}" title="Натисни, якщо спрацював Take-Profit — автоматично занесе в історію угод" class="px-2 py-0.5 rounded bg-emerald-950/80 hover:bg-emerald-800/80 border border-emerald-700/70 text-emerald-200 font-semibold transition cursor-pointer">TP ${fmtScPrice(p.tp)}</button>`
+                    : '<span class="text-slate-600">TP —</span>'}
+                </div>
               </td>
-              <td class="py-2.5 text-right font-mono-num font-bold ${pCls}">${p.type === 'cash' ? '0%' : `${sgn}$${Math.round(p.upnl)} (${sgn}${p.upnlPct.toFixed(1)}%)`}</td>
+              <td class="py-2.5 text-right font-mono-num font-bold ${pCls}">${p.type === 'cash' ? '0%' : `${sgn}$${Math.round(p.upnl)} (${sgn}${p.upnlPct.toFixed(1)}%)`}${lockedHtml}</td>
               <td class="py-2.5 text-right whitespace-nowrap">
-                ${p.type !== 'cash' ? `<button type="button" data-pos-close="${p.id}" class="px-2 py-1 rounded bg-emerald-950/70 hover:bg-emerald-900/70 border border-emerald-700/60 text-[11px] text-emerald-300 mr-1 transition">Закрити в журнал</button>` : ''}
+                ${p.type !== 'cash' ? `<button type="button" data-pos-dca="${p.id}" class="px-2 py-1 rounded bg-amber-950/70 hover:bg-amber-900/70 border border-amber-700/60 text-[11px] text-amber-300 mr-1 transition">+ Усереднити</button><button type="button" data-pos-partial="${p.id}" class="px-2 py-1 rounded bg-emerald-950/70 hover:bg-emerald-900/70 border border-emerald-700/60 text-[11px] text-emerald-300 mr-1 transition">✂ Частка / Закрити</button>` : ''}
                 <button type="button" data-pos-del="${p.id}" class="px-2 py-1 rounded bg-rose-950/60 hover:bg-rose-900/60 border border-rose-800/50 text-[11px] text-rose-300 transition">✕</button>
               </td>
             </tr>`;
@@ -5560,42 +5654,283 @@
           tbody.querySelectorAll('button[data-pos-del]').forEach(b => {
             b.addEventListener('click', () => {
               portfolioPositions = portfolioPositions.filter(x => x.id !== b.dataset.posDel);
+              if (posDrawerState.posId === b.dataset.posDel) closePosDrawer();
               savePortfolioPositions();
               renderPortfolioPositions();
               renderJournalCrossAnalysis();
               renderDashboard();
             });
           });
-          tbody.querySelectorAll('button[data-pos-close]').forEach(b => {
-            b.addEventListener('click', () => {
-              const p = sum.enriched.find(x => x.id === b.dataset.posClose);
-              if (!p) return;
-              const marketLbl = p.type === 'fut-short' ? 'Futures Short' : (p.type === 'fut-long' ? 'Futures Long' : 'Spot Sell');
-              const ws = getWorkingScenarioSnapshot();
-              journalTrades.push({
-                id: 'tr-' + Date.now(),
-                date: new Date().toLocaleDateString('uk-UA'),
-                asset: p.asset,
-                market: marketLbl,
-                entry: p.entry,
-                exit: p.liveP,
-                lev: p.lev + 'x',
-                pnl: parseFloat(p.upnl.toFixed(2)),
-                note: `Закрито з портфеля (${ws.name})`
-              });
-              portfolioPositions = portfolioPositions.filter(x => x.id !== p.id);
-              saveJournal();
-              savePortfolioPositions();
-              renderJournal();
-              renderPortfolioPositions();
-              renderJournalCrossAnalysis();
-              renderDashboard();
-            });
+          tbody.querySelectorAll('button[data-pos-dca]').forEach(b => {
+            b.addEventListener('click', () => openPosDrawer('dca', b.dataset.posDca));
+          });
+          tbody.querySelectorAll('button[data-pos-partial]').forEach(b => {
+            b.addEventListener('click', () => openPosDrawer('partial', b.dataset.posPartial));
+          });
+          tbody.querySelectorAll('button[data-pos-exec-sl]').forEach(b => {
+            b.addEventListener('click', () => executePositionOrder(b.dataset.posExecSl, 'sl'));
+          });
+          tbody.querySelectorAll('button[data-pos-exec-tp]').forEach(b => {
+            b.addEventListener('click', () => executePositionOrder(b.dataset.posExecTp, 'tp'));
           });
         }
       }
       renderJournalCrossAnalysis();
     }
+
+    // ==================== PARTIAL CLOSE & DCA AVERAGING LOGIC ====================
+    let posDrawerState = { mode: null, posId: null };
+
+    function executePositionOrder(posId, orderKind) {
+      const idx = portfolioPositions.findIndex(x => x.id === posId);
+      if (idx === -1) return;
+      const pos = portfolioPositions[idx];
+      const execPrice = orderKind === 'sl' ? pos.sl : pos.tp;
+      if (!execPrice || execPrice <= 0) return;
+
+      const lev = pos.type === 'spot' ? 1 : Math.max(1, pos.lev || 1);
+      const pctMove = pos.type === 'fut-short'
+        ? ((pos.entry - execPrice) / pos.entry)
+        : ((execPrice - pos.entry) / pos.entry);
+      const realizedPnl = parseFloat((pos.amount * lev * pctMove).toFixed(2));
+      const marketLbl = pos.type === 'fut-short' ? 'Futures Short' : (pos.type === 'fut-long' ? 'Futures Long' : 'Spot Sell');
+      const ws = getWorkingScenarioSnapshot();
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' }) + ' ' + now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+      const kindLabel = orderKind === 'sl' ? 'Stop-Loss (SL)' : 'Take-Profit (TP)';
+
+      journalTrades.push({
+        id: 'tr-' + Date.now(),
+        date: dateStr,
+        asset: pos.asset,
+        market: marketLbl,
+        entry: parseFloat(pos.entry.toFixed(4)),
+        exit: parseFloat(execPrice.toFixed(4)),
+        lev: lev + 'x',
+        pnl: realizedPnl,
+        note: `Виконано ${kindLabel} · ${ws.name}`
+      });
+
+      adjustCashReserve(Math.max(0, pos.amount + realizedPnl));
+      portfolioPositions.splice(idx, 1);
+      if (posDrawerState.posId === posId) closePosDrawer();
+
+      saveJournal();
+      savePortfolioPositions();
+      renderJournal();
+      renderPortfolioPositions();
+      renderDashboard();
+
+      const sgn = realizedPnl >= 0 ? '+' : '';
+      showJournalToast(`Виконано ${kindLabel} по ${pos.asset} (${fmtScPrice(execPrice)}): ${sgn}$${realizedPnl.toFixed(2)} занесено в історію угод.`);
+    }
+
+    function closePosDrawer() {
+      posDrawerState = { mode: null, posId: null };
+      const dr = document.getElementById('pos-action-drawer');
+      if (dr) dr.classList.add('hidden');
+    }
+
+    function openPosDrawer(mode, posId) {
+      const sum = computePortfolioSummary();
+      const p = sum.enriched.find(x => x.id === posId);
+      if (!p) return;
+      posDrawerState = { mode, posId };
+
+      const dr = document.getElementById('pos-action-drawer');
+      const badge = document.getElementById('pos-drawer-badge');
+      const title = document.getElementById('pos-drawer-title');
+      const pFields = document.getElementById('pos-drawer-partial-fields');
+      const dFields = document.getElementById('pos-drawer-dca-fields');
+      const confirmBtn = document.getElementById('btn-pos-drawer-confirm');
+      const errEl = document.getElementById('pos-drawer-err');
+      errEl.classList.add('hidden');
+
+      dr.classList.remove('hidden');
+      if (mode === 'partial') {
+        badge.textContent = '✂ Часткове / повне закриття';
+        badge.className = 'px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-emerald-500/20 text-emerald-300';
+        title.textContent = `${p.asset} · Поточна сума $${Math.round(p.amount).toLocaleString('uk-UA')} (Вхід ${fmtScPrice(p.entry)})`;
+        pFields.classList.remove('hidden');
+        dFields.classList.add('hidden');
+        document.getElementById('pos-pclose-pct').value = '50';
+        document.getElementById('pos-pclose-price').value = p.liveP >= 100 ? p.liveP.toFixed(1) : (p.liveP >= 10 ? p.liveP.toFixed(2) : p.liveP.toFixed(4));
+        document.getElementById('pos-pclose-be').checked = false;
+        confirmBtn.textContent = 'Підтвердити закриття частки';
+        confirmBtn.className = 'px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white whitespace-nowrap transition';
+      } else {
+        badge.textContent = '+ Усереднення (DCA)';
+        badge.className = 'px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-amber-500/20 text-amber-300';
+        title.textContent = `${p.asset} · Поточний середній вхід ${fmtScPrice(p.entry)} ($${Math.round(p.amount).toLocaleString('uk-UA')})`;
+        dFields.classList.remove('hidden');
+        pFields.classList.add('hidden');
+        document.getElementById('pos-dca-amount').value = Math.round(p.amount);
+        document.getElementById('pos-dca-price').value = p.liveP >= 100 ? p.liveP.toFixed(1) : (p.liveP >= 10 ? p.liveP.toFixed(2) : p.liveP.toFixed(4));
+        confirmBtn.textContent = 'Застосувати усереднення';
+        confirmBtn.className = 'px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs font-semibold text-white whitespace-nowrap transition';
+      }
+      updatePosDrawerPreview();
+      dr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function updatePosDrawerPreview() {
+      const sum = computePortfolioSummary();
+      const p = sum.enriched.find(x => x.id === posDrawerState.posId);
+      const prevEl = document.getElementById('pos-drawer-preview');
+      if (!p || !prevEl) return;
+
+      if (posDrawerState.mode === 'partial') {
+        const pct = Math.min(100, Math.max(1, parseFloat(document.getElementById('pos-pclose-pct').value) || 0));
+        const cPrice = parseFloat(document.getElementById('pos-pclose-price').value) || p.liveP;
+        const frac = pct / 100;
+        const closedAmt = p.amount * frac;
+        const remainAmt = Math.max(0, p.amount - closedAmt);
+        const pctMove = p.type === 'fut-short' ? ((p.entry - cPrice) / p.entry) : ((cPrice - p.entry) / p.entry);
+        const rPnl = closedAmt * p.lev * pctMove;
+        const sgn = rPnl >= 0 ? '+' : '';
+        const pCol = rPnl >= 0 ? 'text-emerald-300' : 'text-rose-300';
+        prevEl.innerHTML = `Закривається <strong>${pct}% ($${Math.round(closedAmt).toLocaleString('uk-UA')})</strong> по ${fmtScPrice(cPrice)} → Realized PnL: <strong class="${pCol}">${sgn}$${rPnl.toFixed(2)}</strong> · Залишок: <strong>$${Math.round(remainAmt).toLocaleString('uk-UA')}</strong>`;
+      } else if (posDrawerState.mode === 'dca') {
+        const addAmt = parseFloat(document.getElementById('pos-dca-amount').value) || 0;
+        const addPrice = parseFloat(document.getElementById('pos-dca-price').value) || p.liveP;
+        if (addAmt <= 0 || addPrice <= 0) {
+          prevEl.textContent = 'Введи суму та ціну докупки, щоб побачити нову середню ціну входу.';
+          return;
+        }
+        const qtyOld = (p.amount * p.lev) / p.entry;
+        const qtyAdd = (addAmt * p.lev) / addPrice;
+        const newAmt = p.amount + addAmt;
+        const newEntry = (newAmt * p.lev) / (qtyOld + qtyAdd);
+        const diffPct = ((newEntry - p.entry) / p.entry) * 100;
+        const dSgn = diffPct >= 0 ? '+' : '';
+        prevEl.innerHTML = `Нова сума: <strong>$${Math.round(newAmt).toLocaleString('uk-UA')}</strong> · Середній вхід: ${fmtScPrice(p.entry)} → <strong class="text-amber-300">${fmtScPrice(newEntry)}</strong> (${dSgn}${diffPct.toFixed(2)}%)`;
+      }
+    }
+
+    function adjustCashReserve(deltaUsd) {
+      if (!deltaUsd || isNaN(deltaUsd)) return;
+      const cashPos = portfolioPositions.find(x => x.type === 'cash');
+      if (cashPos) {
+        cashPos.amount = Math.max(0, cashPos.amount + deltaUsd);
+      } else if (deltaUsd > 0) {
+        portfolioPositions.push({
+          id: 'pos-cash-' + Date.now(),
+          type: 'cash',
+          asset: 'USDT',
+          amount: parseFloat(deltaUsd.toFixed(2)),
+          entry: 1,
+          lev: 1,
+          sl: null,
+          tp: null
+        });
+      }
+    }
+
+    document.getElementById('btn-pos-drawer-close').addEventListener('click', closePosDrawer);
+
+    document.querySelectorAll('.pclose-pct-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('pos-pclose-pct').value = btn.dataset.pclosePct;
+        updatePosDrawerPreview();
+      });
+    });
+
+    ['pos-pclose-pct', 'pos-pclose-price', 'pos-dca-amount', 'pos-dca-price'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updatePosDrawerPreview);
+    });
+
+    document.getElementById('btn-pos-drawer-confirm').addEventListener('click', () => {
+      const idx = portfolioPositions.findIndex(x => x.id === posDrawerState.posId);
+      const errEl = document.getElementById('pos-drawer-err');
+      if (idx === -1) return;
+      const pos = portfolioPositions[idx];
+      const lev = pos.type === 'spot' ? 1 : Math.max(1, pos.lev || 1);
+
+      if (posDrawerState.mode === 'partial') {
+        const pct = parseFloat(document.getElementById('pos-pclose-pct').value);
+        const cPrice = parseFloat(document.getElementById('pos-pclose-price').value);
+        const toCash = document.getElementById('pos-pclose-to-cash').checked;
+        const moveBe = document.getElementById('pos-pclose-be').checked;
+
+        if (isNaN(pct) || pct <= 0 || pct > 100 || isNaN(cPrice) || cPrice <= 0) {
+          errEl.textContent = 'Вкажи коректний відсоток (1–100%) та ціну закриття (> 0).';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        errEl.classList.add('hidden');
+        const frac = pct / 100;
+        const closedAmt = pos.amount * frac;
+        const pctMove = pos.type === 'fut-short' ? ((pos.entry - cPrice) / pos.entry) : ((cPrice - pos.entry) / pos.entry);
+        const realizedPnl = parseFloat((closedAmt * lev * pctMove).toFixed(2));
+        const marketLbl = pos.type === 'fut-short' ? 'Futures Short' : (pos.type === 'fut-long' ? 'Futures Long' : 'Spot Sell');
+        const ws = getWorkingScenarioSnapshot();
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' }) + ' ' + now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+
+        journalTrades.push({
+          id: 'tr-' + Date.now(),
+          date: dateStr,
+          asset: pos.asset,
+          market: marketLbl,
+          entry: parseFloat(pos.entry.toFixed(4)),
+          exit: parseFloat(cPrice.toFixed(4)),
+          lev: lev + 'x',
+          pnl: realizedPnl,
+          note: pct >= 99.9 ? `Повне закриття 100% (${ws.name})` : `Частка ${pct}% ($${Math.round(closedAmt)}) · ${ws.name}`
+        });
+
+        if (toCash) {
+          adjustCashReserve(Math.max(0, closedAmt + realizedPnl));
+        }
+
+        if (pct >= 99.9) {
+          portfolioPositions.splice(idx, 1);
+        } else {
+          pos.amount = parseFloat((pos.amount - closedAmt).toFixed(2));
+          pos.realizedPnl = parseFloat(((pos.realizedPnl || 0) + realizedPnl).toFixed(2));
+          pos.partialCloses = (pos.partialCloses || 0) + 1;
+          if (moveBe) pos.sl = parseFloat(pos.entry.toFixed(4));
+        }
+
+        saveJournal();
+        savePortfolioPositions();
+        closePosDrawer();
+        renderJournal();
+        renderPortfolioPositions();
+        renderDashboard();
+        showJournalToast(pct >= 99.9 ? `Позицію ${pos.asset} повністю закрито в журнал.` : `Зафіксовано ${pct}% по ${pos.asset} (${realizedPnl >= 0 ? '+' : ''}$${realizedPnl}). Залишок оновлюється далі.`);
+      } else if (posDrawerState.mode === 'dca') {
+        const addAmt = parseFloat(document.getElementById('pos-dca-amount').value);
+        const addPrice = parseFloat(document.getElementById('pos-dca-price').value);
+        const fromCash = document.getElementById('pos-dca-from-cash').checked;
+
+        if (isNaN(addAmt) || addAmt <= 0 || isNaN(addPrice) || addPrice <= 0) {
+          errEl.textContent = 'Вкажи коректну суму докупки ($) та ціну докупки (> 0).';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        errEl.classList.add('hidden');
+        const qtyOld = (pos.amount * lev) / pos.entry;
+        const qtyAdd = (addAmt * lev) / addPrice;
+        const newAmt = pos.amount + addAmt;
+        const newEntry = (newAmt * lev) / (qtyOld + qtyAdd);
+
+        pos.amount = parseFloat(newAmt.toFixed(2));
+        pos.entry = parseFloat(newEntry.toFixed(6));
+        pos.dcaCount = (pos.dcaCount || 0) + 1;
+
+        if (fromCash) {
+          adjustCashReserve(-addAmt);
+        }
+
+        savePortfolioPositions();
+        closePosDrawer();
+        renderPortfolioPositions();
+        renderDashboard();
+        showJournalToast(`Позицію ${pos.asset} усереднено: новий середній вхід ${fmtScPrice(pos.entry)}, сума $${Math.round(pos.amount).toLocaleString('uk-UA')}.`);
+      }
+    });
 
     function renderJournalCrossAnalysis() {
       const ws = getWorkingScenarioSnapshot();
@@ -5748,12 +6083,12 @@
           const tName = p.type === 'spot' ? 'Спот' : (p.type === 'fut-long' ? 'Ф’юч Long' : (p.type === 'fut-short' ? 'Ф’юч Short' : 'Кеш'));
           return `<div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between gap-2">
             <div>
-              <span class="font-bold text-white font-mono-num">${p.asset}</span>
+              <span class="font-bold text-white font-mono-num">${p.asset}</span>${p.dcaCount ? `<span class="ml-1 px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px]">DCA ×${p.dcaCount}</span>` : ''}
               <span class="text-[11px] text-slate-400 ml-1.5">${tName}${p.lev > 1 ? ' ' + p.lev + 'x' : ''} · $${Math.round(p.amount).toLocaleString('uk-UA')}</span>
               ${p.type !== 'cash' ? `<div class="text-[11px] font-mono-num text-slate-400 mt-0.5">Вхід ${fmtScPrice(p.entry)} → Live <span class="text-cyan-300">${fmtScPrice(p.liveP)}</span>${p.sl ? ' · SL ' + fmtScPrice(p.sl) : ''}${p.tp ? ' · TP ' + fmtScPrice(p.tp) : ''}</div>` : ''}
             </div>
             <div class="text-right font-mono-num font-bold ${pCls}">
-              ${p.type === 'cash' ? '<span class="text-slate-300">Резерв</span>' : `${sgn}$${Math.round(p.upnl)}<div class="text-[10px]">${sgn}${p.upnlPct.toFixed(1)}%</div>`}
+              ${p.type === 'cash' ? '<span class="text-slate-300">Резерв</span>' : `${sgn}$${Math.round(p.upnl)}<div class="text-[10px]">${sgn}${p.upnlPct.toFixed(1)}%</div>${(p.realizedPnl && Math.abs(p.realizedPnl) >= 0.01) ? `<div class="text-[10px] font-normal text-slate-400">Зафікс: ${p.realizedPnl >= 0 ? '+' : ''}$${Math.round(p.realizedPnl)}</div>` : ''}`}
             </div>
           </div>`;
         }).join('');
@@ -5797,6 +6132,7 @@
       const entry = type === 'cash' ? 1 : parseFloat(document.getElementById('pos-entry').value);
       const lev = (type === 'spot' || type === 'cash') ? 1 : Math.max(1, parseFloat(document.getElementById('pos-lev').value) || 1);
       const slVal = parseFloat(document.getElementById('pos-sl').value);
+      const tpVal = parseFloat(document.getElementById('pos-tp').value);
       const errEl = document.getElementById('pos-form-err');
 
       if (isNaN(amount) || amount <= 0 || isNaN(entry) || entry <= 0) {
@@ -5812,11 +6148,13 @@
         amount,
         entry,
         lev,
-        sl: !isNaN(slVal) && slVal > 0 ? slVal : null
+        sl: !isNaN(slVal) && slVal > 0 ? slVal : null,
+        tp: !isNaN(tpVal) && tpVal > 0 ? tpVal : null
       });
       savePortfolioPositions();
       document.getElementById('pos-amount').value = '';
       document.getElementById('pos-sl').value = '';
+      document.getElementById('pos-tp').value = '';
       renderPortfolioPositions();
       renderDashboard();
     });
@@ -5826,10 +6164,99 @@
     document.getElementById('btn-dash-goto-sc').addEventListener('click', () => switchTab('scenarios'));
     document.getElementById('btn-dash-goto-j').addEventListener('click', () => switchTab('journal'));
 
+    function buildPortfolioAnalysisReport() {
+      const ws = getWorkingScenarioSnapshot();
+      const sum = computePortfolioSummary();
+      const ev = evaluateScenarioState(ws, ws.livePrice);
+      const nowStr = new Date().toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const lines = [];
+      lines.push(`📊 ЗВІТ ПОРТФЕЛЯ ДЛЯ АНАЛІЗУ (${nowStr})`);
+      lines.push('');
+      lines.push(`1) АКТИВНА СТРАТЕГІЯ: ${ws.name} (${ws.isPinned ? 'В роботі з ' + ws.pinnedAt : 'обрано в трекері'})`);
+      lines.push(`   Структура плану: ${ws.allocLabel}`);
+      lines.push(`   Поточна ціна ${ws.asset}: ${fmtScPrice(ws.livePrice)} | Статус: ${ev.badge}`);
+      lines.push(`   Рівні плану: Вхід ${fmtScPrice(ws.entry)} | Warning ${fmtScPrice(ws.warn)} | SL ${fmtScPrice(ws.inval)} | TP1 ${fmtScPrice(ws.tp1)} | TP2 ${fmtScPrice(ws.tp2)}`);
+      lines.push('');
+      lines.push(`2) СУКУПНИЙ ПОРТФЕЛЬ: $${Math.round(sum.totalCapital).toLocaleString('uk-UA')} (Unrealized P&L: ${sum.totalUpnl >= 0 ? '+' : ''}$${Math.round(sum.totalUpnl)})`);
+      lines.push(`   Розподіл факт vs план: Спот ${sum.spotPct.toFixed(0)}% (план ${ws.targetAlloc.spot}%) | Ф’ючерси ${sum.futPct.toFixed(0)}% (план ${ws.targetAlloc.fut}%) | Кеш ${sum.cashPct.toFixed(0)}% (план ${ws.targetAlloc.cash}%)`);
+      lines.push('');
+      lines.push('3) ВІДКРИТІ ПОЗИЦІЇ:');
+      if (sum.enriched.length === 0) {
+        lines.push('   - Відкритих позицій не додано');
+      } else {
+        sum.enriched.forEach(p => {
+          const tLbl = p.type === 'spot' ? 'Спот' : (p.type === 'fut-long' ? `Ф’юч Long ${p.lev}x` : (p.type === 'fut-short' ? `Ф’юч Short ${p.lev}x` : 'Кеш'));
+          if (p.type === 'cash') {
+            lines.push(`   - ${p.asset} (${tLbl}): $${Math.round(p.amount).toLocaleString('uk-UA')}`);
+          } else {
+            const dcaTxt = p.dcaCount ? `, DCA ×${p.dcaCount}` : '';
+            const lockedTxt = (p.realizedPnl && Math.abs(p.realizedPnl) >= 0.01) ? `, зафікс. частками ${p.realizedPnl >= 0 ? '+' : ''}$${p.realizedPnl.toFixed(2)}` : '';
+            const slTxt = p.sl ? fmtScPrice(p.sl) : '—';
+            const tpTxt = p.tp ? fmtScPrice(p.tp) : '—';
+            lines.push(`   - ${p.asset} | ${tLbl} | Сума $${Math.round(p.amount)} | Вхід ${fmtScPrice(p.entry)} → Live ${fmtScPrice(p.liveP)} | SL ${slTxt} / TP ${tpTxt} | PnL ${p.upnl >= 0 ? '+' : ''}$${p.upnl.toFixed(2)} (${p.upnlPct >= 0 ? '+' : ''}${p.upnlPct.toFixed(1)}%)${dcaTxt}${lockedTxt}`);
+          }
+        });
+      }
+      lines.push('');
+      const totalJ = journalTrades.length;
+      const winsJ = journalTrades.filter(t => t.pnl > 0).length;
+      const pnlJ = journalTrades.reduce((a, b) => a + (parseFloat(b.pnl) || 0), 0);
+      lines.push(`4) ЖУРНАЛ ЗАКРИТИХ УГОД: ${totalJ} угод | Winrate ${totalJ ? Math.round((winsJ / totalJ) * 100) : 0}% | Сумарний PnL: ${pnlJ >= 0 ? '+' : ''}$${pnlJ.toFixed(2)}`);
+      const recent = journalTrades.slice(-5).reverse();
+      recent.forEach(t => {
+        lines.push(`   - [${t.date}] ${t.asset} (${t.market} ${t.lev || ''}): ${t.entry || '—'} → ${t.exit || '—'} | PnL ${t.pnl >= 0 ? '+' : ''}$${Number(t.pnl).toFixed(2)}${t.note ? ' | ' + t.note : ''}`);
+      });
+      lines.push('');
+      lines.push('Проаналізуй мої поточні позиції відносно актуальної ситуації на ринку: чи варто тримати, зафіксувати частку, усереднити чи змінити SL/TP?');
+      return lines.join('\n');
+    }
+
+    document.getElementById('btn-dash-copy-report').addEventListener('click', async () => {
+      const report = buildPortfolioAnalysisReport();
+      const box = document.getElementById('dash-report-box');
+      const ta = document.getElementById('dash-report-text');
+      const st = document.getElementById('dash-report-status');
+      const btn = document.getElementById('btn-dash-copy-report');
+      ta.value = report;
+      box.classList.remove('hidden');
+
+      let copied = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(report);
+          copied = true;
+        }
+      } catch (e) {}
+
+      if (!copied) {
+        try {
+          ta.focus();
+          ta.select();
+          copied = document.execCommand('copy');
+        } catch (e) {}
+      }
+
+      if (copied) {
+        st.textContent = '✓ Звіт скопійовано в буфер — просто встав його в чат для аналізу!';
+        st.className = 'text-xs font-semibold text-emerald-300';
+        btn.textContent = '✓ Скопійовано!';
+        setTimeout(() => { btn.textContent = '📋 Скопіювати звіт для аналізу'; }, 2200);
+      } else {
+        st.textContent = 'Виділи текст нижче та скопіюй вручну (Ctrl+C / Довге натискання):';
+        st.className = 'text-xs font-semibold text-amber-300';
+        ta.focus();
+        ta.select();
+      }
+    });
+
+    document.getElementById('btn-dash-report-hide').addEventListener('click', () => {
+      document.getElementById('dash-report-box').classList.add('hidden');
+    });
+
     // ==================== GLOBAL PERSISTENT UI STATE ACROSS ALL TABS ====================
     const STATE_SKIP_IDS = new Set([
-      'finnhub-key-input', 'ocr-file-input', 'j-asset', 'j-entry', 'j-exit', 'j-pnl', 'j-note', 'j-open-amount', 'j-open-sl', 'j-open-tp',
-      'pos-amount', 'pos-entry', 'pos-sl', 'sc-new-name', 'sc-new-asset', 'sc-new-entry',
+      'finnhub-key-input', 'ocr-file-input', 'j-asset', 'j-entry', 'j-exit', 'j-pnl', 'j-note', 'j-open-amount', 'j-open-sl', 'j-open-tp', 'pos-pclose-pct', 'pos-pclose-price', 'pos-dca-amount', 'pos-dca-price',
+      'pos-amount', 'pos-entry', 'pos-sl', 'pos-tp', 'sc-new-name', 'sc-new-asset', 'sc-new-entry',
       'sc-new-warn', 'sc-new-inval', 'sc-new-tp1', 'sc-new-tp2', 'glossary-search'
     ]);
     let appStateTimer = null;
